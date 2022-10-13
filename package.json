@@ -1,0 +1,22 @@
+{
+  "name": "ygg-tv",
+  "version": "1.0.0",
+  "description": "Streaming website based on YggTorrent files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GaspardCulis/ygg-tv.git"
+  },
+  "keywords": [
+    "yggtorrent"
+  ],
+  "author": "GaspardCulis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GaspardCulis/ygg-tv/issues"
+  },
+  "homepage": "https://github.com/GaspardCulis/ygg-tv#readme"
+}
