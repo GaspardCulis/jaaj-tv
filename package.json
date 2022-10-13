@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/GaspardCulis/ygg-tv/issues"
   },
-  "homepage": "https://github.com/GaspardCulis/ygg-tv#readme"
+  "homepage": "https://github.com/GaspardCulis/ygg-tv#readme",
+  "dependencies": {
+    "node-yggtorrent": "^1.0.1"
+  }
 }
