@@ -1,32 +1,16 @@
 {
-  "name": "ygg-tv",
-  "version": "1.0.0",
-  "description": "Streaming website based on YggTorrent files",
-  "main": "index.js",
+  "name": "@example/basics",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GaspardCulis/ygg-tv.git"
-  },
-  "keywords": [
-    "yggtorrent"
-  ],
-  "author": "GaspardCulis",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GaspardCulis/ygg-tv/issues"
-  },
-  "homepage": "https://github.com/GaspardCulis/ygg-tv#readme",
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "ejs": "^3.1.8",
-    "express": "^4.18.2",
-    "node-yggtorrent": "^1.0.3",
-    "sha.js": "^2.4.11"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.20"
+    "astro": "^1.5.0"
   }
 }
