@@ -1,0 +1,17 @@
+---
+import TextField from "../components/TextField.astro";
+import Form from "../layouts/Form.astro";
+import GradientBackground from "../layouts/GradientBackground.astro";
+---
+
+<GradientBackground title="LOOL">
+	<Form title="HELO" method="POST" action="/login.post">
+		<TextField placeholder="Username" type="text" name="username" required />
+		<TextField
+			placeholder="Password"
+			type="password"
+			name="password"
+			required
+		/>
+	</Form>
+</GradientBackground>
