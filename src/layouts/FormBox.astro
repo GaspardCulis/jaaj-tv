@@ -1,23 +1,18 @@
 ---
 export interface Props {
 	title: string;
-	method: string;
-	action: string;
 }
 
-const { title, method, action } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <div class="center">
 	<h1>{title}</h1>
-	<form class="form" method={method} action={action}>
-		<slot />
-
-		<div class="container">
-			<input type="submit" value="Login" id="login_button" />
-		</div>
-		<div id="error"></div>
-	</form>
+	<slot />
+	<div class="container">
+		<input type="submit" value="Login" id="login_button" />
+	</div>
+	<div id="error"></div>
 </div>
 <style>
 	.center {
@@ -28,16 +23,14 @@ const { title, method, action } = Astro.props;
 		width: 400px;
 		background: whitesmoke;
 		border-radius: 10px;
+		padding: 0 40px;
+		padding-bottom: 10px;
+		box-sizing: border-box;
 	}
 	.center h1 {
 		text-align: center;
 		padding: 0 0 20px 0;
 		border-bottom: 1px solid silver;
-	}
-	.form {
-		padding: 0 40px;
-		padding-bottom: 10px;
-		box-sizing: border-box;
 	}
 	.container {
 		display: flex;

@@ -1,17 +1,43 @@
 ---
 import TextField from "../components/TextField.astro";
-import Form from "../layouts/Form.astro";
+import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
+import { createAuthToken, isLoggedIn, isLoginValid } from "../model/database";
+import { addCookie } from "../model/utils";
+
+const cookie = Astro.request.headers.get("cookie");
+
+if (isLoggedIn(cookie)) {
+	return Astro.redirect("index.astro");
+}
+
+const text = await Astro.request.text();
+const username = new URLSearchParams(text).get("username");
+const password = new URLSearchParams(text).get("password");
+
+if (isLoginValid(username, password)) {
+	let { token, maxAge } = createAuthToken(username);
+	addCookie(Astro.response.headers, {
+		name: "token",
+		value: token,
+		expires: maxAge,
+		secure: true,
+		path: "/",
+	});
+	return Astro.response;
+}
 ---
 
-<GradientBackground title="LOOL">
-	<Form title="HELO" method="POST" action="/login.post">
-		<TextField placeholder="Username" type="text" name="username" required />
-		<TextField
-			placeholder="Password"
-			type="password"
-			name="password"
-			required
-		/>
-	</Form>
+<GradientBackground title="Login">
+	<form method="post">
+		<FormBox title="Login">
+			<TextField placeholder="Username" type="text" name="username" required />
+			<TextField
+				placeholder="Password"
+				type="password"
+				name="password"
+				required
+			/>
+		</FormBox>
+	</form>
 </GradientBackground>
