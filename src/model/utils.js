@@ -21,4 +21,5 @@ export function addCookie(headers, cookie) {
     val += cookie.expires ? ` Expires=${cookie.expires};` : '';
     val += cookie.secure ? ` Secure;` : '';
     val += cookie.path ? ` Path=${cookie.path};` : '';
+    headers.append('Set-Cookie', val);
 }

@@ -1,0 +1,87 @@
+---
+import Button from "../components/Button.astro";
+import TextField from "../components/TextField.astro";
+import FormBox from "../layouts/FormBox.astro";
+import GradientBackground from "../layouts/GradientBackground.astro";
+import { consumeInviteCode, createUser, userExists } from "../model/database";
+
+if (Astro.request.method == "POST") {
+	const text = await Astro.request.text();
+	const invite_code = new URLSearchParams(text).get("code");
+	const username = new URLSearchParams(text).get("username");
+	const password = new URLSearchParams(text).get("password");
+	const password_confirm = new URLSearchParams(text).get("password_confirm");
+	console.log(text);
+
+	let error = "";
+	if (userExists(username)) {
+		error = "Username already exists";
+	} else if (password !== password_confirm) {
+		error = "Passwords do not match";
+	} else if (password.length < 8) {
+		error = "Password length must exceed 8 characters";
+	} else if (!consumeInviteCode(invite_code)) {
+		error = "Invalid invite code";
+	}
+
+	if (error) {
+		return Astro.redirect(`register?error=${error}`);
+	} else {
+		createUser(username, password);
+		return Astro.redirect(`login`);
+	}
+}
+
+const error = Astro.url.searchParams.get("error") || "";
+---
+
+<GradientBackground title="Register">
+	<form method="post">
+		<FormBox title="Register">
+			<TextField placeholder="Invite code" type="text" name="code" required />
+			<TextField placeholder="Username" type="text" name="username" required />
+			<TextField
+				placeholder="Password"
+				type="password"
+				name="password"
+				required
+			/>
+			<TextField
+				placeholder="Confirm password"
+				type="password"
+				name="password_confirm"
+				required
+			/>
+			<Button text="Register" />
+			<div id="error">{error}</div>
+			<div class="signup_link">
+				Already a memeber ? <a id="login_link" href="login">Login</a>
+			</div>
+		</FormBox>
+	</form>
+</GradientBackground>
+<style>
+	.signup_link {
+		margin: 30px 0;
+		text-align: center;
+		font-size: 16px;
+		color: #666666;
+	}
+
+	.signup_link a {
+		color: #2691d9;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.signup_link a:hover {
+		text-decoration: underline;
+	}
+
+	#error {
+		color: red;
+		text-align: center;
+		font-size: small;
+		margin-top: 5px;
+	}
+</style>

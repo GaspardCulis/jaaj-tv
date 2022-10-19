@@ -1,30 +1,42 @@
 ---
+import Button from "../components/Button.astro";
 import TextField from "../components/TextField.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
 import { createAuthToken, isLoggedIn, isLoginValid } from "../model/database";
 import { addCookie } from "../model/utils";
 
-const cookie = Astro.request.headers.get("cookie");
+const cookie = Astro.request.headers.get("cookie") || "";
+const token = (cookie.endsWith(";") ? cookie : cookie + ";").match(
+	/token=([^;]*);/
+);
 
-if (isLoggedIn(cookie)) {
-	return Astro.redirect("index.astro");
+if (token && isLoggedIn(token[1])) {
+	return Astro.redirect("app");
 }
 
-const text = await Astro.request.text();
-const username = new URLSearchParams(text).get("username");
-const password = new URLSearchParams(text).get("password");
+if (Astro.request.method == "POST") {
+	const text = await Astro.request.text();
+	const username = new URLSearchParams(text).get("username");
+	const password = new URLSearchParams(text).get("password");
 
-if (isLoginValid(username, password)) {
-	let { token, maxAge } = createAuthToken(username);
-	addCookie(Astro.response.headers, {
-		name: "token",
-		value: token,
-		expires: maxAge,
-		secure: true,
-		path: "/",
-	});
-	return Astro.response;
+	if (isLoginValid(username, password)) {
+		let { token, expires } = createAuthToken(username);
+		const headers = new Headers();
+		addCookie(headers, {
+			name: "token",
+			value: token,
+			expires: expires,
+			secure: true,
+			path: "/",
+		});
+		headers.append("Location", "/app");
+
+		return new Response("", {
+			status: 302,
+			headers,
+		});
+	}
 }
 ---
 
@@ -38,6 +50,28 @@ if (isLoginValid(username, password)) {
 				name="password"
 				required
 			/>
+			<Button text="Login" />
+			<div class="signup_link">
+				Not a memeber ? <a id="register_link" href="register">Signup</a>
+			</div>
 		</FormBox>
 	</form>
 </GradientBackground>
+<style>
+	.signup_link {
+		margin: 30px 0;
+		text-align: center;
+		font-size: 16px;
+		color: #666666;
+	}
+
+	.signup_link a {
+		color: #2691d9;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.signup_link a:hover {
+		text-decoration: underline;
+	}
+</style>

@@ -4,22 +4,32 @@ import shajs from 'sha.js';
 const DB_PATH = './data/database.json';
 
 /**
- * @returns { {users: Object, sessions: Object} }
+ * @returns { {users: Object, sessions: Object, invite_codes: Array<String>} }
  */
 function getDatabase() {
     return JSON.parse(fs.readFileSync(DB_PATH));
 }
 
 /**
- * @param { {users: Object, sessions: Object} } database
+ * @param { {users: Object, sessions: Object, invite_codes: Array<String>} } database
  */
 function storeDatabase(database) {
-    fs.writeFileSync(DB_PATH, JSON.stringify(database));
+    fs.writeFileSync(DB_PATH, JSON.stringify(database, null, 4));
+}
+
+function updateTokens() {
+    let database = getDatabase();
+    for (let token in database.sessions) {
+        if (database.sessions[token].birth + database.sessions[token].maxAge < Date.now()) {
+            delete database.sessions[token];
+        }
+    }
+    storeDatabase(database);
 }
 
 /**
  * @param { String } username
- * @returns { { token: String, maxAge: number } }
+ * @returns { { token: String, expires: number } }
  */
 export function createAuthToken(username) {
     let token = shajs('sha256').update(username + Date.now()).digest('hex');
@@ -31,26 +41,20 @@ export function createAuthToken(username) {
         birth: Date.now()
     };
     storeDatabase(database);
-    return {token: token, maxAge: maxAge};
+    return {token: token, expires: Date.now() + maxAge};
 }
 
 
 /**
- * @param { String } cookie
+ * @param { String } token
  * @returns { boolean } 
  */
-export function isLoggedIn(cookie) {
+export function isLoggedIn(token) {
+    updateTokens();
     const database = getDatabase();
     let logged = false;
-    if (cookie) {
-        if (database.sessions[cookie]) {
-            if (database.sessions[cookie].birth + database.sessions[cookie].maxAge > Date.now()) {
-                logged = true;
-            } else {
-                delete database.sessions[cookie];
-                storeDatabase(database);
-            }
-        }
+    if (database.sessions[token]) {
+        logged = true;
     }
     return logged;
 }
@@ -88,4 +92,33 @@ export function createUser(username, password) {
     }
     return created;
 }
+
+/**
+ * @param { String } code 
+ * @returns { boolean }
+ */
+export function consumeInviteCode(code) {
+    let database = getDatabase();
+    let consumed = false;
+
+    if (database.invite_codes.includes(code)) {
+        database.invite_codes = database.invite_codes.filter((value) => value !== code);
+        consumed = true;
+    }
+
+    storeDatabase(database);
+    return consumed
+}
+
+/**
+ * 
+ * @param { String } username 
+ * @returns { boolean }
+ */
+export function userExists(username) {
+    const database = getDatabase();
+    return username in database.users;
+}
+
+
 
