@@ -21,6 +21,7 @@ if (Astro.request.method == "POST") {
 	const password = new URLSearchParams(text).get("password");
 
 	if (isLoginValid(username, password)) {
+		console.log("Login valid");
 		let { token, expires } = createAuthToken(username);
 		const headers = new Headers();
 		addCookie(headers, {
@@ -36,8 +37,15 @@ if (Astro.request.method == "POST") {
 			status: 302,
 			headers,
 		});
+	} else {
+		console.log(username, " is a dumbass");
+		return Astro.redirect("?error=Invalid username or password");
 	}
+
+	console.log("mélian");
 }
+
+const error = Astro.url.searchParams.get("error") || "";
 ---
 
 <GradientBackground title="Login">
@@ -51,6 +59,7 @@ if (Astro.request.method == "POST") {
 				required
 			/>
 			<Button text="Login" />
+			<div id="error">{error}</div>
 			<div class="signup_link">
 				Not a memeber ? <a id="register_link" href="register">Signup</a>
 			</div>
@@ -82,5 +91,12 @@ if (Astro.request.method == "POST") {
 
 	html.is-animating .transition-fade {
 		opacity: 0;
+	}
+
+	#error {
+		color: red;
+		text-align: center;
+		font-size: small;
+		margin-top: 5px;
 	}
 </style>
