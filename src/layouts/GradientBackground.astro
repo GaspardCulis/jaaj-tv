@@ -17,7 +17,7 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body id="swup" class="running_gradient transition-fade">
+	<body class="running_gradient">
 		<PageTransition
 			speed={500}
 			zIndex={99}
@@ -45,15 +45,6 @@ const { title } = Astro.props;
 				100% {
 					background-position: 0% 50%;
 				}
-			}
-
-			.transition-fade {
-				transition: 0.4s;
-				opacity: 1;
-			}
-
-			html.is-animating .transition-fade {
-				opacity: 0;
 			}
 		</style>
 	</body>
