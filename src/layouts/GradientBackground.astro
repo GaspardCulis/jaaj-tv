@@ -1,6 +1,4 @@
 ---
-import { PageTransition } from "astro-page-transition";
-
 export interface Props {
 	title: string;
 }
@@ -18,11 +16,6 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body class="running_gradient">
-		<PageTransition
-			speed={500}
-			zIndex={99}
-			background="linear-gradient(120deg, #2980b9, #8e44ad, #2980b9, #8e44ad)"
-		/>
 		<slot />
 		<style>
 			.running_gradient {
@@ -47,5 +40,13 @@ const { title } = Astro.props;
 				}
 			}
 		</style>
+		<script>
+			import Swup from "swup";
+			import SwupHeadPlugin from "@swup/head-plugin";
+			import SwupSlideTheme from "@swup/slide-theme";
+			const swup = new Swup({
+				plugins: [new SwupHeadPlugin(), new SwupSlideTheme()],
+			});
+		</script>
 	</body>
 </html>
