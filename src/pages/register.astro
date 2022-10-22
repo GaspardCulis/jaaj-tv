@@ -1,6 +1,7 @@
 ---
 import Button from "../components/Button.astro";
 import TextField from "../components/TextField.astro";
+import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
 import { consumeInviteCode, createUser, userExists } from "../model/database";
@@ -36,7 +37,7 @@ const error = Astro.url.searchParams.get("error") || "";
 ---
 
 <GradientBackground title="Register">
-	<form method="post">
+	<form method="post" class="transition-fade">
 		<FormBox title="Register">
 			<TextField placeholder="Invite code" type="text" name="code" required />
 			<TextField placeholder="Username" type="text" name="username" required />
@@ -60,6 +61,7 @@ const error = Astro.url.searchParams.get("error") || "";
 		</FormBox>
 	</form>
 </GradientBackground>
+<Transition />
 <style>
 	.signup_link {
 		margin: 30px 0;

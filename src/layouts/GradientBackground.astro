@@ -6,47 +6,35 @@ export interface Props {
 const { title } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body class="running_gradient">
-		<slot />
-		<style>
-			.running_gradient {
-				animation: gradient 15s ease infinite;
-				margin: 0;
-				padding: 0;
-				background: linear-gradient(120deg, #2980b9, #8e44ad, #2980b9, #8e44ad);
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+<title>{title}</title>
+
+<body class="running_gradient">
+	<slot />
+	<style>
+		.running_gradient {
+			animation: gradient 15s ease infinite;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(120deg, #2980b9, #8e44ad, #2980b9, #8e44ad);
+			background-position: 0% 50%;
+			background-size: 400% 400%;
+			height: 100vh;
+			overflow: hidden;
+		}
+		@keyframes gradient {
+			0% {
 				background-position: 0% 50%;
-				background-size: 400% 400%;
-				height: 100vh;
-				overflow: hidden;
 			}
-			@keyframes gradient {
-				0% {
-					background-position: 0% 50%;
-				}
-				50% {
-					background-position: 100% 50%;
-				}
-				100% {
-					background-position: 0% 50%;
-				}
+			50% {
+				background-position: 100% 50%;
 			}
-		</style>
-		<script>
-			import Swup from "swup";
-			import SwupHeadPlugin from "@swup/head-plugin";
-			import SwupSlideTheme from "@swup/slide-theme";
-			const swup = new Swup({
-				plugins: [new SwupHeadPlugin(), new SwupSlideTheme()],
-			});
-		</script>
-	</body>
-</html>
+			100% {
+				background-position: 0% 50%;
+			}
+		}
+	</style>
+</body>

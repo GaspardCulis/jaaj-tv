@@ -1,6 +1,7 @@
 ---
 import Button from "../components/Button.astro";
 import TextField from "../components/TextField.astro";
+import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
 import { createAuthToken, isLoggedIn, isLoginValid } from "../model/database";
@@ -38,18 +39,15 @@ if (Astro.request.method == "POST") {
 			headers,
 		});
 	} else {
-		console.log(username, " is a dumbass");
 		return Astro.redirect("?error=Invalid username or password");
 	}
-
-	console.log("mélian");
 }
 
 const error = Astro.url.searchParams.get("error") || "";
 ---
 
 <GradientBackground title="Login">
-	<form method="post">
+	<form method="post" class="transition-fade">
 		<FormBox title="Login">
 			<TextField placeholder="Username" type="text" name="username" required />
 			<TextField
@@ -66,6 +64,7 @@ const error = Astro.url.searchParams.get("error") || "";
 		</FormBox>
 	</form>
 </GradientBackground>
+<Transition />
 <style>
 	.signup_link {
 		margin: 30px 0;
@@ -82,15 +81,6 @@ const error = Astro.url.searchParams.get("error") || "";
 
 	.signup_link a:hover {
 		text-decoration: underline;
-	}
-
-	.transition-fade {
-		transition: 0.4s;
-		opacity: 1;
-	}
-
-	html.is-animating .transition-fade {
-		opacity: 0;
 	}
 
 	#error {

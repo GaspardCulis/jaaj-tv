@@ -1,0 +1,57 @@
+---
+export interface Props {
+	duration?: number;
+}
+
+let { duration, target_class } = Astro.props;
+duration = duration || 500;
+---
+
+<script define:vars={{ duration }}>
+	function animate() {
+		for (let h of document.getElementsByTagName('html')) {
+			h.classList.add('is-animating');
+		}
+	}
+
+	/**
+	 * @param { MouseEvent } e
+	 */
+	function handleLoad(e) {
+		e.preventDefault();
+		animate();
+		setTimeout(
+			(e) => {
+				if (e.target.tagName == 'A') 
+					document.location.href = e.target.href;
+				else if (e.target.tagName == 'FORM') 
+					e.target.submit();
+			}, duration, e);
+	}
+
+	document.addEventListener('DOMContentLoaded', () => {
+		for (let a of document.getElementsByTagName("a")) {
+			a.addEventListener('click', handleLoad);
+		}
+		for (let form of document.getElementsByTagName("form")) {
+			form.addEventListener('submit', handleLoad);
+		}
+		for (let h of document.getElementsByTagName('html')) {
+			h.classList.add('is-loaded');
+		}
+	});
+</script>
+<style is:global>
+	html.is-loaded .transition-fade {
+		transition: 0.4s;
+		opacity: 1;
+	}
+
+	.transition-fade {
+		opacity: 0;
+	}
+
+	html.is-animating .transition-fade {
+		opacity: 0;
+	}
+</style>
