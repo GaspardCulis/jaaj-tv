@@ -9,14 +9,13 @@ const { title } = Astro.props;
 <div class="center">
 	<h1>{title}</h1>
 	<slot />
-	<div id="error"></div>
 </div>
 <style>
 	.center {
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		transform: translate(-50%, -50%);
+		transform: translate(500%, -50%);
 		width: 400px;
 		background: whitesmoke;
 		border-radius: 10px;
@@ -28,5 +27,20 @@ const { title } = Astro.props;
 		text-align: center;
 		padding: 0 0 20px 0;
 		border-bottom: 1px solid silver;
+	}
+
+	html.is-leaving .center {
+		transform: translate(-500%, -50%) !important;
+		transition: 800ms ease-in;
+	}
+
+	html.is-loaded .center {
+		transform: translate(-50%, -50%);
+		transition: 800ms ease-out;
+	}
+
+	html.is-refreshed .center {
+		transform: translate(-50%, -50%);
+		transition: 0;
 	}
 </style>

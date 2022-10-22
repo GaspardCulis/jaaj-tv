@@ -37,7 +37,11 @@ duration = duration || 500;
 			form.addEventListener('submit', handleLoad);
 		}
 		for (let h of document.getElementsByTagName('html')) {
-			h.classList.add('is-loaded');
+			if (performance.getEntries()[0].type == 'reload')
+				h.classList.add('is-refreshed');
+			else
+				h.classList.add('is-loaded');
+			
 		}
 	});
 </script>
@@ -47,11 +51,16 @@ duration = duration || 500;
 		opacity: 1;
 	}
 
-	.transition-fade {
-		opacity: 0;
+	html.is-refreshed .transition-fade {
+		transition: 0;
+		opacity: 1;
 	}
 
 	html.is-leaving .transition-fade {
+		opacity: 0;
+	}
+
+	.transition-fade {
 		opacity: 0;
 	}
 </style>
