@@ -1,11 +1,32 @@
 ---
 import NavigationItem from './NavigationItem.astro';
-import './style.css'
 ---
+<link rel="stylesheet" href="style.css">
 <div class="navbar">
+    <img src="./icon/logo.svg" alt="logo"class="navbar_logo" />
     <div class="vbox">
         <NavigationItem text="Search" icon="./icon/search.svg" href="search.astro" selected/>
         <NavigationItem text="Library" icon="./icon/dvd.svg" href="library.astro" selected/>
         <NavigationItem text="Settings" icon="./icon/settings.svg" href="settings.astro" selected/>
     </div>
 </div>
+<style>
+    .navbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 15%;
+        height: 100%;
+        background-color: whitesmoke;
+        border-right: 2 px solid lightgray;
+    }
+
+    .navbar_logo {
+        width: 80%;
+        padding: 10px;
+        padding-bottom: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

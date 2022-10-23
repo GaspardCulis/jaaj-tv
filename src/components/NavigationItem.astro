@@ -1,6 +1,4 @@
 ---
-import './style.css'
-
 export interface Props {
 	text: string;
     href: string;
@@ -10,20 +8,62 @@ export interface Props {
 
 const { text, href, icon, selected } = Astro.props;
 ---
-<a href={href} class="item">
-    <div class="hbox">
-        <img src={icon}/>
-        <p class="text">{text}</p>
+<link rel="stylesheet" href="style.css">
+<a href={href} class="item root">
+    <div class="hbox item">
+        <img src={icon} class="icon"/>
+        <h2 class="text vbox">{text}</h2>
     </div>
 </a>
 <style>
+    .root {
+        text-decoration: none;
+    }
+
     .item {
-
+        width: 90%;
+        margin-bottom: 10px;
+        text-align: center;
     }
 
-    .box {
-        background-color: whitesmoke;
-        border: 2px grey;
-        border-radius: 10px;
+    .text {
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #000;
+        font-size: 1.2em;
+        font-weight: 1500;
     }
+
+    @media only screen and (min-width: 800px) {
+        .root {
+            margin-left: 10%;
+        }
+
+        .icon {
+            width: 15%;
+            margin-left: 10px;
+            margin-right: 20px;
+        }
+    }
+
+    @media only screen and (max-width: 800px) {
+        .icon {
+            width: 50%;
+            margin-inline: auto;
+        }
+
+        .text {
+            display: none !important;
+        }
+
+        .item {
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+
+    
 </style>
