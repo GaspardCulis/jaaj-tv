@@ -1,0 +1,47 @@
+---
+import TextField from "./TextField.astro";
+
+
+---
+<div class="hbox root">
+    <div class="search-bar">
+        <TextField placeholder="Search" type="text" name="search" required/>
+    </div>
+</div>
+<style>
+    .root {
+        margin-left: 16%;
+        width: 100%;
+        padding-block: 16px;
+    }
+
+    .search-bar {
+        height: 60px;
+        flex-grow: 0.3;
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 35px;
+        padding-left: 5px;
+        padding-bottom: 10px;
+        padding-top: 20px;
+        padding-inline: 20px;
+        display: flex;
+        align-items: center;
+        transform: translateY(-150%);
+    }
+
+    html.is-leaving .search-bar {
+        transform: translateY(-150%) !important;
+        transition: 0.5s ease-in;
+    }
+
+    html.is-loaded .search-bar {
+        transform: translateY(0);
+        transition: 0.5s ease-out;
+    }
+
+    html.is-refreshed .search-bar {
+        transform: translateY(0);
+        transition: 0s;
+    }
+</style>
