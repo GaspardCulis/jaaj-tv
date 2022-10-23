@@ -1,0 +1,11 @@
+---
+import NavigationItem from './NavigationItem.astro';
+import './style.css'
+---
+<div class="navbar">
+    <div class="vbox">
+        <NavigationItem text="Search" icon="./icon/search.svg" href="search.astro" selected/>
+        <NavigationItem text="Library" icon="./icon/dvd.svg" href="library.astro" selected/>
+        <NavigationItem text="Settings" icon="./icon/settings.svg" href="settings.astro" selected/>
+    </div>
+</div>

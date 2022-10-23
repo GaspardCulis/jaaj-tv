@@ -22,7 +22,6 @@ if (Astro.request.method == "POST") {
 	const password = new URLSearchParams(text).get("password");
 
 	if (isLoginValid(username, password)) {
-		console.log("Login valid");
 		let { token, expires } = createAuthToken(username);
 		const headers = new Headers();
 		addCookie(headers, {

@@ -1,0 +1,29 @@
+---
+import './style.css'
+
+export interface Props {
+	text: string;
+    href: string;
+    icon: string;
+    selected: boolean;
+}
+
+const { text, href, icon, selected } = Astro.props;
+---
+<a href={href} class="item">
+    <div class="hbox">
+        <img src={icon}/>
+        <p class="text">{text}</p>
+    </div>
+</a>
+<style>
+    .item {
+
+    }
+
+    .box {
+        background-color: whitesmoke;
+        border: 2px grey;
+        border-radius: 10px;
+    }
+</style>
