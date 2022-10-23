@@ -2,12 +2,15 @@
 import NavigationItem from './NavigationItem.astro';
 ---
 <link rel="stylesheet" href="style.css">
-<div class="navbar">
+<div class="navbar vbox">
     <img src="./icon/logo.svg" alt="logo"class="navbar_logo" />
-    <div class="vbox">
-        <NavigationItem text="Search" icon="./icon/search.svg" href="search.astro" selected/>
-        <NavigationItem text="Library" icon="./icon/dvd.svg" href="library.astro" selected/>
-        <NavigationItem text="Settings" icon="./icon/settings.svg" href="settings.astro" selected/>
+    <div class="vbox" style="justify-content:space-between; flex-grow: 1;">
+        <div class="vbox">
+            <NavigationItem text="Search" icon="./icon/search.svg" href="search" selected/>
+            <NavigationItem text="Library" icon="./icon/dvd.svg" href="library" selected/>
+            <NavigationItem text="Settings" icon="./icon/settings.svg" href="settings" selected/>
+        </div>
+        <NavigationItem text="Disconnect" icon="./icon/disconnect.svg" href="disconnect"/>
     </div>
 </div>
 <style>
@@ -17,8 +20,23 @@ import NavigationItem from './NavigationItem.astro';
         left: 0;
         width: 15%;
         height: 100%;
+        transform: translate(-100%, 0%);
         background-color: whitesmoke;
         border-right: 2 px solid lightgray;
+    }
+
+    html.is-loaded .navbar {
+        transform: translate(0%, 0%);
+        transition: 500ms;
+    }
+
+    html.is-refreshed .navbar {
+        transform: translate(0%, 0%);
+    }
+
+    html.is-leaving .navbar {
+        transform: translate(-100%, 0%);
+        transition: 500ms;
     }
 
     .navbar_logo {

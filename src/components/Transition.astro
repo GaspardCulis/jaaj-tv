@@ -15,23 +15,30 @@ duration = duration || 500;
 	}
 
 	/**
-	 * @param { MouseEvent } e
+	 * @param { MouseEvent | PointerEvent } e
 	 */
 	function handleLoad(e) {
 		e.preventDefault();
 		animate();
 		setTimeout(
 			(e) => {
-				if (e.target.tagName == 'A') 
-					document.location.href = e.target.href;
-				else if (e.target.tagName == 'FORM') 
-					e.target.submit();
+				console.log('redirecting to', e.path);
+				for (let element of e.path) {
+					if (element.tagName == 'A') {
+						document.location.href = element.href;
+						break;
+					}
+					else if (element.tagName == 'FORM') {
+						element.submit();
+						break;
+					}
+				}
 			}, duration, e);
 	}
 
 	document.addEventListener('DOMContentLoaded', () => {
 		for (let a of document.getElementsByTagName("a")) {
-			a.addEventListener('click', handleLoad);
+			a.addEventListener('click', handleLoad, false);
 		}
 		for (let form of document.getElementsByTagName("form")) {
 			form.addEventListener('submit', handleLoad);

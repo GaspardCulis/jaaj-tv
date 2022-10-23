@@ -44,6 +44,15 @@ export function createAuthToken(username) {
     return {token: token, expires: Date.now() + maxAge};
 }
 
+/**
+ * @param { String } token 
+ */
+export function revokeToken(token) {
+    let database = getDatabase();
+    delete database.sessions[token];
+    storeDatabase(database);
+}
+
 
 /**
  * @param { String } token

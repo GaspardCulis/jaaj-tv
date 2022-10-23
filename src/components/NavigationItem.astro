@@ -3,7 +3,7 @@ export interface Props {
 	text: string;
     href: string;
     icon: string;
-    selected: boolean;
+    selected?: boolean;
 }
 
 const { text, href, icon, selected } = Astro.props;
@@ -11,6 +11,7 @@ const { text, href, icon, selected } = Astro.props;
 <link rel="stylesheet" href="style.css">
 <a href={href} class="item root">
     <div class="hbox item">
+        <div class={`select-indicator ${selected ? 'selected' : ''}`}></div>
         <img src={icon} class="icon"/>
         <h2 class="text vbox">{text}</h2>
     </div>
