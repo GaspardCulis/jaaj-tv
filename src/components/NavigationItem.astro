@@ -18,12 +18,19 @@ const { text, href, icon, selected } = Astro.props;
 <style>
     .root {
         text-decoration: none;
+        height: fit-content;
     }
 
     .item {
-        width: 90%;
-        margin-bottom: 10px;
         text-align: center;
+    }
+
+    .item:hover .text {
+        color: deeppink;
+    }
+
+    .item:hover .icon {
+        filter: invert(21%) sepia(98%) saturate(3914%) hue-rotate(317deg) brightness(104%) contrast(102%);
     }
 
     .text {
@@ -33,6 +40,14 @@ const { text, href, icon, selected } = Astro.props;
         color: #000;
         font-size: 1.2em;
         font-weight: 1500;
+        transition: 0.2s;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .icon {
+        width: 24px;
+        min-height: 100%;
+        transition: 0.2s;
     }
 
     @media only screen and (min-width: 800px) {
@@ -41,9 +56,7 @@ const { text, href, icon, selected } = Astro.props;
         }
 
         .icon {
-            width: 15%;
-            margin-left: 10px;
-            margin-right: 20px;
+            margin-right: 10px;
         }
     }
 
@@ -51,6 +64,7 @@ const { text, href, icon, selected } = Astro.props;
         .icon {
             width: 50%;
             margin-inline: auto;
+            margin-bottom: 10%;
         }
 
         .text {
