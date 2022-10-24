@@ -1,6 +1,7 @@
 ---
 import TextField from "./TextField.astro";
 import { SubCategories } from "node-yggtorrent";
+import Button from "./Button.astro";
 
 /**
  * Replaces the _ with spaces and only keeps the first letter uppercase
@@ -21,19 +22,22 @@ function formatCategoryName(name: string) {
             })
         }
     </select>
+    <div class="button vbox">
+        <Button text="Search"/>
+    </div>
 </div>
 <style>
     .search-bar {
         margin-left: 16%;
-        width: 100%;
+        width: 80%;
         padding-block: 16px;
         animation: 500ms ease-out 0s 1 slideInFromTop;
-        gap: 2%;
+        justify-content: space-between;
     }
 
     .name-field {
         height: 60px;
-        flex-grow: 0.3;
+        flex-grow: 0.6;
         background-color: whitesmoke;
         border: 1px solid #ccc;
         border-radius: 35px;
@@ -52,6 +56,13 @@ function formatCategoryName(name: string) {
     html.is-leaving .search-bar {
         transform: translate(0, -150%);
         transition: 500ms ease-in;
+    }
+
+    .button {
+        min-height: 100%;
+        flex-grow: 0.2;
+        justify-content: center;
+        align-items: center;
     }
 
     @keyframes slideInFromTop {
