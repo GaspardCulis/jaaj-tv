@@ -12,11 +12,25 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 /**
  * @param { SubmitEvent } event
  */
-function onSearch(event) {
+async function onSearch(event) {
     event.preventDefault();
+    
     const loadingBoi = document.getElementById("loading-boi");
-    console.log(loadingBoi);
     loadingBoi.classList.add("visible");
+
+    const query =  Object.fromEntries(new FormData(event.target));
+
+    const results = await fetch("../api/search", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            query,
+        }),
+    });
+
+    console.log(results);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
