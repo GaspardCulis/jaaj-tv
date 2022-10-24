@@ -1,15 +1,16 @@
 ---
 export interface Props {
+    id?: string;
 	text: string;
     href: string;
     icon: string;
     selected?: boolean;
 }
 
-const { text, href, icon, selected } = Astro.props;
+const { id, text, href, icon, selected } = Astro.props;
 ---
 <link rel="stylesheet" href="style.css">
-<a href={href} class={`item root ${selected ? 'selected' : ''}`}>
+<a href={href} class={`item root${selected ? ' selected' : ''}`} id={id ? id : ""}>
     <div class="hbox item">
         <div class="select-indicator"></div>
         <img src={icon} class="icon"/>

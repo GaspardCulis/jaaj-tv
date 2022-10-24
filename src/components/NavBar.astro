@@ -16,7 +16,7 @@ if (referer) {
 }
 ---
 <link rel="stylesheet" href="../style.css">
-<div class={`navbar vbox ${is_so ? "transitionless" : ""}`}>
+<div class={`vbox ${is_so ? "transitionless" : ""}`} id="navbar">
     <img src="../icon/logo.svg" alt="logo"class="navbar_logo" />
     <div class="vbox" style="justify-content:space-between; flex-grow: 1;">
         <div class="vbox">
@@ -24,11 +24,17 @@ if (referer) {
             <NavigationItem text="Library" icon="../icon/dvd.svg" href="library" selected={selected_index == 1}/>
             <NavigationItem text="Settings" icon="../icon/settings.svg" href="settings" selected={selected_index == 2}/>
         </div>
-        <NavigationItem text="Disconnect" icon="../icon/disconnect.svg" href="disconnect"/>
+        <NavigationItem text="Disconnect" icon="../icon/disconnect.svg" href="disconnect" id="disconnect-button"/>
     </div>
 </div>
+<script>
+    const disconnect_button = document.getElementById('disconnect-button');
+    disconnect_button.addEventListener('click', () => {
+        document.getElementById('navbar').classList.add('disconnecting');
+    });
+</script>
 <style>
-    .navbar {
+    #navbar {
         position: absolute;
         top: 0;
         left: 0;
@@ -39,21 +45,21 @@ if (referer) {
         border-right: 2 px solid lightgray;
     }
 
-    html.is-loaded .navbar {
+    html.is-loaded #navbar {
         transform: translate(0%, 0%);
         transition: 500ms;
     }
 
-    html.is-refreshed .navbar {
+    html.is-refreshed #navbar {
         transform: translate(0%, 0%);
     }
 
-    html.is-leaving .navbar.disconnecting {
+    html.is-leaving #navbar.disconnecting {
         transform: translate(-100%, 0%);
         transition: 500ms;
     }
 
-    .navbar.transitionless {
+    #navbar.transitionless {
         transform: translate(0%, 0%);
         transition: none;
     }
