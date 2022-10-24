@@ -1,21 +1,37 @@
 ---
 import TextField from "./TextField.astro";
+import { SubCategories } from "node-yggtorrent";
 
-
+/**
+ * Replaces the _ with spaces and only keeps the first letter uppercase
+ */
+function formatCategoryName(name: string) {
+    return name.toLowerCase().replace(/_/g, " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).replace('Tv', 'TV');
+}
 ---
-<div class="hbox root">
-    <div class="search-bar">
+<div class="hbox search-bar">
+    <div class="name-field">
         <TextField placeholder="Search" type="text" name="search" required/>
     </div>
+    <select class="minimal">
+        <option disabled selected>Select a category</option>
+        {
+            Object.keys(SubCategories.FILM_VIDEO).map((key) => {
+                return <option value={key}>{formatCategoryName(key)}</option>
+            })
+        }
+    </select>
 </div>
 <style>
-    .root {
+    .search-bar {
         margin-left: 16%;
         width: 100%;
         padding-block: 16px;
+        animation: 500ms ease-out 0s 1 slideInFromTop;
+        gap: 2%;
     }
 
-    .search-bar {
+    .name-field {
         height: 60px;
         flex-grow: 0.3;
         background-color: whitesmoke;
@@ -27,7 +43,10 @@ import TextField from "./TextField.astro";
         padding-inline: 20px;
         display: flex;
         align-items: center;
-        animation: 500ms ease-out 0s 1 slideInFromTop;
+    }
+
+    html.is-refreshed .search-bar {
+        animation: none;
     }
 
     html.is-leaving .search-bar {
@@ -42,5 +61,36 @@ import TextField from "./TextField.astro";
         100% {
             transform: translateX(0);
         }
+    }
+
+    /** SELECTS */
+
+    select {
+
+        /* styling */
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 35px;
+        display: inline-block;
+        font-family: inherit;
+        line-height: 1.5em;
+        padding: 0.5em 3.5em 0.5em 1em;
+        font-size: larger;
+        /* reset */
+
+        margin: 0;      
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    select.minimal {
+       
+    }
+
+    select.minimal:focus {
+        outline: 0;
     }
 </style>
