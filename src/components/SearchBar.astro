@@ -27,21 +27,20 @@ import TextField from "./TextField.astro";
         padding-inline: 20px;
         display: flex;
         align-items: center;
-        transform: translateY(-150%);
+        animation: 500ms ease-out 0s 1 slideInFromTop;
     }
 
     html.is-leaving .search-bar {
-        transform: translateY(-150%) !important;
-        transition: 0.5s ease-in;
+        transform: translate(0, -150%);
+        transition: 500ms ease-in;
     }
 
-    html.is-loaded .search-bar {
-        transform: translateY(0);
-        transition: 0.5s ease-out;
-    }
-
-    html.is-refreshed .search-bar {
-        transform: translateY(0);
-        transition: 0s;
+    @keyframes slideInFromTop {
+        0% {
+            transform: translateY(-150%);
+        }
+        100% {
+            transform: translateX(0);
+        }
     }
 </style>

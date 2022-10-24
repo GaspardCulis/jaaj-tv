@@ -1,6 +1,6 @@
 ---
-import GradientBackground from "../layouts/GradientBackground.astro";
-import { isLoggedIn, revokeToken } from "../model/database";
+import GradientBackground from "../../layouts/GradientBackground.astro";
+import { isLoggedIn, revokeToken } from "../../model/database";
 
 const cookie = Astro.request.headers.get("cookie") || "";
 const token = (cookie.endsWith(";") ? cookie : cookie + ";").match(
@@ -11,7 +11,7 @@ if (token && isLoggedIn(token[1])) {
 	revokeToken(token[1]);
 }
 
-return Astro.redirect("login");
+return Astro.redirect("../login");
 ---
 <GradientBackground title="Disconnect">
 

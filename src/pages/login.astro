@@ -31,7 +31,7 @@ if (Astro.request.method == "POST") {
 			secure: true,
 			path: "/",
 		});
-		headers.append("Location", "/app");
+		headers.append("Location", "/app/search");
 
 		return new Response("", {
 			status: 302,

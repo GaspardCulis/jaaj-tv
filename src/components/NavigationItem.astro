@@ -9,9 +9,9 @@ export interface Props {
 const { text, href, icon, selected } = Astro.props;
 ---
 <link rel="stylesheet" href="style.css">
-<a href={href} class="item root">
+<a href={href} class={`item root ${selected ? 'selected' : ''}`}>
     <div class="hbox item">
-        <div class={`select-indicator ${selected ? 'selected' : ''}`}></div>
+        <div class="select-indicator"></div>
         <img src={icon} class="icon"/>
         <h2 class="text vbox">{text}</h2>
     </div>
@@ -20,6 +20,30 @@ const { text, href, icon, selected } = Astro.props;
     .root {
         text-decoration: none;
         height: fit-content;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .root.selected .text {
+        color: deeppink;
+    }
+
+    .root.selected .icon {
+        filter: invert(21%) sepia(98%) saturate(3914%) hue-rotate(317deg) brightness(104%) contrast(102%);
+    }
+
+    .select-indicator {
+        width: 4px;
+        min-height: 100%;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        margin-right: 10%;
+        background-color: deeppink;
+        visibility: hidden;
+    }
+
+    .root.selected .select-indicator {
+        visibility: visible;
     }
 
     .item {
@@ -51,17 +75,13 @@ const { text, href, icon, selected } = Astro.props;
         transition: 0.2s;
     }
 
-    @media only screen and (min-width: 800px) {
-        .root {
-            margin-left: 10%;
-        }
-
+    @media only screen and (min-width: 900px) {
         .icon {
             margin-right: 10px;
         }
     }
 
-    @media only screen and (max-width: 800px) {
+    @media only screen and (max-width: 900px) {
         .icon {
             width: 50%;
             margin-inline: auto;
@@ -77,8 +97,9 @@ const { text, href, icon, selected } = Astro.props;
             justify-content: center;
             align-items: center;
         }
+
+        .select-indicator {
+            display: none;
+        }
     }
-
-
-    
 </style>

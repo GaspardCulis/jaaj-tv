@@ -1,16 +1,30 @@
 ---
 import NavigationItem from './NavigationItem.astro';
+
+export interface Props {
+    selected_index?: number;
+}
+
+const { selected_index } = Astro.props;
+
+let is_so = false;
+const referer = Astro.request.headers.get('referer');
+if (referer) {
+    const uri = new URL(referer);
+
+    is_so = uri.pathname.startsWith('/app');
+}
 ---
-<link rel="stylesheet" href="style.css">
-<div class="navbar vbox">
-    <img src="./icon/logo.svg" alt="logo"class="navbar_logo" />
+<link rel="stylesheet" href="../style.css">
+<div class={`navbar vbox ${is_so ? "transitionless" : ""}`}>
+    <img src="../icon/logo.svg" alt="logo"class="navbar_logo" />
     <div class="vbox" style="justify-content:space-between; flex-grow: 1;">
-        <div class="vbox no-transition">
-            <NavigationItem text="Search" icon="./icon/search.svg" href="search" selected/>
-            <NavigationItem text="Library" icon="./icon/dvd.svg" href="library" selected/>
-            <NavigationItem text="Settings" icon="./icon/settings.svg" href="settings" selected/>
+        <div class="vbox">
+            <NavigationItem text="Search" icon="../icon/search.svg" href="search" selected={selected_index == 0}/>
+            <NavigationItem text="Library" icon="../icon/dvd.svg" href="library" selected={selected_index == 1}/>
+            <NavigationItem text="Settings" icon="../icon/settings.svg" href="settings" selected={selected_index == 2}/>
         </div>
-        <NavigationItem text="Disconnect" icon="./icon/disconnect.svg" href="disconnect"/>
+        <NavigationItem text="Disconnect" icon="../icon/disconnect.svg" href="disconnect"/>
     </div>
 </div>
 <style>
@@ -34,9 +48,14 @@ import NavigationItem from './NavigationItem.astro';
         transform: translate(0%, 0%);
     }
 
-    html.is-leaving .navbar {
+    html.is-leaving .navbar.disconnecting {
         transform: translate(-100%, 0%);
         transition: 500ms;
+    }
+
+    .navbar.transitionless {
+        transform: translate(0%, 0%);
+        transition: none;
     }
 
     .navbar_logo {
