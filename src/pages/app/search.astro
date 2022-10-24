@@ -14,6 +14,9 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
  */
 function onSearch(event) {
     event.preventDefault();
+    const loadingBoi = document.getElementById("loading-boi");
+    console.log(loadingBoi);
+    loadingBoi.classList.add("visible");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -28,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="vbox full-height full-width">
         <SearchBar />
         <div id="search-results" class="vbox">
-            <div style="position:static; margin: auto;">
+            <div style="position:static; margin: auto;" id="loading-boi">
                 <LoadingBoi />
             </div>
         </div>
@@ -41,5 +44,27 @@ document.addEventListener("DOMContentLoaded", () => {
         margin-left: 15%;
         width: 85%;
         height: 100%;
+    }
+
+    #loading-boi {
+        display: none;
+        opacity: 0;
+        transition: 1s;
+    }
+
+    #loading-boi.visible {
+        display: block;
+        animation: scale-in 1s forwards;
+    }
+
+    @keyframes scale-in {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 </style>
