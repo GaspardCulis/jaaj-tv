@@ -9,7 +9,7 @@ export interface Props {
 
 const { id, text, href, icon, selected } = Astro.props;
 ---
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 <a href={href} class={`item root${selected ? ' selected' : ''}`} id={id ? id : ""}>
     <div class="hbox item">
         <div class="select-indicator"></div>

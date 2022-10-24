@@ -31,7 +31,8 @@ duration = duration || 500;
 					action = (element) => element.submit();
 					target = element;
 				}
-			} else {
+			}
+			if(action || element == target) {
 				no_transition = no_transition || (element.classList && element.classList.contains('no-transition'));
 			}
 		}

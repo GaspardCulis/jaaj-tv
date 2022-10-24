@@ -1,4 +1,5 @@
 ---
+import LoadingBoi from "../../components/LoadingBoi.astro";
 import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
 import Transition from "../../components/Transition.astro";
@@ -6,8 +7,39 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 
 
 ---
+<script defer>
+
+/**
+ * @param { SubmitEvent } event
+ */
+function onSearch(event) {
+    event.preventDefault();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchBar = document.getElementById("search-bar");
+    searchBar.addEventListener("submit", onSearch);
+});
+
+</script>
 <Transition />
-<GradientBackground title="jaajTV">
+<GradientBackground title="jaajTV | Search">
     <NavBar selected_index={0}/>
-    <SearchBar />
+    <div class="vbox full-height full-width">
+        <SearchBar />
+        <div id="search-results" class="vbox">
+            <div style="position:static; margin: auto;">
+                <LoadingBoi />
+            </div>
+        </div>
+    </div>
 </GradientBackground>
+<style>
+    #search-results {
+        overflow-y: auto;
+        padding: 1rem;
+        margin-left: 15%;
+        width: 85%;
+        height: 100%;
+    }
+</style>

@@ -20,17 +20,37 @@ if (referer) {
     <img src="../icon/logo.svg" alt="logo"class="navbar_logo" />
     <div class="vbox" style="justify-content:space-between; flex-grow: 1;">
         <div class="vbox">
-            <NavigationItem text="Search" icon="../icon/search.svg" href="search" selected={selected_index == 0}/>
-            <NavigationItem text="Library" icon="../icon/dvd.svg" href="library" selected={selected_index == 1}/>
-            <NavigationItem text="Settings" icon="../icon/settings.svg" href="settings" selected={selected_index == 2}/>
+            <NavigationItem text="Search" icon="../icon/search.svg" href="search" selected={selected_index == 0} id="search-button"/>
+            <NavigationItem text="Library" icon="../icon/dvd.svg" href="library" selected={selected_index == 1} id="library-button" />
+            <NavigationItem text="Settings" icon="../icon/settings.svg" href="settings" selected={selected_index == 2} id="settings-button" />
         </div>
         <NavigationItem text="Disconnect" icon="../icon/disconnect.svg" href="disconnect" id="disconnect-button"/>
     </div>
 </div>
-<script>
+<script define:vars={{selected_index}}>
     const disconnect_button = document.getElementById('disconnect-button');
     disconnect_button.addEventListener('click', () => {
         document.getElementById('navbar').classList.add('disconnecting');
+    });
+
+    const search_button = document.getElementById('search-button');
+    const library_button = document.getElementById('library-button');
+    const settings_button = document.getElementById('settings-button');
+    const buttons = [search_button, library_button, settings_button];
+
+    function onButtonPressed(index) {
+        if (index == selected_index) return;
+        
+    }
+
+    search_button.addEventListener('click', () => {
+        onButtonPressed(0);
+    });
+    library_button.addEventListener('click', () => {
+        onButtonPressed(1);
+    });
+    settings_button.addEventListener('click', () => {
+        onButtonPressed(2);
     });
 </script>
 <style>

@@ -2,6 +2,7 @@
 import TextField from "./TextField.astro";
 import { SubCategories } from "node-yggtorrent";
 import Button from "./Button.astro";
+import SelectMenu from "../layouts/SelectMenu.astro";
 
 /**
  * Replaces the _ with spaces and only keeps the first letter uppercase
@@ -10,24 +11,27 @@ function formatCategoryName(name: string) {
     return name.toLowerCase().replace(/_/g, " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).replace('Tv', 'TV');
 }
 ---
-<div class="hbox search-bar">
-    <div class="name-field">
+<link rel="stylesheet" href="../style.css">
+<form class="hbox no-transition" id="search-bar">
+    <div class="container name-field">
         <TextField placeholder="Search" type="text" name="search" required/>
     </div>
-    <select class="minimal">
-        <option disabled selected>Select a category</option>
-        {
-            Object.keys(SubCategories.FILM_VIDEO).map((key) => {
-                return <option value={key}>{formatCategoryName(key)}</option>
-            })
-        }
-    </select>
+    <div class="container category-field">
+        <SelectMenu name="category" placeholder="Category" required>
+            <option value="" selected disabled hidden></option>
+            {
+                Object.keys(SubCategories.FILM_VIDEO).map((key) => {
+                    return <option value={key}>{formatCategoryName(key)}</option>
+                })
+            }
+        </SelectMenu>
+    </div>
     <div class="button vbox">
         <Button text="Search"/>
     </div>
-</div>
+</form>
 <style>
-    .search-bar {
+    #search-bar {
         margin-left: 16%;
         width: 80%;
         padding-block: 16px;
@@ -35,9 +39,8 @@ function formatCategoryName(name: string) {
         justify-content: space-between;
     }
 
-    .name-field {
+    .container {
         height: 60px;
-        flex-grow: 0.6;
         background-color: whitesmoke;
         border: 1px solid #ccc;
         border-radius: 35px;
@@ -49,11 +52,19 @@ function formatCategoryName(name: string) {
         align-items: center;
     }
 
-    html.is-refreshed .search-bar {
+    .name-field {
+        flex-grow: 0.6;
+    }
+
+    .category-field {
+        flex-grow: 0.1;
+    }
+
+    html.is-refreshed #search-bar {
         animation: none;
     }
 
-    html.is-leaving .search-bar {
+    html.is-leaving #search-bar {
         transform: translate(0, -150%);
         transition: 500ms ease-in;
     }
@@ -72,36 +83,5 @@ function formatCategoryName(name: string) {
         100% {
             transform: translateX(0);
         }
-    }
-
-    /** SELECTS */
-
-    select {
-
-        /* styling */
-        background-color: whitesmoke;
-        border: 1px solid #ccc;
-        border-radius: 35px;
-        display: inline-block;
-        font-family: inherit;
-        line-height: 1.5em;
-        padding: 0.5em 3.5em 0.5em 1em;
-        font-size: larger;
-        /* reset */
-
-        margin: 0;      
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-    }
-
-    select.minimal {
-       
-    }
-
-    select.minimal:focus {
-        outline: 0;
     }
 </style>
