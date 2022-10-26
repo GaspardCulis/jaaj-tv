@@ -16,37 +16,11 @@ if (token && isLoggedIn(token[1])) {
 	return Astro.redirect("app");
 }
 
-if (Astro.request.method == "POST") {
-	const text = await Astro.request.text();
-	const username = new URLSearchParams(text).get("username");
-	const password = new URLSearchParams(text).get("password");
-
-	if (isLoginValid(username, password)) {
-		let { token, expires } = createAuthToken(username);
-		const headers = new Headers();
-		addCookie(headers, {
-			name: "token",
-			value: token,
-			expires: expires,
-			secure: true,
-			path: "/",
-		});
-		headers.append("Location", "/app/search");
-
-		return new Response("", {
-			status: 302,
-			headers,
-		});
-	} else {
-		return Astro.redirect("?error=Invalid username or password");
-	}
-}
-
 const error = Astro.url.searchParams.get("error") || "";
 ---
 
 <GradientBackground title="Login">
-	<form method="post">
+	<form method="post" action="../api/login">
 		<FormBox title="Login">
 			<TextField placeholder="Username" type="text" name="username" required />
 			<TextField
