@@ -20,7 +20,7 @@ async function onSearch(event) {
 
     const query =  Object.fromEntries(new FormData(event.target));
 
-    const results = await fetch("../api/search", {
+    const response = await fetch("../api/search", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -29,6 +29,8 @@ async function onSearch(event) {
             query,
         }),
     });
+
+    const results = (await response.json()).results;
 
     console.log(results);
 }
