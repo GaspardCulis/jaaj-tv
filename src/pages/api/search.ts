@@ -8,7 +8,23 @@ async function getImage(torrent_url: string) {
   const response = await axios.get(torrent_url);
   const $ = cheerio.load(response.data);
   const container = $(".default");
-  const image = container.find("img").attr("src");
+  let image = "false";
+  while (image==="false" || image.endsWith(".gif")) {
+    const img = container.find("img");
+    if (!img) break;
+    image = img.attr("src") || "";
+
+    const width = img.attr("width") || "0";
+    const height = img.attr("height") || "0";
+    const ratio = parseInt(width) / parseInt(height);
+    if ((parseInt(width) < 100 || parseInt(height) < 100 || ratio > 1) && (width !== "0" && height !== "0")) {
+      image = "false";
+    }
+
+    container.find("img").remove();
+  }
+
+  console.log(image);
 
   return image;
 }

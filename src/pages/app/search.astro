@@ -55,6 +55,7 @@ async function onSearch(event) {
     loadingBoi.classList.remove("visible");
 
     const container = document.getElementById("search-results");
+    container.innerHTML = "";
     for (const result of results) {
         container.appendChild(movieElement(result));
     }
@@ -73,9 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="vbox full-height full-width">
         <SearchBar />
         <div id="search-results" class="hbox wrap">
-            <div style="position:static; margin: auto;" id="loading-boi">
-                <LoadingBoi />
-            </div>
+        </div>
+        <div style="position:static; margin: auto; margin-left: 15%" id="loading-boi">
+            <LoadingBoi />
         </div>
     </div>
 </GradientBackground>
