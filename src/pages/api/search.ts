@@ -26,14 +26,22 @@ export const post: APIRoute = async ({ request }) => {
         sort: SortBy.COMPLETED,
         order: SortOrder.DESC
     });
+    
+    ygg.closeBrowser();
 
     // Scraping the result images and parsing names
+    let i = 0; // For ordering
     await Promise.all(results.map(async (result) => {
+      let index = i;
+      i++;
       out.push({
         ...tnp(result.name),
         image: await getImage(result.url),
+        index
       });
     }));
+    // Reordering the results
+    out.sort((a, b) => a.index - b.index);
 
     return new Response(JSON.stringify({
         results: out
