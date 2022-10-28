@@ -36,6 +36,7 @@ export const post: APIRoute = async ({ request }) => {
       i++;
       out.push({
         ...tnp(result.name),
+        baseName: result.name,
         image: await getImage(result.url),
         index
       });

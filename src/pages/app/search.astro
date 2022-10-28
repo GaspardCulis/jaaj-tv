@@ -11,12 +11,19 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 
 function movieElement(movie) {
     const out = document.createElement("div");
-    out.classList.add("hbox");
+    out.classList.add("vbox", "movie");
+
+    const image_fallback = "../assets/placeholder.jpg";
+    let image_url = movie.image ? movie.image : image_fallback;
     out.innerHTML = `
-            <div class="result">
-                <p>${movie.title}</p>
-            </div>
-            `
+        <div class="poster-container">
+            <img src="${image_url}" alt="${movie.title}" onerror="this.onerror=null;this.src='${image_fallback}'">
+        </div>
+        <div class="spacer"></div>
+        <div class="vbox movie-info">
+            <h3>${movie.title || movie.baseName}</h3>
+            <p>${movie.year || ""}</p>
+        `
     return out;
 }
 
@@ -59,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
+<link rel="stylesheet" href="../movie.css" />
 <Transition />
 <GradientBackground title="jaajTV | Search">
     <NavBar selected_index={0}/>
