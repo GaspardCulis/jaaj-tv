@@ -1,8 +1,21 @@
 import { APIRoute } from "astro"
-import { YggTorrent, Categories, SubCategories } from "node-yggtorrent";
+import { YggTorrent, Categories, SubCategories, SortBy, SortOrder } from "node-yggtorrent";
+import axios from "axios";
+import cheerio from 'cheerio';
+import tnp from 'torrent-name-parser';
+
+async function getImage(torrent_url: string) {
+  const response = await axios.get(torrent_url);
+  const $ = cheerio.load(response.data);
+  const container = $(".default");
+  const image = container.find("img").attr("src");
+
+  return image;
+}
 
 export const post: APIRoute = async ({ request }) => {
     const query = (await request.json()).query;
+    const out = [];
     
     const ygg = new YggTorrent();
     await ygg.initializeBrowser();
@@ -10,12 +23,20 @@ export const post: APIRoute = async ({ request }) => {
         name: query.search,
         category: Categories.FILM_VIDEO,
         subCategory: SubCategories.FILM_VIDEO[query.category],
+        sort: SortBy.COMPLETED,
+        order: SortOrder.DESC
     });
 
-    console.log(results);
+    // Scraping the result images and parsing names
+    await Promise.all(results.map(async (result) => {
+      out.push({
+        ...tnp(result.name),
+        image: await getImage(result.url),
+      });
+    }));
 
     return new Response(JSON.stringify({
-        results: results
+        results: out
       }), {
         status: 200
       })

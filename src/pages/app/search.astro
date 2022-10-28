@@ -9,6 +9,17 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 ---
 <script defer>
 
+function movieElement(movie) {
+    const out = document.createElement("div");
+    out.classList.add("hbox");
+    out.innerHTML = `
+            <div class="result">
+                <p>${movie.title}</p>
+            </div>
+            `
+    return out;
+}
+
 /**
  * @param { SubmitEvent } event
  */
@@ -33,6 +44,13 @@ async function onSearch(event) {
     const results = (await response.json()).results;
 
     console.log(results);
+
+    loadingBoi.classList.remove("visible");
+
+    const container = document.getElementById("search-results");
+    for (const result of results) {
+        container.appendChild(movieElement(result));
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -46,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <NavBar selected_index={0}/>
     <div class="vbox full-height full-width">
         <SearchBar />
-        <div id="search-results" class="vbox">
+        <div id="search-results" class="hbox wrap">
             <div style="position:static; margin: auto;" id="loading-boi">
                 <LoadingBoi />
             </div>
@@ -56,7 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
 <style>
     #search-results {
         overflow-y: auto;
-        padding: 1rem;
+        padding-block: 1rem;
+        padding-right: 1rem;
+        padding-left: 3rem;
         margin-left: 15%;
         width: 85%;
         height: 100%;
