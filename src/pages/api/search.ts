@@ -18,26 +18,26 @@ async function getImage(torrent_url: string) {
   while (image==="false" || image.endsWith(".gif")) {
     const img = container.find("img");
     if (!img) break;
-    image = img.attr("src") || "";
+    image = img.attr("src") || "false";
 
-    let result = await probe(image).catch((err) => console.log("Failed to get image : ", image));
-    if (!result) {
-      container.find("img").remove();
-      continue;
-    }
+    if (image!== "false") {
+      let result = await probe(image).catch((err) => console.log("Failed to get image : ", image, " on torrent : ", torrent_url));
 
-    const width = result?.width || 0;
-    const height = result?.height || 0;
-  
-    const ratio = width / height;
-    if (width < 100 || height < 100 || ratio > 1.5) {
-      image = "false";
+      if (result) {
+        const width = result?.width || 0;
+        const height = result?.height || 0;
+      
+        const ratio = width / height;
+        if (width < 100 || height < 100 || ratio > 1.5) {
+          image = "false";
+        }
+      }
     }
 
     container.find("img").remove();
   }
 
-  return image;
+  return image==="false" ? null : image;
 }
 
 export const post: APIRoute = async ({ request }) => {
