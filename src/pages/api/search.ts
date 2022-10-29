@@ -3,9 +3,15 @@ import { YggTorrent, Categories, SubCategories, SortBy, SortOrder } from "node-y
 import axios from "axios";
 import cheerio from 'cheerio';
 import tnp from 'torrent-name-parser';
+import probe from 'probe-image-size';
+
+
 
 async function getImage(torrent_url: string) {
-  const response = await axios.get(torrent_url);
+  const response = await axios.get(torrent_url).catch((err) => {
+    console.log("Failed to get torrent page : ", torrent_url);
+  });
+  if (!response) return null;
   const $ = cheerio.load(response.data);
   const container = $(".default");
   let image = "false";
@@ -14,17 +20,22 @@ async function getImage(torrent_url: string) {
     if (!img) break;
     image = img.attr("src") || "";
 
-    const width = img.attr("width") || "0";
-    const height = img.attr("height") || "0";
-    const ratio = parseInt(width) / parseInt(height);
-    if ((parseInt(width) < 100 || parseInt(height) < 100 || ratio > 1) && (width !== "0" && height !== "0")) {
+    let result = await probe(image).catch((err) => console.log("Failed to get image : ", image));
+    if (!result) {
+      container.find("img").remove();
+      continue;
+    }
+
+    const width = result?.width || 0;
+    const height = result?.height || 0;
+  
+    const ratio = width / height;
+    if (width < 100 || height < 100 || ratio > 1.5) {
       image = "false";
     }
 
     container.find("img").remove();
   }
-
-  console.log(image);
 
   return image;
 }
@@ -54,7 +65,8 @@ export const post: APIRoute = async ({ request }) => {
         ...tnp(result.name),
         baseName: result.name,
         image: await getImage(result.url),
-        index
+        index,
+        url: result.url,
       });
     }));
     // Reordering the results

@@ -10,8 +10,12 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 <script defer>
 
 function movieElement(movie) {
-    const out = document.createElement("div");
+    const out = document.createElement("a");
     out.classList.add("vbox", "movie");
+    // remove link styling
+    out.style.textDecoration = "none";
+    out.style.color = "inherit";
+    out.href = movie.url;
 
     const image_fallback = "../assets/placeholder.jpg";
     let image_url = movie.image ? movie.image : image_fallback;
@@ -23,6 +27,7 @@ function movieElement(movie) {
         <div class="vbox movie-info">
             <h3>${movie.title || movie.baseName}</h3>
             <p>${movie.year || ""}</p>
+        </div>
         `
     return out;
 }
@@ -32,6 +37,9 @@ function movieElement(movie) {
  */
 async function onSearch(event) {
     event.preventDefault();
+
+    const container = document.getElementById("search-results");
+    container.innerHTML = "";
     
     const loadingBoi = document.getElementById("loading-boi");
     loadingBoi.classList.add("visible");
@@ -54,8 +62,6 @@ async function onSearch(event) {
 
     loadingBoi.classList.remove("visible");
 
-    const container = document.getElementById("search-results");
-    container.innerHTML = "";
     for (const result of results) {
         container.appendChild(movieElement(result));
     }
@@ -73,10 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     <NavBar selected_index={0}/>
     <div class="vbox full-height full-width">
         <SearchBar />
-        <div id="search-results" class="hbox wrap">
-        </div>
-        <div style="position:static; margin: auto; margin-left: 15%" id="loading-boi">
+        <div style="pointer-events: none;position:absolute; margin: auto; margin-left: 15%; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
             <LoadingBoi />
+        </div>
+        <div id="search-results" class="hbox wrap">
         </div>
     </div>
 </GradientBackground>
