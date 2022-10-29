@@ -21,8 +21,9 @@ async function getImage(torrent_url: string) {
     image = img.attr("src") || "false";
 
     if (image!== "false") {
-      console.log("Found image, probing...");
+      console.log("Found image, probing... ", image);
       let result = await probe(image).catch((err) => console.log("Failed to get image : ", image, " on torrent : ", torrent_url));
+      console.log("Result : ", result);
 
       if (result) {
         const width = result?.width || 0;
