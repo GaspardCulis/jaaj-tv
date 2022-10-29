@@ -21,6 +21,7 @@ async function getImage(torrent_url: string) {
     image = img.attr("src") || "false";
 
     if (image!== "false") {
+      console.log("Found image, probing...");
       let result = await probe(image).catch((err) => console.log("Failed to get image : ", image, " on torrent : ", torrent_url));
 
       if (result) {
@@ -30,11 +31,12 @@ async function getImage(torrent_url: string) {
         const ratio = width / height;
         if (width < 100 || height < 100 || ratio > 1.5) {
           image = "false";
+          console.log("Image too small or bad ratio, trying next one... : ", image, " on torrent : ", torrent_url);
         }
       }
     }
 
-    container.find("img").remove();
+    img.remove();
   }
 
   return image==="false" ? null : image;
@@ -46,6 +48,8 @@ export const post: APIRoute = async ({ request }) => {
     
     const ygg = new YggTorrent();
     await ygg.initializeBrowser();
+    
+    console.log("Searching for : ", query);
     const results = await ygg.search({
         name: query.search,
         category: Categories.FILM_VIDEO,
