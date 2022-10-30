@@ -17,22 +17,20 @@ async function getImage(torrent_url: string) {
   let image = "false";
   while (image==="false" || image.endsWith(".gif")) {
     const img = container.find("img");
-    if (!img) break;
+    if (!img.length) break;
     image = img.attr("src") || "false";
 
     if (image!== "false") {
-      console.log("Found image, probing... ", image);
-      let result = await probe(image).catch((err) => console.log("Failed to get image : ", image, " on torrent : ", torrent_url));
-      console.log("Result : ", result);
+      let result = await probe(image).catch((err) => {/*console.log("Failed to get image : ", image, " on torrent : ", torrent_url)*/});
 
       if (result) {
         const width = result?.width || 0;
         const height = result?.height || 0;
       
         const ratio = width / height;
-        if (width < 100 || height < 100 || ratio > 1.5) {
+        if (width < 100 || height < 100 || ratio >= 2) {
+          //console.log("Image too small or bad ratio, trying next one... : ", image, " on torrent : ", torrent_url);
           image = "false";
-          console.log("Image too small or bad ratio, trying next one... : ", image, " on torrent : ", torrent_url);
         }
       }
     }
@@ -63,6 +61,18 @@ export const post: APIRoute = async ({ request }) => {
 
     // Scraping the result images and parsing names
     let i = 0; // For ordering
+    for (let result of results) {
+      let index = i;
+      i++;
+      out.push({
+        ...tnp(result.name),
+        baseName: result.name,
+        image: await getImage(result.url),
+        index,
+        url: result.url,
+      });
+    }
+    /*
     await Promise.all(results.map(async (result) => {
       let index = i;
       i++;
@@ -74,6 +84,7 @@ export const post: APIRoute = async ({ request }) => {
         url: result.url,
       });
     }));
+    */
     // Reordering the results
     out.sort((a, b) => a.index - b.index);
 
