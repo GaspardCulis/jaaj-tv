@@ -5,7 +5,10 @@ import cheerio from 'cheerio';
 import tnp from 'torrent-name-parser';
 import probe from 'probe-image-size';
 
-
+const DEBUG = true;
+function debug(msg: string) {
+  if (DEBUG) console.log(msg);
+}
 
 async function getImage(torrent_url: string) {
   const response = await axios.get(torrent_url).catch((err) => {
@@ -15,13 +18,18 @@ async function getImage(torrent_url: string) {
   const $ = cheerio.load(response.data);
   const container = $(".default");
   let image = "false";
-  while (image==="false" || image.endsWith(".gif")) {
+  debug("Finding image for " + torrent_url);
+  while (image=="false" || image.endsWith(".gif")) {
     const img = container.find("img");
-    if (!img.length) break;
+    if (!img.length) {
+      debug("\tNo image found for : " + torrent_url); 
+      break;
+    }
     image = img.attr("src") || "false";
+    debug("\tChecking image : " + image);
 
     if (image!== "false") {
-      let result = await probe(image).catch((err) => {/*console.log("Failed to get image : ", image, " on torrent : ", torrent_url)*/});
+      let result = await probe(image).catch((err) => {debug("\tFailed to get image : " + image)});
 
       if (result) {
         const width = result?.width || 0;
@@ -29,15 +37,16 @@ async function getImage(torrent_url: string) {
       
         const ratio = width / height;
         if (width < 100 || height < 100 || ratio >= 2) {
-          //console.log("Image too small or bad ratio, trying next one... : ", image, " on torrent : ", torrent_url);
+          debug("\tImage too small or bad ratio, trying next one... : " + image);
           image = "false";
         }
       }
     }
-
+    
     img.remove();
   }
 
+  debug("\tImage found : " + image);
   return image==="false" ? null : image;
 }
 
@@ -61,6 +70,7 @@ export const post: APIRoute = async ({ request }) => {
 
     // Scraping the result images and parsing names
     let i = 0; // For ordering
+    /*
     for (let result of results) {
       let index = i;
       i++;
@@ -72,7 +82,7 @@ export const post: APIRoute = async ({ request }) => {
         url: result.url,
       });
     }
-    /*
+    */
     await Promise.all(results.map(async (result) => {
       let index = i;
       i++;
@@ -84,7 +94,6 @@ export const post: APIRoute = async ({ request }) => {
         url: result.url,
       });
     }));
-    */
     // Reordering the results
     out.sort((a, b) => a.index - b.index);
 
