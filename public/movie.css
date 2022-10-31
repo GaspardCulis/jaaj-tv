@@ -6,6 +6,7 @@
     background-color: whitesmoke;
     border-radius: 10px;
     padding-bottom: 5px;
+    transform: rotateY(90deg);
 }
 
 .movie .movie-info {
@@ -58,4 +59,13 @@
 
 .movie .spacer {
     height: 100%;
+}
+
+@keyframes movie-appear {
+    0% {
+        transform: rotateY(90deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
 }

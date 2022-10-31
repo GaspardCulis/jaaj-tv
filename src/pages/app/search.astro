@@ -9,12 +9,13 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 ---
 <script defer>
 
-function movieElement(movie) {
+function movieElement(movie, animation_delay) {
     const out = document.createElement("a");
     out.classList.add("vbox", "movie");
     // remove link styling
     out.style.textDecoration = "none";
     out.style.color = "inherit";
+    out.style.animation = `movie-appear 0.5s ease-in-out ${animation_delay}s forwards`;
     out.href = movie.url;
 
     const image_fallback = "../assets/placeholder.jpg";
@@ -69,8 +70,10 @@ async function onSearch(event) {
 
     loadingBoi.classList.remove("visible");
 
+    let i = 0;
     for (const result of results) {
-        container.appendChild(movieElement(result));
+        container.appendChild(movieElement(result, i * 0.1));
+        i++;
     }
 }
 
@@ -102,6 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
         margin-left: 15%;
         width: 85%;
         height: 100%;
+    }
+
+    html.is-leaving #search-results {
+        opacity: 0;
+        transition: 500ms;
     }
 
     #loading-boi {
