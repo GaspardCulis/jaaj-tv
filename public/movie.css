@@ -2,21 +2,50 @@
     margin: 0.5rem;
     width: 300px;
     height: 450px;
-    text-align: center;
+    text-align: left;
     background-color: whitesmoke;
     border-radius: 10px;
+    padding-bottom: 5px;
 }
 
 .movie .movie-info {
-    padding: 1rem;
+    padding-top: 0.5rem;
+    padding-left: 1rem;
     text-indent: 0%;
+    justify-content: flex-start;
+    align-items: baseline;
+    overflow-y: scroll;
+    scrollbar-width: 0px;
+}
+
+.movie .movie-info::-webkit-scrollbar {
+    display: none;
+}
+
+.movie .movie-info h3 {
+    margin: 0px;
+    padding: 0px;
+}
+
+.movie .movie-info ul {
+    text-align: left;
 }
 
 .movie .poster-container {
     width: 100%;
     height: 370px;
-    background-color: #f5f5f5;
+    background-color: whitesmoke;
     border-radius: 10px 10px 0 0;
+}
+
+.movie .poster-container::after {
+    display: block;
+    position: relative;
+    margin-top: -14px;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, whitesmoke 100%);
+    
+    content: '';
+    height: 10px;
 }
 
 .movie .poster-container img {

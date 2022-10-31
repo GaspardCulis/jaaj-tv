@@ -19,14 +19,21 @@ function movieElement(movie) {
 
     const image_fallback = "../assets/placeholder.jpg";
     let image_url = movie.image ? movie.image : image_fallback;
+
+    const important_properties = ["language", "quality", "resolution", "year"]
+
     out.innerHTML = `
         <div class="poster-container">
-            <img src="${image_url}" alt="${movie.title}" onerror="this.onerror=null;this.src='${image_fallback}'">
+            <img src="${image_url}" alt="${movie.title}" onerror="this.onerror=null;this.src='${image_fallback}'" />
         </div>
-        <div class="spacer"></div>
+        
         <div class="vbox movie-info">
             <h3>${movie.title || movie.baseName}</h3>
-            <p>${movie.year || ""}</p>
+            <ul>
+                ${important_properties.map((prop) => {
+                    return movie[prop] ? `<li>${prop}: ${movie[prop]}</li>` : ""
+                }).join("")}
+            </ul>
         </div>
         `
     return out;

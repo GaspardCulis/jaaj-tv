@@ -5,7 +5,7 @@ import cheerio from 'cheerio';
 import tnp from 'torrent-name-parser';
 import probe from 'probe-image-size';
 
-const DEBUG = true;
+const DEBUG = false;
 function debug(msg: string) {
   if (DEBUG) console.log(msg);
 }
