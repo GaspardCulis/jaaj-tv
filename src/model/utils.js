@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 /**
  * @param { Request } request 
  * @returns { Object }
@@ -22,4 +24,15 @@ export function addCookie(headers, cookie) {
     val += cookie.secure ? ` Secure;` : '';
     val += cookie.path ? ` Path=${cookie.path};` : '';
     headers.append('Set-Cookie', val);
+}
+
+/**
+ * @param { String } directory 
+ * @returns { String }
+ */
+export function ensureDirectoryExists(directory) {
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+    return directory;
 }
