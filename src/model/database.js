@@ -164,3 +164,9 @@ export function getCachedResults(query) {
     }
 }
 
+export function clearCache() {
+    let database = getDatabase();
+    database.cached_results = {};
+    storeDatabase(database);
+}
+
