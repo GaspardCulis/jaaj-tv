@@ -31,7 +31,7 @@ async function getImage(torrent_url: string) {
     debug("\tChecking image : " + image);
 
     if (image!== "false") {
-      let result = await probe(image).catch((err) => {debug("\tFailed to get image : " + image)});
+      let result = await probe(image).catch((err) => {debug("\tFailed to get image : " + image);});
 
       if (result) {
         const width = result?.width || 0;
@@ -42,6 +42,8 @@ async function getImage(torrent_url: string) {
           debug("\tImage too small or bad ratio, trying next one... : " + image);
           image = "false";
         }
+      } else {
+        image = "false";
       }
     }
     
@@ -80,7 +82,7 @@ export const post: APIRoute = async ({ request }) => {
         const parsed_torrent = tnp(result.name);
         let image = await getImage(result.url);
         if (!image && (typeof parsed_torrent.title == 'string' && parsed_torrent.title.length>0)) {
-          image = (await GOOGLE_IMG_SCRAP({search: parsed_torrent.title})).result[0].url
+          image = (await GOOGLE_IMG_SCRAP({search: parsed_torrent.title})).result[0].url;
         }
         out.push({
           ...parsed_torrent,
