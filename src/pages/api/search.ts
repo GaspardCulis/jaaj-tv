@@ -4,6 +4,7 @@ import axios from "axios";
 import cheerio from 'cheerio';
 import tnp from 'torrent-name-parser';
 import probe from 'probe-image-size';
+import { cacheResults, getCachedResults } from '../../model/database';
 
 const DEBUG = false;
 function debug(msg: string) {
@@ -52,54 +53,60 @@ async function getImage(torrent_url: string) {
 
 export const post: APIRoute = async ({ request }) => {
     const query = (await request.json()).query;
-    const out = [];
-    
-    const ygg = new YggTorrent();
-    await ygg.initializeBrowser();
-    
-    console.log("Searching for : ", query);
-    const results = await ygg.search({
-        name: query.search,
-        category: Categories.FILM_VIDEO,
-        subCategory: SubCategories.FILM_VIDEO[query.category],
-        sort: SortBy.COMPLETED,
-        order: SortOrder.DESC
-    });
-    
-    ygg.closeBrowser();
+    const out =  getCachedResults(query) || [];
 
-    // Scraping the result images and parsing names
-    let i = 0; // For ordering
-    /*
-    for (let result of results) {
-      let index = i;
-      i++;
-      out.push({
-        ...tnp(result.name),
-        baseName: result.name,
-        image: await getImage(result.url),
-        index,
-        url: result.url,
+    console.log("Searching for : ", query);
+    if (!out.length) {
+      const ygg = new YggTorrent();
+      await ygg.initializeBrowser();
+      
+      const results = await ygg.search({
+          name: query.search,
+          category: Categories.FILM_VIDEO,
+          subCategory: SubCategories.FILM_VIDEO[query.category],
+          sort: SortBy.COMPLETED,
+          order: SortOrder.DESC
       });
+      
+      ygg.closeBrowser();
+
+      // Scraping the result images and parsing names
+      let i = 0; // For ordering
+      /*
+      for (let result of results) {
+        let index = i;
+        i++;
+        out.push({
+          ...tnp(result.name),
+          baseName: result.name,
+          image: await getImage(result.url),
+          index,
+          url: result.url,
+        });
+      }
+      */
+      await Promise.all(results.map(async (result) => {
+        let index = i;
+        i++;
+        out.push({
+          ...tnp(result.name),
+          baseName: result.name,
+          image: await getImage(result.url),
+          index,
+          url: result.url,
+        });
+      }));
+      // Reordering the results
+      out.sort((a, b) => a.index - b.index);
+
+      cacheResults(query, out);
+    } else {
+      console.log("\t -> Using cached results");
     }
-    */
-    await Promise.all(results.map(async (result) => {
-      let index = i;
-      i++;
-      out.push({
-        ...tnp(result.name),
-        baseName: result.name,
-        image: await getImage(result.url),
-        index,
-        url: result.url,
-      });
-    }));
-    // Reordering the results
-    out.sort((a, b) => a.index - b.index);
 
     return new Response(JSON.stringify({
-        results: out
-      }), {
-        status: 200
-      })
+      results: out
+    }), {
+      status: 200
+    })
 }

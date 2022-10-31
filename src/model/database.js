@@ -129,5 +129,38 @@ export function userExists(username) {
     return username in database.users;
 }
 
+/**
+ * @param { Object } query 
+ * @param { Object } results 
+ */
+export function cacheResults(query, results) {
+    let database = getDatabase();
+    database.cached_results[JSON.stringify(query)] = {
+        age: Date.now(),
+        results: results
+    };
+    storeDatabase(database);
+}
 
+/**
+ * @param { Object } query 
+ * @returns 
+ */
+export function getCachedResults(query) {
+    // Update the cache and yeet the old results
+    let database = getDatabase();
+    for (let key in database.cached_results) {
+        if (database.cached_results[key].age + 1000 * 60 * 60 * 24 < Date.now()) {
+            delete database.cached_results[key];
+        }
+    }
+    storeDatabase(database);
+
+    // Return the results
+    if (JSON.stringify(query) in database.cached_results) {
+        return database.cached_results[JSON.stringify(query)].results;
+    } else {
+        return null;
+    }
+}
 
