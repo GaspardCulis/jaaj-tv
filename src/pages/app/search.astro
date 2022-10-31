@@ -1,4 +1,5 @@
 ---
+import BottomPopup from "../../components/BottomPopup.astro";
 import LoadingBoi from "../../components/LoadingBoi.astro";
 import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
@@ -51,6 +52,9 @@ async function onSearch(event) {
     const loadingBoi = document.getElementById("loading-boi");
     loadingBoi.classList.add("visible");
 
+    const popup = document.getElementById("bottom_popup");
+    popup.classList.remove("visible");
+
     const query =  Object.fromEntries(new FormData(event.target));
 
     const response = await fetch("../api/search", {
@@ -68,6 +72,10 @@ async function onSearch(event) {
     console.log(results);
 
     loadingBoi.classList.remove("visible");
+
+    if (!results.length) {
+        popup.classList.add("visible");
+    }
 
     let i = 0;
     for (const result of results) {
@@ -93,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div id="search-results" class="hbox wrap">
         </div>
+        <BottomPopup message="No results" color="#FFFFFF"/>
     </div>
 </GradientBackground>
 <style>
