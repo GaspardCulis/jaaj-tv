@@ -5,6 +5,7 @@ import cheerio from 'cheerio';
 import tnp from 'torrent-name-parser';
 import probe from 'probe-image-size';
 import { cacheResults, getCachedResults } from '../../model/database';
+import { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } from 'google-img-scrap';
 
 const DEBUG = false;
 function debug(msg: string) {
@@ -72,26 +73,15 @@ export const post: APIRoute = async ({ request }) => {
 
       // Scraping the result images and parsing names
       let i = 0; // For ordering
-      /*
-      for (let result of results) {
-        let index = i;
-        i++;
-        out.push({
-          ...tnp(result.name),
-          baseName: result.name,
-          image: await getImage(result.url),
-          index,
-          url: result.url,
-        });
-      }
-      */
+
       await Promise.all(results.map(async (result) => {
         let index = i;
         i++;
+        const parsed_name = tnp(result.name);
         out.push({
-          ...tnp(result.name),
+          ...parsed_name,
           baseName: result.name,
-          image: await getImage(result.url),
+          image: await getImage(result.url) || (await GOOGLE_IMG_SCRAP({search: parsed_name.title})).result[0].url,
           index,
           url: result.url,
         });
