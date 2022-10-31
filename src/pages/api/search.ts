@@ -7,7 +7,7 @@ import probe from 'probe-image-size';
 import { cacheResults, getCachedResults } from '../../model/database';
 import { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } from 'google-img-scrap';
 
-const DEBUG = true;
+const DEBUG = false;
 function debug(msg: string) {
   if (DEBUG) console.log(msg);
 }
@@ -77,11 +77,15 @@ export const post: APIRoute = async ({ request }) => {
       await Promise.all(results.map(async (result) => {
         let index = i;
         i++;
-        const parsed_name = tnp(result.name);
+        const parsed_torrent = tnp(result.name);
+        let image = await getImage(result.url);
+        if (!image && (typeof parsed_torrent.title == 'string' && parsed_torrent.title.length>0)) {
+          image = (await GOOGLE_IMG_SCRAP({search: parsed_torrent.title})).result[0].url
+        }
         out.push({
-          ...parsed_name,
+          ...parsed_torrent,
           baseName: result.name,
-          image: await getImage(result.url) || parsed_name.title ? (await GOOGLE_IMG_SCRAP({search: parsed_name.title})).result[0].url : null,
+          image:  image,
           index,
           url: result.url,
         });
