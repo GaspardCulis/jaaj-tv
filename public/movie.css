@@ -91,6 +91,47 @@
     transform: scale(1);
 }
 
+.movie.is-showing {
+    position: absolute;
+
+    top: 0 !important;
+    left: 15% !important;
+
+    height: calc(100% + 8px);
+    width: 85%;
+    border-radius: 0px;
+
+    margin: 0px;
+
+    z-index: 1;
+
+    transition: all 500ms ease-in-out;
+}
+
+.is-showing img {
+    transform: scale(1) !important;
+    border-radius: 0px !important;
+    object-fit: contain !important;
+    object-position: left !important;
+    transition: 500ms !important;
+}
+
+.is-showing .poster-container {
+    border-radius: 0px !important;
+    transition: 500ms;
+    height: 100%;
+}
+
+.is-showing .poster-container::after {
+    margin-top: 0px;
+    height: 0px;
+    background-image: none;
+}
+
+.is-showing .movie-info {
+    max-height: 0%;
+}
+
 .movie .spacer {
     height: 100%;
 }

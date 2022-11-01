@@ -12,9 +12,27 @@ if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 <script src="../src/cookie-utils.js" type="text/javascript" is:inline/>
 <script type="text/javascript" defer>
 
-function onMovieClicked() {
+function createSpacer(element) {
+    const spacer = document.createElement("div");
+    const rect = element.getBoundingClientRect();
+    spacer.style.minWidth = rect.width + "px";
+    spacer.style.minHeight = rect.height + "px";
+    element.parentNode.insertBefore(spacer, element);
+} 
+
+function onMovieClicked(clicked_a) {
     let results_container = document.getElementById("search-results");
     results_container.classList.remove("has-transition");
+    const target_root = clicked_a.parentElement.parentElement;
+    const rect = target_root.getBoundingClientRect();
+    target_root.style.position = "absolute";
+    createSpacer(target_root);
+    target_root.style.top = `${rect.top}px`;
+    target_root.style.left = `${rect.left}px`;
+    setTimeout(() => {
+        target_root.classList.add("is-showing");
+    }, 10);
+    
 }
 
 function movieElement(movie, animation_delay, no_animation) {
@@ -38,7 +56,7 @@ function movieElement(movie, animation_delay, no_animation) {
         </div>
         
         <div class="vbox movie-info">
-            <a href="./movie/${movie.id}" style="color: inherit;" onclick="onMovieClicked(); handleLoad(event);"><h3>${movie.title || movie.baseName}</h3></a>
+            <a href="./movie/${movie.id}" style="color: inherit;" onclick="onMovieClicked(this); handleLoad(event);"><h3>${movie.title || movie.baseName}</h3></a>
             <ul>
                 ${important_properties.map((prop) => {
                     return movie[prop] ? `<li>${prop}: ${movie[prop]}</li>` : ""
