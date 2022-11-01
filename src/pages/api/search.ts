@@ -55,7 +55,7 @@ async function getImage(torrent_url: string) {
 }
 
 export const post: APIRoute = async ({ request }) => {
-    const query = (await request.json()).query;
+    const query = (await request.json());
     const out =  getCachedResults(query) || [];
 
     console.log("Searching for : ", query);

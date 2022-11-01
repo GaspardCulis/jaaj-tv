@@ -8,22 +8,28 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 
 
 ---
-<script defer>
+<script src="../src/cookie-utils.js" type="text/javascript" is:inline/>
+<script type="text/javascript" defer>
 
 function onMovieClicked() {
     let results_container = document.getElementById("search-results");
     results_container.classList.remove("has-transition");
 }
 
-function movieElement(movie, animation_delay) {
+function movieElement(movie, animation_delay, no_animation) {
     const out = document.createElement("div");
     out.classList.add("vbox", "movie");
-    out.style.animation = `movie-appear 0.5s ease-in-out ${animation_delay}s forwards`;
+
+    if (no_animation) {
+        out.style.animation = `movie-appear 0s forwards`;
+    } else {
+        out.style.animation = `movie-appear 0.5s ease-in-out ${animation_delay}s forwards`;
+    }
 
     const image_fallback = "../assets/placeholder.jpg";
     let image_url = movie.image ? movie.image : image_fallback;
 
-    const important_properties = ["language", "quality", "resolution", "year"]
+    const important_properties = ["season","episode","language", "quality", "resolution", "year"]
 
     out.innerHTML = `
         <div class="poster-container">
@@ -43,13 +49,37 @@ function movieElement(movie, animation_delay) {
 }
 
 /**
+ * @param { String } query
+ * @param { boolean | void } no_animation
+ */
+async function runSearch(query, no_animation) {
+    const container = document.getElementById("search-results");
+    container.innerHTML = "";
+
+    const response = await fetch("../api/search", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: query,
+    });
+
+    const results = (await response.json()).results;
+
+    let i = 0;
+    for (const result of results) {
+        container.appendChild(movieElement(result, i * 0.1, no_animation));
+        i++;
+    }
+
+    return results;
+}
+
+/**
  * @param { SubmitEvent } event
  */
 async function onSearch(event) {
     event.preventDefault();
-
-    const container = document.getElementById("search-results");
-    container.innerHTML = "";
     
     const loadingBoi = document.getElementById("loading-boi");
     loadingBoi.classList.add("visible");
@@ -57,19 +87,10 @@ async function onSearch(event) {
     const popup = document.getElementById("bottom_popup");
     popup.classList.remove("visible");
 
-    const query =  Object.fromEntries(new FormData(event.target));
+    const query =  JSON.stringify(Object.fromEntries(new FormData(event.target)));
+    setCookie("cached_search", query, 1);
 
-    const response = await fetch("../api/search", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            query,
-        }),
-    });
-
-    const results = (await response.json()).results;
+    const results = await runSearch(query);
 
     console.log(results);
 
@@ -78,17 +99,20 @@ async function onSearch(event) {
     if (!results.length) {
         popup.classList.add("visible");
     }
-
-    let i = 0;
-    for (const result of results) {
-        container.appendChild(movieElement(result, i * 0.1));
-        i++;
-    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const searchBar = document.getElementById("search-bar");
     searchBar.addEventListener("submit", onSearch);
+
+    let cached_search = getCookie("cached_search");
+    if(cached_search) {
+        runSearch(cached_search, true);
+        let formData = JSON.parse(cached_search);
+        let form = document.getElementById("search-bar");
+        form.getElementsByTagName("input")[0].value = formData.search;
+        form.getElementsByTagName("select")[0].value = formData.category;
+    }
 });
 
 </script>
@@ -115,11 +139,22 @@ document.addEventListener("DOMContentLoaded", () => {
         margin-left: 15%;
         width: 85%;
         height: 100%;
+        opacity: 0;
     }
 
     html.is-leaving #search-results.has-transition {
         opacity: 0;
         transition: 500ms;
+    }
+
+    html.is-loaded #search-results {
+        opacity: 1;
+        transition: 1500ms;
+    }
+
+    html.is-refreshed #search-results {
+        opacity: 1;
+        transition: 0s;
     }
 
     #loading-boi {
