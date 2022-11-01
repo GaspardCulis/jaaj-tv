@@ -115,10 +115,12 @@ async function getImage(torrent: Torrent, torrent_name: string) {
 
 export const post: APIRoute = async ({ request }) => {
     const query = (await request.json());
+    const is_custom = query.is_custom || false;
+    delete query.is_custom;
     const out =  getCachedResults(query) || [];
 
     console.log("Searching for : ", query);
-    if (!out.length) {
+    if (!out.length && !is_custom) {
       const ygg = new YggTorrent();
       await ygg.initializeBrowser();
       
@@ -151,7 +153,7 @@ export const post: APIRoute = async ({ request }) => {
       out.sort((a, b) => a.index - b.index);
 
       cacheResults(query, out);
-    } else {
+    } else if(out.length) {
       console.log("\t -> Using cached results");
     }
 

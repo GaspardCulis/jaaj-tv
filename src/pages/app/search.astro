@@ -62,7 +62,7 @@ async function runSearch(query, no_animation) {
             "Content-Type": "application/json",
         },
         body: query,
-    });
+    }); 
 
     const results = (await response.json()).results;
 
@@ -107,7 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let cached_search = getCookie("cached_search");
     if(cached_search) {
-        runSearch(cached_search, true);
+        let custom_search = JSON.parse(cached_search);
+        custom_search.is_custom = true;
+        runSearch(JSON.stringify(custom_search), true);
         let formData = JSON.parse(cached_search);
         let form = document.getElementById("search-bar");
         form.getElementsByTagName("input")[0].value = formData.search;
