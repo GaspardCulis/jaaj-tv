@@ -85,11 +85,11 @@ export const post: APIRoute = async ({ request }) => {
           image = (await GOOGLE_IMG_SCRAP({search: parsed_torrent.title})).result[0].url;
         }
         out.push({
+          id: result.id,
           ...parsed_torrent,
           baseName: result.name,
           image:  image,
-          index,
-          url: result.url,
+          index
         });
       }));
       // Reordering the results

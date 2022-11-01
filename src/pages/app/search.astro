@@ -8,7 +8,12 @@ import GradientBackground from "../../layouts/GradientBackground.astro";
 
 
 ---
-<script>
+<script defer>
+
+function onMovieClicked() {
+    let results_container = document.getElementById("search-results");
+    results_container.classList.remove("has-transition");
+}
 
 function movieElement(movie, animation_delay) {
     const out = document.createElement("div");
@@ -26,15 +31,12 @@ function movieElement(movie, animation_delay) {
         </div>
         
         <div class="vbox movie-info">
-            <h3>${movie.title || movie.baseName}</h3>
+            <a href="./movie/${movie.id}" style="color: inherit;" onclick="onMovieClicked(); handleLoad(event);"><h3>${movie.title || movie.baseName}</h3></a>
             <ul>
                 ${important_properties.map((prop) => {
                     return movie[prop] ? `<li>${prop}: ${movie[prop]}</li>` : ""
                 }).join("")}
             </ul>
-            <div class="download-button">
-                Add to library    
-            </div>
         </div>
         `
     return out;
@@ -99,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div style="pointer-events: none;position:absolute; margin: auto; margin-left: 15%; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
             <LoadingBoi />
         </div>
-        <div id="search-results" class="hbox wrap">
+        <div id="search-results" class="hbox wrap has-transition">
         </div>
         <BottomPopup message="No results" color="#FFFFFF"/>
     </div>
@@ -115,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 100%;
     }
 
-    html.is-leaving #search-results {
+    html.is-leaving #search-results.has-transition {
         opacity: 0;
         transition: 500ms;
     }

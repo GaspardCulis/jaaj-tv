@@ -28,6 +28,33 @@
     padding: 0px;
 }
 
+.movie .movie-info a {
+    display: block;
+    position: relative;
+    padding: 0.1rem;
+    text-decoration: none;
+}
+
+.movie .movie-info a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.08em;
+    background-color: black;
+    opacity: 0;
+    transition: opacity 300ms, transform 300ms;
+}
+
+.movie .movie-info a:hover::after,
+.movie .movie-info a:focus::after {
+  opacity: 1;
+  transform: translate3d(0, 0.2em, 0);
+}
+
+
+
 .movie .movie-info ul {
     text-align: left;
 }
