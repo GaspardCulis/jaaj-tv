@@ -5,8 +5,9 @@ import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
 import Transition from "../../components/Transition.astro";
 import GradientBackground from "../../layouts/GradientBackground.astro";
+import { isAuthorized } from "../../model/utils";
 
-
+if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 ---
 <script src="../src/cookie-utils.js" type="text/javascript" is:inline/>
 <script type="text/javascript" defer>

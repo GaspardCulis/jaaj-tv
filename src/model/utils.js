@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { isLoggedIn } from './database';
 
 /**
  * @param { Request } request 
@@ -35,4 +36,13 @@ export function ensureDirectoryExists(directory) {
         fs.mkdirSync(directory, { recursive: true });
     }
     return directory;
+}
+
+export function isAuthorized(request) {
+    const cookie = request.headers.get("cookie") || "";
+    const token = (cookie.endsWith(";") ? cookie : cookie + ";").match(
+        /token=([^;]*);/
+    );
+
+    return token && isLoggedIn(token[1]);
 }

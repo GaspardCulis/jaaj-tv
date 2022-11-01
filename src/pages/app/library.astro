@@ -3,7 +3,9 @@ import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
 import Transition from "../../components/Transition.astro";
 import GradientBackground from "../../layouts/GradientBackground.astro";
+import { isAuthorized } from "../../model/utils";
 
+if (!isAuthorized(Astro.request)) return Astro.redirect("../login");
 
 ---
 <GradientBackground title="jaajTV  |  Library">

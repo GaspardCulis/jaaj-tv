@@ -4,6 +4,9 @@ import TextField from "../components/TextField.astro";
 import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
+import { isAuthorized } from "../model/utils";
+
+if (isAuthorized(Astro.request)) return Astro.redirect("/app");
 
 const error = Astro.url.searchParams.get("error") || "";
 ---

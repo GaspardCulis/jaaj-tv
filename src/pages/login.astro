@@ -4,17 +4,9 @@ import TextField from "../components/TextField.astro";
 import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
-import { createAuthToken, isLoggedIn, isLoginValid } from "../model/database";
-import { addCookie } from "../model/utils";
+import { isAuthorized } from "../model/utils";
 
-const cookie = Astro.request.headers.get("cookie") || "";
-const token = (cookie.endsWith(";") ? cookie : cookie + ";").match(
-	/token=([^;]*);/
-);
-
-if (token && isLoggedIn(token[1])) {
-	return Astro.redirect("app");
-}
+if (isAuthorized(Astro.request)) return Astro.redirect("/app");
 
 const error = Astro.url.searchParams.get("error") || "";
 ---

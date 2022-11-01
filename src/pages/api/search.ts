@@ -6,6 +6,7 @@ import tnp from 'torrent-name-parser';
 import probe from 'probe-image-size';
 import { cacheResults, getCachedResults } from '../../model/database';
 import { FinalResult, GOOGLE_IMG_SCRAP } from 'google-img-scrap';
+import { isAuthorized } from '../../model/utils';
 
 const DEBUG = false;
 function debug(msg: string) {
@@ -114,6 +115,8 @@ async function getImage(torrent: Torrent, torrent_name: string) {
 }
 
 export const post: APIRoute = async ({ request }) => {
+    if (!isAuthorized(request)) return;
+    
     const query = (await request.json());
     const is_custom = query.is_custom || false;
     delete query.is_custom;

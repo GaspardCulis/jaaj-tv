@@ -1,4 +1,8 @@
 ---
+import { isAuthorized } from "../../../model/utils";
+
+if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
+
 const { id } = Astro.params;
 ---
 <h1>{id}</h1>
