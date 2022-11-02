@@ -147,21 +147,24 @@ export function cacheResults(query, results) {
  * @returns 
  */
 export function getCachedResults(query) {
+    const maxAge = 1000 * 60 * 60 * 24 * 0.5; // 12 hours
     // Update the cache and yeet the old results
     let database = getDatabase();
     for (let key in database.cached_results) {
-        if (database.cached_results[key].age + 1000 * 60 * 60 * 24 < Date.now()) {
+        if (database.cached_results[key].age + maxAge < Date.now()) {
             delete database.cached_results[key];
         }
     }
-    storeDatabase(database);
 
     // Return the results
-    if (JSON.stringify(query) in database.cached_results) {
+    query = JSON.stringify(query);
+    if (query in database.cached_results) {
+        database.cached_results[query].age = Date.now(); // Update the age
         return database.cached_results[JSON.stringify(query)].results;
     } else {
         return null;
     }
+    storeDatabase(database);
 }
 
 export function clearCache() {

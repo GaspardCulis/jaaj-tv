@@ -107,7 +107,7 @@ async function onSearch(event) {
     popup.classList.remove("visible");
 
     const query =  JSON.stringify(Object.fromEntries(new FormData(event.target)));
-    setCookie("cached_search", query, 1);
+    setCookie("cached_search", query, 0.5);
 
     const results = await runSearch(query);
 
