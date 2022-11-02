@@ -14,7 +14,7 @@ export const post: APIRoute = async ({ request }) => {
 			name: "token",
 			value: token,
 			expires: expires,
-			secure: true,
+			secure: false, // TODO: change to true
 			path: "/",
 		});
 		headers.append("Location", "/app/search");
