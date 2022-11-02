@@ -160,7 +160,7 @@ export function getCachedResults(query) {
     query = JSON.stringify(query);
     if (query in database.cached_results) {
         database.cached_results[query].age = Date.now(); // Update the age
-        return database.cached_results[JSON.stringify(query)].results;
+        return database.cached_results[query].results;
     } else {
         return null;
     }
