@@ -63,20 +63,21 @@ if (referer) {
         transform: translate(-100%, 0%);
         background-color: whitesmoke;
         border-right: 2 px solid lightgray;
+        transition: 500ms;
     }
 
     html.is-loaded #navbar {
         transform: translate(0%, 0%);
-        transition: 500ms;
     }
 
     html.is-refreshed #navbar {
         transform: translate(0%, 0%);
+        transition: none;
     }
 
     html.is-leaving #navbar.disconnecting {
         transform: translate(-100%, 0%);
-        transition: 500ms;
+        transition: all 500ms;
     }
 
     #navbar.transitionless {

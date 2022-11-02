@@ -147,7 +147,7 @@ export function cacheResults(query, results) {
  * @returns 
  */
 export function getCachedResults(query) {
-    const maxAge = 1000 * 60 * 60 * 24 * 0.5; // 12 hours
+    const maxAge = 1000 * 60 * 60 * 24; // 1 day
     // Update the cache and yeet the old results
     let database = getDatabase();
     for (let key in database.cached_results) {

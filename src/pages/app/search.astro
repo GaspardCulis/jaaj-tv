@@ -107,7 +107,7 @@ async function onSearch(event) {
     popup.classList.remove("visible");
 
     const query =  JSON.stringify(Object.fromEntries(new FormData(event.target)));
-    setCookie("cached_search", query, 0.5);
+    sessionStorage.setItem("search_query", query);
 
     const results = await runSearch(query);
 
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchBar = document.getElementById("search-bar");
     searchBar.addEventListener("submit", onSearch);
 
-    let cached_search = getCookie("cached_search");
+    let cached_search = sessionStorage.getItem("search_query");
     if(cached_search) {
         let custom_search = JSON.parse(cached_search);
         custom_search.is_custom = true;
