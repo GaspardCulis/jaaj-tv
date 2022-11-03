@@ -81,7 +81,7 @@ async function runSearch(query, no_animation) {
             "Content-Type": "application/json",
         },
         body: query,
-    }); 
+    });
 
     const results = (await response.json()).results;
 

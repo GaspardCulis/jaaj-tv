@@ -3,7 +3,7 @@ import { ensureDirectoryExists } from './utils';
 import path from 'path';
 import getConfig from './config';
 
-const USERS_FOLDER = process.env.USERS_FOLDER;
+const USERS_FOLDER = path.join(getConfig().jaajtv_folder, "users");
 
 export default class User {
     private login: string;

@@ -1,16 +1,14 @@
 import { APIRoute } from "astro"
-import { YggTorrent, Categories, SubCategories, SortBy, SortOrder, Torrent } from "node-yggtorrent";
+import { Categories, SubCategories, SortBy, SortOrder } from "node-yggtorrent";
 import tnp from 'torrent-name-parser';
 import { cacheResults, getCachedResults } from '../../model/database';
 import { isAuthorized } from '../../model/utils';
-import getConfig from '../../model/config';
-import path from 'path';
 import { getImage } from "../../model/imageprovider";
 import UserManager from "../../model/usermanager";
 
 export const post: APIRoute = async ({ request }) => {
     const authorized = isAuthorized(request);
-    if (authorized) return;
+    if (!authorized) return { status: 401, body: "Unauthorized" };
 
     const user = await UserManager.getUser(authorized as string);
     
@@ -49,8 +47,6 @@ export const post: APIRoute = async ({ request }) => {
       }));
       // Reordering the results
       out.sort((a, b) => a.index - b.index);
-
-      ygg.closeBrowser();
 
       cacheResults(query, out);
     } else if(out.length) {

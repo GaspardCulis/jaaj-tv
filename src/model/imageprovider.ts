@@ -85,11 +85,12 @@ export async function getImage(torrent: Torrent, torrent_name: string) {
         new GoogleImageProvider(torrent_name || torrent.name),
     ];
     for (const provider of image_providers) {
+        await provider.init();
         while (await provider.hasNext()) {
-        const image_url = await provider.next();
-        if (await isImageValid(image_url)) {
-            return image_url;
-        }
+            const image_url = await provider.next();
+            if (await isImageValid(image_url)) {
+                return image_url;
+            }
         }
     }
 
