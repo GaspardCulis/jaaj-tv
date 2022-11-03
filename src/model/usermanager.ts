@@ -11,6 +11,9 @@ export default class UserManager {
 
         const user = this.users.get(login);
         await user.waitReady();
+
+        console.info(`${this.users.size} users connected`);
+
         return user;
     }
 

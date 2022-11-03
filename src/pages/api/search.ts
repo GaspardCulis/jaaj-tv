@@ -9,16 +9,15 @@ import UserManager from "../../model/usermanager";
 export const post: APIRoute = async ({ request }) => {
     const authorized = isAuthorized(request);
     if (!authorized) return { status: 401, body: "Unauthorized" };
-
-    const user = await UserManager.getUser(authorized as string);
     
     const query = (await request.json());
     const is_custom = query.is_custom || false;
     delete query.is_custom;
-    const out = []// getCachedResults(query) || [];
+    const out = getCachedResults(query) || [];
 
     console.log("Searching for : ", query);
     if (!out.length && !is_custom) {
+      const user = await UserManager.getUser(authorized as string);
       const ygg = user.getClient();
       
       const results = await ygg.search({

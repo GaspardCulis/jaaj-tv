@@ -148,6 +148,7 @@ export function cacheResults(query: any, results: Movie[]) {
 }
 
 export function getCachedResults(query: any): Movie[] {
+    cleanUpCache();
     let database = getDatabase();
     let cached_results = database.cached_results[JSON.stringify(query)];
     if (cached_results) {
@@ -155,6 +156,34 @@ export function getCachedResults(query: any): Movie[] {
     } else {
         return null;
     }
+}
+
+function getMovieReferenceCount(movie: Movie): number {
+    let database = getDatabase();
+    let count = 0;
+    for (let query in database.cached_results) {
+        if (database.cached_results[query].results.includes(movie.id)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function cleanUpCache() {
+    const maxAge = 1000 * 60 * 60 * 24 * 0.5; // 12 hours
+
+    let database = getDatabase();
+    for (let query in database.cached_results) {
+        if (database.cached_results[query].createdAt + maxAge < Date.now()) {
+            for (let id of database.cached_results[query].results) {
+                if (getMovieReferenceCount(database.cached_movies[id]) <= 1) {
+                    delete database.cached_movies[id];
+                }
+            }
+            delete database.cached_results[query];
+        }
+    }
+    storeDatabase(database);
 }
 
 export function clearCache() {
