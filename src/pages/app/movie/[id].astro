@@ -11,15 +11,110 @@ const { id } = Astro.params;
 const movie = getCachedMovieById(parseInt(id + ""));
 
 if (!movie) return new Response("Movie not found", { status: 404 });
+
+const important_properties = ["episode","season","language", "quality", "resolution", "year"];
 ---
+<script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
+<script defer define:vars={{id}} type="module">
+
+    async function getFiles() {
+        const response = await fetch("/api/files", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+        });
+
+        const files = (await response.json()).files;
+
+        console.log(files);
+        
+        const treeData = [
+            {
+                id: '0',
+                text: 'node-0',
+                children: [
+                {
+                    id: '0-0',
+                    text: 'node-0-0',
+                    children: [
+                    {id: '0-0-0', text: 'node-0-0-0'},
+                    {id: '0-0-1', text: 'node-0-0-1'},
+                    {id: '0-0-2', text: 'node-0-0-2'},
+                    ],
+                },
+                {id: '0-1', text: 'node-0-1'},
+                ],
+            },
+            {
+                id: '1',
+                text: 'node-1',
+                children: [{id: '1-0', text: 'node-1-0'}, {id: '1-1', text: 'node-1-1'}],
+            },
+        ];
+        
+        const myTree = new Tree('.files-container', {
+            data: parseFiles(files),
+        });
+    }
+
+    function parseFiles(files) {
+        const treeData = [];
+        for (const file of files) {
+            const path = file.path.split("\\");
+            let currentNode = treeData;
+            for (const folder of path) {
+                const node = currentNode.find((node) => node.text === folder);
+                if (node) {
+                    currentNode = node.children;
+                } else {
+                    const newNode = {
+                        id: folder,
+                        text: folder,
+                        children: [],
+                    };
+                    currentNode.push(newNode);
+                    currentNode = newNode.children;
+                }
+            }
+        }
+        treeData[0].checked = true;
+
+        return treeData;
+    }
+    
+    document.addEventListener("DOMContentLoaded", getFiles);
+</script>
 <GradientBackground title="jaajTV | Search">
     <NavBar selected_index={0}/>
     <div id="movie-page" class="hbox">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
-        <div id="movie-info">
-            <div class="title-container">
-                <h1>{movie.title || movie.baseName}</h1>
-                <h2>{movie.baseName}</h2>
+        <div id="movie-info" class="vbox">
+            <header class="hbox">
+                <div class="title-container">
+                    <h1>{movie.title || movie.baseName}</h1>
+                    <a href={movie.url}><h2>{movie.baseName}</h2></a>
+                </div>
+                <a href="/app/search" id="close-button">
+                    <img src="/assets/close.svg" alt="close" id="close-icon"/>
+                </a>
+            </header>
+            <div class="info-container">
+                <h2>Informations :</h2>
+                <ul>
+                    {important_properties.map((prop) => {
+                        if (movie[prop]) {
+                            return <li style="opacity: 0; animation: fadeIn 0.5s ease-in-out forwards 0.6s;"><b>{prop}:</b> {movie[prop]}</li>
+                        }
+                    })}
+                </ul>
+            </div>
+            <div id="files">
+                <h2>Files :</h2>
+                <div class="files-container">
+
+                </div>
             </div>
         </div>
     </div>
@@ -42,31 +137,82 @@ if (!movie) return new Response("Movie not found", { status: 404 });
         width: 100%;
         padding-top: 1rem;
         padding-left: 3rem;
-        display: flex;
-        flex-direction: column;
         justify-content: space-between;
     }
 
-    #movie-info .title-container {
+    #movie-info header {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #close-button {
+        width: 2rem;
+        height: 2rem;
+        margin-right: 1rem;
+    }
+
+    #close-icon {
+        height: 2rem;
+        width: 2rem;
+        cursor: pointer;
+    }
+
+    .title-container {
         display: flex;
         flex-direction: column;
     }
 
-    #movie-info .title-container h1 {
+    .title-container a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .title-container h1 {
         font-size: 2.5rem;
         margin-bottom: 0;
         opacity: 0;
         animation: fadeIn 0.5s ease-in-out forwards 0s;
     }
 
-    #movie-info .title-container h2 {
+    .title-container h2 {
         font-size: 1rem;
-        margin-top: 0;
+        margin-block: 0;
         margin-left: 0.5rem;
         color: gray;
         opacity: 0;
         animation: fadeIn 0.5s ease-in-out forwards 0.2s;
     }
+
+    .title-container a:hover h2 {
+        text-decoration: underline;
+    }
+
+    .info-container h2 {
+        font-size: 1.5rem;
+        margin-block: 0;
+        margin-left: 0.5rem;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards 0.4s;
+    }
+
+    #files {
+        width: 80%;
+        height: fit-content;
+        overflow-y: auto;
+        margin-bottom: 50px;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards 0.8s;
+    }
+
+    #files .files-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        border: 1px solid gray;
+        border-radius: 5px;
+        min-height: 10rem;
+    }
+
 
     @keyframes fadeIn {
         from {

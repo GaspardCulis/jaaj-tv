@@ -48,7 +48,7 @@ function movieElement(movie, animation_delay, no_animation) {
     const image_fallback = "/assets/placeholder.jpg";
     let image_url = movie.image ? movie.image : image_fallback;
 
-    const important_properties = ["season","episode","language", "quality", "resolution", "year"]
+    const important_properties = ["episode","season","language", "quality", "resolution", "year"];
 
     out.innerHTML = `
         <div class="poster-container">
@@ -75,7 +75,7 @@ async function runSearch(query, no_animation) {
     const container = document.getElementById("search-results");
     container.innerHTML = "";
 
-    const response = await fetch("../api/search", {
+    const response = await fetch("/api/search", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

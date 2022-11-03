@@ -2,14 +2,16 @@ import { Torrent, YggTorrent, Categories, SubCategories, SortBy, SortOrder } fro
 import { ensureDirectoryExists } from './utils';
 import path from 'path';
 import getConfig from './config';
+import Downloader from './downloader';
 
 const USERS_FOLDER = path.join(getConfig().jaajtv_folder, "users");
 
 export default class User {
-    private login: string;
-    private directory: string;
+    public login: string;
+    public directory: string;
+    public ready = false;
     private _client: YggTorrent;
-    private ready = false;
+    private _downloader: Downloader;
 
     constructor(login: string) {
         this.login = login;
@@ -24,17 +26,22 @@ export default class User {
                     });
                 }, 1000);
             });
-        })
-    }
-
-    getClient(): YggTorrent {
-        return this._client;
+        });
+        this._downloader = new Downloader(this);
     }
 
     async waitReady() {
         while (!this.ready) {
             await new Promise((resolve) => setTimeout(resolve, 100));
         }
+    }
+
+    getClient(): YggTorrent {
+        return this._client;
+    }
+
+    getDownloader(): Downloader {
+        return this._downloader;
     }
 
     async kill() {
