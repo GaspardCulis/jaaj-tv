@@ -13,6 +13,8 @@ pnpm-debug.log*
 
 data
 
+jaajtv.config.json
+
 # environment variables
 .env
 .env.production

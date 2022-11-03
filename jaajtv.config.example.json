@@ -1,0 +1,7 @@
+{
+    "yggtorrent": {
+        "username": "YGGTORRENT_USERNAME",
+        "password": "YGGTORRENT_PASSWORD"
+    },
+    "jaajtv_folder": "Path where jaajtv will store user directories and torrents"
+}
