@@ -173,3 +173,21 @@ export function clearCache() {
     storeDatabase(database);
 }
 
+/**
+ * 
+ * @param { number } id 
+ * @returns { { id: number, baseName: String, image: String } }
+ */
+export function getCachedMovieById(id) {
+    let database = getDatabase();
+    for (let key in database.cached_results) {
+        let results = database.cached_results[key].results;
+        for (let movie of results) {
+            if (movie.id == id) {
+                return movie;
+            }
+        }
+    }
+    return null;
+}
+

@@ -45,7 +45,7 @@ function movieElement(movie, animation_delay, no_animation) {
         out.style.animation = `movie-appear 0.5s ease-in-out ${animation_delay}s forwards`;
     }
 
-    const image_fallback = "../assets/placeholder.jpg";
+    const image_fallback = "/assets/placeholder.jpg";
     let image_url = movie.image ? movie.image : image_fallback;
 
     const important_properties = ["season","episode","language", "quality", "resolution", "year"]

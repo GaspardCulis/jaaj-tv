@@ -15,16 +15,16 @@ if (referer) {
     is_so = uri.pathname.startsWith('/app');
 }
 ---
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="/style.css">
 <div class={`vbox ${is_so ? "transitionless" : ""}`} id="navbar">
-    <img src="../icon/logo.svg" alt="logo"class="navbar_logo" />
+    <img src="/icon/logo.svg" alt="logo"class="navbar_logo" />
     <div class="vbox" style="justify-content:space-between; flex-grow: 1;">
         <div class="vbox">
-            <NavigationItem text="Search" icon="../icon/search.svg" href="search" selected={selected_index == 0} id="search-button"/>
-            <NavigationItem text="Library" icon="../icon/dvd.svg" href="library" selected={selected_index == 1} id="library-button" />
-            <NavigationItem text="Settings" icon="../icon/settings.svg" href="settings" selected={selected_index == 2} id="settings-button" />
+            <NavigationItem text="Search" icon="/icon/search.svg" href="/app/search" selected={selected_index == 0} id="search-button"/>
+            <NavigationItem text="Library" icon="/icon/dvd.svg" href="/app/library" selected={selected_index == 1} id="library-button" />
+            <NavigationItem text="Settings" icon="/icon/settings.svg" href="/app/settings" selected={selected_index == 2} id="settings-button" />
         </div>
-        <NavigationItem text="Disconnect" icon="../icon/disconnect.svg" href="disconnect" id="disconnect-button"/>
+        <NavigationItem text="Disconnect" icon="/icon/disconnect.svg" href="/app/disconnect" id="disconnect-button"/>
     </div>
 </div>
 <script define:vars={{selected_index}}>

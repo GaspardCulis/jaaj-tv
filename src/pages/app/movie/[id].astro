@@ -1,8 +1,31 @@
 ---
 import { isAuthorized } from "../../../model/utils";
+import { getCachedMovieById } from "../../../model/database";
+import GradientBackground from "../../../layouts/GradientBackground.astro";
+import NavBar from "../../../components/NavBar.astro";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 
 const { id } = Astro.params;
+
+const movie = getCachedMovieById(parseInt(id + ""));
 ---
-<h1>{id}</h1>
+<GradientBackground title="jaajTV | Search">
+    <NavBar selected_index={0}/>
+    <div id="movie-info-container">
+        <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
+    </div>
+</GradientBackground>
+<style>
+    #movie-info-container {
+        height: 100%;
+        width: 85%;
+        margin-left: 15%;
+        background-color: whitesmoke;
+    }
+
+    #movie-info-container img {
+        height: 100%;
+        object-fit: contain;
+    }
+</style>
