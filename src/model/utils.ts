@@ -2,14 +2,6 @@ import fs from 'fs';
 import { isLoggedIn } from './database';
 
 /**
- * @param { Request } request 
- * @returns { Object }
- */
-export function getCookies(request) {
-
-}
-
-/**
  * @param { Headers } headers 
  * @param { Object } cookie
  * @param { String } cookie.name
@@ -27,22 +19,19 @@ export function addCookie(headers, cookie) {
     headers.append('Set-Cookie', val);
 }
 
-/**
- * @param { String } directory 
- * @returns { String }
- */
-export function ensureDirectoryExists(directory) {
+export function ensureDirectoryExists(directory: string): string {
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
     }
     return directory;
 }
 
-export function isAuthorized(request) {
+/** Returns username if logged in, false otherwise */
+export function isAuthorized(request: Request): boolean | string {
     const cookie = request.headers.get("cookie") || "";
     const token = (cookie.endsWith(";") ? cookie : cookie + ";").match(
         /token=([^;]*);/
     );
-
-    return token && isLoggedIn(token[1]);
+    if (token) return isLoggedIn(token[1]);
+    else return false;
 }
