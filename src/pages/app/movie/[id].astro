@@ -79,7 +79,9 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 }
             }
         }
-        treeData[0].checked = true;
+        for(const node of treeData) {
+            node.checked = true;
+        }
 
         return treeData;
     }
