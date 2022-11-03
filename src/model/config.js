@@ -8,7 +8,7 @@ export class Config {
         if (Config._instance) {
             throw new Error('Cannot create another instance of Config');
         }
-        this._config = JSON.parse(fs.readFileSync('../../jaajtv.config.json'));
+        this._config = JSON.parse(fs.readFileSync('./jaajtv.config.json'));
         Config._instance = this;
     }
 

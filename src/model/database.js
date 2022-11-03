@@ -11,7 +11,7 @@ function getDatabase() {
 }
 
 /**
- * @param { {users: Object, sessions: Object, invite_codes: Array<String>} } database
+ * @param { {users: Object, sessions: Object, invite_codes: Array<String>, cached_results: Array<Object>, cached_movies: Array<Object>} } database
  */
 function storeDatabase(database) {
     fs.writeFileSync(DB_PATH, JSON.stringify(database, null, 4));
@@ -135,9 +135,14 @@ export function userExists(username) {
  */
 export function cacheResults(query, results) {
     let database = getDatabase();
+
+    for (let movie of results) {
+        database.cached_movies[movie.id] = movie;
+    }
+
     database.cached_results[JSON.stringify(query)] = {
         age: Date.now(),
-        results: results
+        results: results.map((movie) => movie.id)
     };
     storeDatabase(database);
 }
@@ -147,47 +152,28 @@ export function cacheResults(query, results) {
  * @returns 
  */
 export function getCachedResults(query) {
-    const maxAge = 1000 * 60 * 60 * 24; // 1 day
-    // Update the cache and yeet the old results
     let database = getDatabase();
-    for (let key in database.cached_results) {
-        if (database.cached_results[key].age + maxAge < Date.now()) {
-            delete database.cached_results[key];
-        }
+    let results = database.cached_results[JSON.stringify(query)];
+    if (results) {
+        results = results.results.map((id) => database.cached_movies[id]);
     }
-
-    // Return the results
-    query = JSON.stringify(query);
-    if (query in database.cached_results) {
-        database.cached_results[query].age = Date.now(); // Update the age
-        return database.cached_results[query].results;
-    } else {
-        return null;
-    }
-    storeDatabase(database);
+    return results;
 }
 
 export function clearCache() {
     let database = getDatabase();
     database.cached_results = {};
+    database.cached_movies = {};
     storeDatabase(database);
 }
 
 /**
  * 
  * @param { number } id 
- * @returns { { id: number, baseName: String, image: String } }
+ * @returns { { id: number, baseName: String, image: String, url: String, title?: String, language?: String, resolution?: String, season?: String, episode?: String, quality?: String, year?: String} }
  */
 export function getCachedMovieById(id) {
     let database = getDatabase();
-    for (let key in database.cached_results) {
-        let results = database.cached_results[key].results;
-        for (let movie of results) {
-            if (movie.id == id) {
-                return movie;
-            }
-        }
-    }
-    return null;
+    return database.cached_movies[id];
 }
 

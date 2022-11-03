@@ -9,23 +9,71 @@ if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 const { id } = Astro.params;
 
 const movie = getCachedMovieById(parseInt(id + ""));
+
+if (!movie) return new Response("Movie not found", { status: 404 });
 ---
 <GradientBackground title="jaajTV | Search">
     <NavBar selected_index={0}/>
-    <div id="movie-info-container">
+    <div id="movie-page" class="hbox">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
+        <div id="movie-info">
+            <div class="title-container">
+                <h1>{movie.title || movie.baseName}</h1>
+                <h2>{movie.baseName}</h2>
+            </div>
+        </div>
     </div>
 </GradientBackground>
 <style>
-    #movie-info-container {
+    #movie-page {
         height: 100%;
         width: 85%;
         margin-left: 15%;
         background-color: whitesmoke;
     }
 
-    #movie-info-container img {
+    #movie-page img {
         height: 100%;
         object-fit: contain;
+    }
+
+    #movie-info {
+        height: 100%;
+        width: 100%;
+        padding-top: 1rem;
+        padding-left: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    #movie-info .title-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #movie-info .title-container h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards 0s;
+    }
+
+    #movie-info .title-container h2 {
+        font-size: 1rem;
+        margin-top: 0;
+        margin-left: 0.5rem;
+        color: gray;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards 0.2s;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 </style>

@@ -7,6 +7,8 @@ import probe from 'probe-image-size';
 import { cacheResults, getCachedResults } from '../../model/database';
 import { FinalResult, GOOGLE_IMG_SCRAP } from 'google-img-scrap';
 import { isAuthorized } from '../../model/utils';
+import { Config } from '../../model/config';
+import path from 'path';
 
 const DEBUG = false;
 function debug(msg: string) {
@@ -126,6 +128,11 @@ export const post: APIRoute = async ({ request }) => {
     if (!out.length && !is_custom) {
       const ygg = new YggTorrent();
       await ygg.initializeBrowser();
+      await ygg.login(Config.getConfig().yggtorrent.username, Config.getConfig().yggtorrent.password);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!(await ygg.isLoggedIn())) {
+        throw new Error("Failed to login to YggTorrent");
+      }
       
       const results = await ygg.search({
           name: query.search,
@@ -134,8 +141,6 @@ export const post: APIRoute = async ({ request }) => {
           sort: SortBy.COMPLETED,
           order: SortOrder.DESC
       });
-      
-      ygg.closeBrowser();
 
       // Scraping the result images and parsing names
       let i = 0; // For ordering
@@ -148,12 +153,19 @@ export const post: APIRoute = async ({ request }) => {
           id: result.id,
           ...parsed_torrent,
           baseName: result.name,
-          image: await getImage(result, parsed_torrent.title),
-          index
+          image: await getImage(result, parsed_torrent.title) || "/assets/placeholder.jpg",
+          index,
+          url: result.url,
         });
+
+        // Saving torrent file
+        const torrent_filepath = path.join(Config.getConfig().jaajtv_folder, "torrents", result.id + ".torrent");
+        await ygg.downloadTorrent(result.id, torrent_filepath);
       }));
       // Reordering the results
       out.sort((a, b) => a.index - b.index);
+
+      ygg.closeBrowser();
 
       cacheResults(query, out);
     } else if(out.length) {
