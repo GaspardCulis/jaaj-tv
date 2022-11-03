@@ -62,7 +62,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
     function parseFiles(files) {
         const treeData = [];
         for (const file of files) {
-            const path = file.path.split("\\");
+            file.path = file.path.replace(/\\/g, "/");
+            const path = file.path.split("/");
             let currentNode = treeData;
             for (const folder of path) {
                 const node = currentNode.find((node) => node.text === folder);
