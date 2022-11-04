@@ -118,6 +118,9 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 <div class="files-container">
 
                 </div>
+                <div class="download-button-container">
+                    <button class="download-button">Add to library</button>
+                </div>
             </div>
         </div>
     </div>
@@ -214,6 +217,38 @@ const important_properties = ["episode","season","language", "quality", "resolut
         border: 1px solid gray;
         border-radius: 5px;
         min-height: 10rem;
+    }
+
+    .download-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        align-items: right;
+        width: 100%;
+    }
+
+    .download-button {
+        border: 1px solid;
+        padding-inline: 10px;
+        padding-block: 5px;
+        margin: 10px;
+        
+        background-size: 200% 100% ;
+        background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
+        transition: background-position 1s;
+
+        border-radius: 25px;
+        font-size: 18px;
+        color: #e9f4fb;
+        font-weight: 700;
+        cursor: pointer;
+        outline: none;
+        text-align: center;
+        user-select: none;
+    }
+
+    .download-button:hover {
+        background-position: -100% 0;
     }
 
 

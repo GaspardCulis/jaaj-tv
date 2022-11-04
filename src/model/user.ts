@@ -3,6 +3,7 @@ import { ensureDirectoryExists } from './utils';
 import path from 'path';
 import getConfig from './config';
 import Downloader from './downloader';
+import Library from './library';
 
 const USERS_FOLDER = path.join(getConfig().jaajtv_folder, "users");
 
@@ -12,6 +13,7 @@ export default class User {
     public ready = false;
     private _client: YggTorrent;
     private _downloader: Downloader;
+    private _library: Library;
 
     constructor(login: string) {
         this.login = login;
@@ -28,6 +30,7 @@ export default class User {
             });
         });
         this._downloader = new Downloader(this);
+        this._library = new Library(this);
     }
 
     async waitReady() {
@@ -42,6 +45,10 @@ export default class User {
 
     getDownloader(): Downloader {
         return this._downloader;
+    }
+
+    getLibrary(): Library {
+        return this._library;
     }
 
     async kill() {
