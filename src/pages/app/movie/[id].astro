@@ -16,6 +16,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 ---
 <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
 <script defer define:vars={{id}} type="module">
+    var fileTree;
 
     async function getFiles() {
         const response = await fetch("/api/files", {
@@ -30,31 +31,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
         console.log(files);
         
-        const treeData = [
-            {
-                id: '0',
-                text: 'node-0',
-                children: [
-                {
-                    id: '0-0',
-                    text: 'node-0-0',
-                    children: [
-                    {id: '0-0-0', text: 'node-0-0-0'},
-                    {id: '0-0-1', text: 'node-0-0-1'},
-                    {id: '0-0-2', text: 'node-0-0-2'},
-                    ],
-                },
-                {id: '0-1', text: 'node-0-1'},
-                ],
-            },
-            {
-                id: '1',
-                text: 'node-1',
-                children: [{id: '1-0', text: 'node-1-0'}, {id: '1-1', text: 'node-1-1'}],
-            },
-        ];
-        
-        const myTree = new Tree('.files-container', {
+        fileTree = new Tree('.files-container', {
             data: parseFiles(files),
         });
     }
@@ -70,10 +47,15 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 if (node) {
                     currentNode = node.children;
                 } else {
+                    const type = path.indexOf(folder) === path.length - 1 ? "file" : "folder";
                     const newNode = {
                         id: folder,
                         text: folder,
                         children: [],
+                        attributes: {
+                            type: type,
+                            path: file.path,
+                        }
                     };
                     currentNode.push(newNode);
                     currentNode = newNode.children;
@@ -86,8 +68,37 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
         return treeData;
     }
+
+    function parseSelectedNodes(selectedNodes) {
+        const files = [];
+        for (const node of selectedNodes) {
+            if (node.attributes.type === 'file') {
+                files.push(node.attributes.path);
+            }
+        }
+        
+        return files;
+    }
+
+    async function onDownloadButtonPressed() {
+        const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
+        
+        const response = await fetch("/api/download", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ torrent_id: id, files: selectedFiles }),
+        });
+
+        console.log(response.status);
+
+    }
     
-    document.addEventListener("DOMContentLoaded", getFiles);
+    document.addEventListener("DOMContentLoaded", () => {
+        getFiles();
+        document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
+    });
 </script>
 <GradientBackground title="jaajTV | Search">
     <NavBar selected_index={0}/>
@@ -119,7 +130,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
                 </div>
                 <div class="download-button-container">
-                    <button class="download-button">Add to library</button>
+                    <button id="download-button">Add to library</button>
                 </div>
             </div>
         </div>
@@ -227,7 +238,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         width: 100%;
     }
 
-    .download-button {
+    #download-button {
         border: 1px solid;
         padding-inline: 10px;
         padding-block: 5px;
@@ -247,7 +258,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         user-select: none;
     }
 
-    .download-button:hover {
+    #download-button:hover {
         background-position: -100% 0;
     }
 
