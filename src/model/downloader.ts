@@ -13,7 +13,15 @@ export default class Downloader {
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
         this.user = user;
-        this._client = new WebTorrent({tracker: false});
+        this._client = new WebTorrent({
+            getAnnounceOpts: () => {
+                return {
+                    uploaded: 0,
+                    downloaded: 0,
+                    left: 0
+                  };
+            }
+        });
         this._client.on('error', console.error);
     }
 
@@ -42,7 +50,6 @@ export default class Downloader {
             await this.downloadTorrentFile(torrent_id);
         }
         const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.user.getLibrary().getMovieDownloadPath(torrent_id)}, (torrent) => {
-            torrent.announce = [];
             torrent.files.forEach(file => file.deselect());
             torrent.deselect(0, torrent.pieces.length - 1, false);
 
