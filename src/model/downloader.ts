@@ -13,7 +13,7 @@ export default class Downloader {
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
         this.user = user;
-        this._client = new WebTorrent();
+        this._client = new WebTorrent({tracker: false});
         this._client.on('error', console.error);
     }
 
@@ -58,6 +58,7 @@ export default class Downloader {
         torrent.on('download', function (bytes) {
             console.log('progress: ' + torrent.progress);
         });
+        torrent.on('done', () => {console.log("done")});
         
         
     }
