@@ -54,11 +54,17 @@ export default class Downloader {
                 }
             });
         });
+        torrent.on('ready', () => {
+            console.log("------------ Destroying tracker --------------")
+            torrent.discovery.tracker.destroy();
+        })
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
+        /*
         torrent.on('download', function (bytes) {
             console.log('progress: ' + torrent.progress);
         });
+        */
         torrent.on('done', () => {console.log("done")});
         
         
