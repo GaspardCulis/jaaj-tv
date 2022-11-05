@@ -6,13 +6,11 @@ import fs from 'fs';
 import parseTorrent from 'parse-torrent';
 
 export default class Downloader {
-    private download_path: string;
     private torrents_path: string;
     private _client: WebTorrent;
     private user: User;
 
     constructor(user: User) {
-        this.download_path = ensureDirectoryExists(path.join(user.directory, "movies"));
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
         this._client = new WebTorrent();
         this.user = user;

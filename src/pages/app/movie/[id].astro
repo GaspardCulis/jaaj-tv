@@ -137,10 +137,31 @@ const important_properties = ["episode","season","language", "quality", "resolut
         }
 
     }
+
+    async function setupDownloadButton() {
+        const response = await fetch("/api/library/exists", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ torrent_id: id }),
+        });
+
+        const data = (await response.json());
+        const downloadButton = document.getElementById("download-button");
+        const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
+        if (data.exists) {
+            downloadButtonText.innerText = "Added to library";
+            downloadButton.style.transition = "none";
+            downloadButton.classList.add("clicked");
+        } else {
+            downloadButton.addEventListener("click", onDownloadButtonPressed);
+        }
+    }
     
-    document.addEventListener("DOMContentLoaded", () => {
-        getFiles();
-        document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
+    document.addEventListener("DOMContentLoaded", async () => {
+        await setupDownloadButton();
+        await getFiles();
     });
 </script>
 <GradientBackground title="jaajTV | Search">

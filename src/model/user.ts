@@ -26,7 +26,7 @@ export default class User {
                         if (!yes) throw new Error("Failed to login.");
                         this.ready = true;
                     });
-                }, 1000);
+                }, 2000);
             });
         });
         this._downloader = new Downloader(this);
