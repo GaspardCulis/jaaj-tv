@@ -62,7 +62,6 @@ export default class Downloader {
         
         torrent.on('download', function (bytes) {
             console.log('progress: ' + torrent.progress);
-            console.log("------------ Destroying tracker --------------")
             torrent.discovery.tracker.destroy();
         });
         
