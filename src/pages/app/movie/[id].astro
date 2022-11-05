@@ -81,6 +81,20 @@ const important_properties = ["episode","season","language", "quality", "resolut
     }
 
     async function onDownloadButtonPressed() {
+        // Animation
+        const downloadButton = document.getElementById("download-button");
+        const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
+        // Lock width and height
+        const rect = downloadButton.getBoundingClientRect();
+        downloadButton.style.width = rect.width + "px";
+        downloadButton.style.height = rect.height + "px";
+        // Remove text
+        downloadButtonText.classList.add("hidden");
+        // Animate
+        downloadButton.classList.add("clicked");
+        const animationWait = new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Fetching
         const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
         
         const response = await fetch("/api/download", {
@@ -91,7 +105,36 @@ const important_properties = ["episode","season","language", "quality", "resolut
             body: JSON.stringify({ torrent_id: id, files: selectedFiles }),
         });
 
-        console.log(response.status);
+        await animationWait;
+        const backgroundBackup = downloadButton.style.backgroundImage;
+        if (response.status === 200) {
+            downloadButtonText.innerText = "Added to library";
+            downloadButtonText.classList.remove("hidden");
+            downloadButton.style.width = "";
+            downloadButton.style.height = "";
+        } else {
+            downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
+            downloadButton.classList.remove("clicked");
+            downloadButtonText.innerText = "Error";
+            downloadButtonText.classList.remove("hidden");
+
+            setTimeout(async () => {
+                downloadButton.style.backgroundImage = "linear-gradient(to left, red 50%, #2691d9 50%)";
+                const transitionBackup = downloadButton.style.transition;
+                downloadButton.style.transition = "none";
+                downloadButton.classList.add("clicked");
+                downloadButtonText.classList.add("hidden");
+                await new Promise((resolve) => setTimeout(resolve, 500));
+                downloadButton.style.transition = transitionBackup;
+                downloadButton.classList.remove("clicked");
+                downloadButtonText.innerText = "Add to library";
+                downloadButtonText.classList.remove("hidden");
+                downloadButton.style.width = "";
+                downloadButton.style.height = "";
+                await new Promise((resolve) => setTimeout(resolve, 500));
+                downloadButton.style.backgroundImage = backgroundBackup;
+            }, 3000);
+        }
 
     }
     
@@ -130,7 +173,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
                 </div>
                 <div class="download-button-container">
-                    <button id="download-button">Add to library</button>
+                    <button id="download-button"><p>Add to library</p></button>
                 </div>
             </div>
         </div>
@@ -246,7 +289,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         
         background-size: 200% 100% ;
         background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
-        transition: background-position 1s;
+        transition: all 500ms;
 
         border-radius: 25px;
         font-size: 18px;
@@ -256,10 +299,24 @@ const important_properties = ["episode","season","language", "quality", "resolut
         outline: none;
         text-align: center;
         user-select: none;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
     }
 
-    #download-button:hover {
+    #download-button.clicked {
         background-position: -100% 0;
+    }
+
+    #download-button p {
+        margin: 0;
+        transition: all 0.5s;
+    }
+
+    #download-button p.hidden {
+        transform: scaleY(0);
     }
 
 
