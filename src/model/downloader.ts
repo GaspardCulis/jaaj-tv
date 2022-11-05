@@ -13,7 +13,7 @@ export default class Downloader {
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
         this.user = user;
-        this._client = new WebTorrent({tracker: false});
+        this._client = new WebTorrent();
         this._client.on('error', console.error);
     }
 
@@ -53,6 +53,10 @@ export default class Downloader {
             });
         });
 
+        torrent.on('ready', () => {
+            // Yeet trackers
+            torrent.announce = [];
+        });
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
         torrent.on('download', function (bytes) {
