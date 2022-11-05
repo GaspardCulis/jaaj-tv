@@ -81,6 +81,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
     }
 
     async function onDownloadButtonPressed() {
+        // Remove event listener to prevent multiple clicks
+        document.getElementById("download-button").removeEventListener("click", onDownloadButtonPressed);
         // Animation
         const downloadButton = document.getElementById("download-button");
         const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
@@ -134,6 +136,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 downloadButton.style.backgroundImage = backgroundBackup;
             }, 3000);
+            // Add event listener back
+            document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
         }
 
     }
