@@ -20,6 +20,10 @@ export default class Library {
         return JSON.parse(data);
     }
 
+    getMovieDownloadPath(torrent_id: number): string {
+        return path.join(this.download_path, torrent_id.toString());
+    }
+
     private init() {
         for(let dir of fs.readdirSync(this.download_path)) {
             const data = fs.readFileSync(path.join(this.download_path, dir, "movie.info"), "utf-8");
@@ -28,20 +32,17 @@ export default class Library {
     }
 
     createMovieFolder(movie: Movie) {
-        const movie_path = path.join(this.download_path, movie.id.toString());
-        ensureDirectoryExists(movie_path);
-        fs.writeFileSync(path.join(movie_path, "movie.info"), JSON.stringify(movie));
+        fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieDownloadPath(movie.id)), "movie.info"), JSON.stringify(movie));
     }
 
     addTorrent(torrent_id: number, files: string[]) {
         const movie = getCachedMovieById(torrent_id);
         this.createMovieFolder(movie);
         this.movies.set(torrent_id, movie);
+        this.user.getDownloader().downloadTorrent(torrent_id, files);
     }
 
     exists(torrent_id: number): boolean {
-        console.log(this.movies);
-        console.log(typeof torrent_id);
         return this.movies.has(torrent_id);
     }
 }

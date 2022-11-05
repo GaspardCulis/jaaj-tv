@@ -12,8 +12,9 @@ export default class Downloader {
 
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
-        this._client = new WebTorrent();
         this.user = user;
+        this._client = new WebTorrent();
+        this._client.on('error', console.error);
     }
 
     getTorrentFileDownloadPath(torrent_id: number): string {
@@ -34,6 +35,37 @@ export default class Downloader {
         }
         const data = parseTorrent(fs.readFileSync(this.getTorrentFileDownloadPath(torrent_id)));
         return data.files;
+    }
+
+    async downloadTorrent(torrent_id: number, files: string[]) {
+        if (!this.isTorrentFileDownloaded(torrent_id)) {
+            await this.downloadTorrentFile(torrent_id);
+        }
+        const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.user.getLibrary().getMovieDownloadPath(torrent_id)}, (torrent) => {
+            torrent.deselect(0, torrent.pieces.length - 1, false);
+
+            for (let file of torrent.files) {
+                const formatted_path = file.path.replace(file._torrent.path, "").replace(/\\/g, "/").replace(/^\//, "");
+                if (files.includes(formatted_path)) {
+                    file.select();
+                    console.log("Selected file: " + file.path);
+                } else {
+                    file.deselect();
+                    console.log("Deselected file: " + file.path);
+                }
+            }
+        });
+
+        torrent.on('warning', console.log);
+        torrent.on('error',console.log);
+        
+        setTimeout(() => {
+            torrent.on('download', function (bytes) {
+                console.log('progress: ' + torrent.progress);
+            });
+        }, 7000);
+        
+        
     }
 
     
