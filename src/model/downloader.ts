@@ -42,28 +42,22 @@ export default class Downloader {
             await this.downloadTorrentFile(torrent_id);
         }
         const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.user.getLibrary().getMovieDownloadPath(torrent_id)}, (torrent) => {
+            torrent.files.forEach(file => file.deselect());
             torrent.deselect(0, torrent.pieces.length - 1, false);
 
-            for (let file of torrent.files) {
+            torrent.files.forEach(file => {
                 const formatted_path = file.path.replace(file._torrent.path, "").replace(/\\/g, "/").replace(/^\//, "");
                 if (files.includes(formatted_path)) {
                     file.select();
-                    console.log("Selected file: " + file.path);
-                } else {
-                    file.deselect();
-                    console.log("Deselected file: " + file.path);
                 }
-            }
+            });
         });
 
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
-        
-        setTimeout(() => {
-            torrent.on('download', function (bytes) {
-                console.log('progress: ' + torrent.progress);
-            });
-        }, 7000);
+        torrent.on('download', function (bytes) {
+            console.log('progress: ' + torrent.progress);
+        });
         
         
     }
