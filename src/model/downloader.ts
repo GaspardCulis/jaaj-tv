@@ -14,9 +14,7 @@ export default class Downloader {
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
         this.user = user;
-        this._client = new WebTorrent({
-            blocklist: ['31.220.2.198'],
-        });
+        this._client = new WebTorrent();
         this._client.on('error', console.error);
     }
 
