@@ -9,6 +9,7 @@ export default class Downloader {
     private torrents_path: string;
     private _client: WebTorrent;
     private user: User;
+    private torrents: Map<number, WebTorrent.Torrent> = new Map();
 
     constructor(user: User) {
         this.torrents_path = ensureDirectoryExists(path.join(user.directory, "torrents"));
@@ -54,20 +55,16 @@ export default class Downloader {
                 }
             });
         });
-        torrent.on('ready', () => {
-            
-        })
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
-        
-        torrent.on('download', function (bytes) {
-            console.log('progress: ' + torrent.progress);
-            torrent.discovery.tracker.destroy();
+        torrent.on('download', function () {
+            torrent.discovery.tracker.destroy(); // Tracker evasion
         });
-        
-        torrent.on('done', () => {console.log("done")});
-        
-        
+        this.torrents.set(torrent_id, torrent);
+    }
+
+    getTorrent(torrent_id: number): WebTorrent.Torrent {
+        return this.torrents.get(torrent_id);
     }
 
     
