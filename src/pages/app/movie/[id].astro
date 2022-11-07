@@ -48,6 +48,12 @@ const important_properties = ["episode","season","language", "quality", "resolut
         });
     }
 
+    // Thanks to https://stackoverflow.com/a/20732091/16994743
+    function humanFileSize(size) {
+        var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+        return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
+
     function parseFiles(files) {
         const treeData = [];
         for (const file of files) {
@@ -55,14 +61,14 @@ const important_properties = ["episode","season","language", "quality", "resolut
             const path = file.path.split("/");
             let currentNode = treeData;
             for (const folder of path) {
-                const node = currentNode.find((node) => node.text === folder);
+                const node = currentNode.find((node) => node.id === folder);
                 if (node) {
                     currentNode = node.children;
                 } else {
                     const type = path.indexOf(folder) === path.length - 1 ? "file" : "folder";
                     const newNode = {
                         id: folder,
-                        text: folder,
+                        text: folder + (type === "file" ? ` (${humanFileSize(file.length)})` : ""),
                         children: [],
                         attributes: {
                             type: type,
