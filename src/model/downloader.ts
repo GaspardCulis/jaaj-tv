@@ -80,8 +80,8 @@ export default class Downloader {
             for (let file of torrent.files) {
                 if (file._destroyed) {
                     fs.unlink(file.path, (err) => {
-                        if (err) throw err;
-                        console.log("Removed file "+file.path);
+                        if (err) console.log("Failed to remove file "+file.path);
+                        else console.log("Removed file "+file.path);
                     });
                 }
             }
