@@ -72,7 +72,7 @@ export default class Downloader {
         torrent.on('error',console.log);
         torrent.on('download', function () {
             torrent.discovery.tracker.destroy(); // Tracker evasion
-            bar.update(torrent.progress * 100);
+            bar.update(Downloader.getTorrentProgress(torrent) * 100);
         });
         torrent.on('done', () => {
             bar.stop();
@@ -93,16 +93,18 @@ export default class Downloader {
         return this.torrents.get(torrent_id);
     }
 
-    getTorrentProgress(torrent: WebTorrent.Torrent): number {
+    static getTorrentProgress(torrent: WebTorrent.Torrent): number {
+        let total = 0;
         let progress = 0;
 
         for(let file of torrent.files) {
             if (!file._destroyed) {
-                progress += file.progress;
+                total += file.length || 0;
+                progress += file.downloaded || 0;
             }
         }
 
-        return progress;
+        return progress / total;
     } 
 
     
