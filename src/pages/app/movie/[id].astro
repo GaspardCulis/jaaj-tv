@@ -45,7 +45,14 @@ const important_properties = ["episode","season","language", "quality", "resolut
         
         fileTree = new Tree('.files-container', {
             data: parseFiles(files),
+            onChange: () => {
+                const downloadButton = document.getElementById("download-button");
+                if (!downloadButton.style.transition.startsWith("none")) {
+                    updateDownloadButton();
+                }
+            }
         });
+        fileTree.options.onChange();
     }
 
     // Thanks to https://stackoverflow.com/a/20732091/16994743
@@ -73,6 +80,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                         attributes: {
                             type: type,
                             path: file.path,
+                            size: file.length,
                         }
                     };
                     currentNode.push(newNode);
@@ -96,6 +104,26 @@ const important_properties = ["episode","season","language", "quality", "resolut
         }
         
         return files;
+    }
+
+    function getTotalFileSize(selectedNodes) {
+        let totalSize = 0;
+        for (const node of selectedNodes) {
+            if (node.attributes.type === 'file') {
+                totalSize += node.attributes.size;
+            }
+        }
+
+        return totalSize;
+    }
+
+    function updateDownloadButton() {
+        if (!fileTree) return;
+        const selectedNodes = fileTree.selectedNodes;
+        const totalSize = getTotalFileSize(selectedNodes);
+
+        const downloadButtonText = document.getElementById("download-button").getElementsByTagName("p")[0];
+        downloadButtonText.innerText = `Add to library (${humanFileSize(totalSize)})`;
     }
 
     async function onDownloadButtonPressed() {
@@ -131,8 +159,6 @@ const important_properties = ["episode","season","language", "quality", "resolut
         if (response.status === 200) {
             downloadButtonText.innerText = "Added to library";
             downloadButtonText.classList.remove("hidden");
-            downloadButton.style.minWidth = "";
-            downloadButton.style.height = "";
         } else {
             downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
             downloadButton.classList.remove("clicked");
@@ -148,10 +174,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 downloadButton.style.transition = transitionBackup;
                 downloadButton.classList.remove("clicked");
-                downloadButtonText.innerText = "Add to library";
+                fileTree.options.onChange();
                 downloadButtonText.classList.remove("hidden");
-                downloadButton.style.minWidth = "";
-                downloadButton.style.height = "";
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 downloadButton.style.backgroundImage = backgroundBackup;
             }, 3000);
