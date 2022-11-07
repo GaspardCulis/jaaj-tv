@@ -52,6 +52,9 @@ export default class Downloader {
                 const formatted_path = file.path.replace(file._torrent.path, "").replace(/\\/g, "/").replace(/^\//, "");
                 if (files.includes(formatted_path)) {
                     file.select();
+                } else {
+                    file.deselect();
+                    file._destroy();
                 }
             });
         });
@@ -73,6 +76,15 @@ export default class Downloader {
         });
         torrent.on('done', () => {
             bar.stop();
+            // Remove deselected files which have empty files
+            for (let file of torrent.files) {
+                if (file._destroyed) {
+                    fs.unlink(file.path, (err) => {
+                        if (err) throw err;
+                        console.log("Removed file "+file.path);
+                    });
+                }
+            }
         })
         this.torrents.set(torrent_id, torrent);
     }
@@ -80,6 +92,18 @@ export default class Downloader {
     getTorrent(torrent_id: number): WebTorrent.Torrent {
         return this.torrents.get(torrent_id);
     }
+
+    getTorrentProgress(torrent: WebTorrent.Torrent): number {
+        let progress = 0;
+
+        for(let file of torrent.files) {
+            if (!file._destroyed) {
+                progress += file.progress;
+            }
+        }
+
+        return progress;
+    } 
 
     
 }
