@@ -4,6 +4,8 @@ import path from 'path';
 import { ensureDirectoryExists } from './utils';
 import fs from 'fs';
 import parseTorrent from 'parse-torrent';
+import cliProgress from 'cli-progress';
+import colors from 'ansi-colors';
 
 export default class Downloader {
     private torrents_path: string;
@@ -53,11 +55,25 @@ export default class Downloader {
                 }
             });
         });
+
+        const bar = new cliProgress.SingleBar({
+            format: 'Download progress |' + colors.greenBright('{bar}') + '| {percentage}% || Time left : {eta_formatted}',
+            barCompleteChar: '\u2588',
+            barIncompleteChar: '\u2591',
+            hideCursor: true
+        });
+        
+        console.log("Starting to download torrent "+torrent_id);
+        bar.start(100, 0);
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
         torrent.on('download', function () {
             torrent.discovery.tracker.destroy(); // Tracker evasion
+            bar.update(torrent.progress * 100);
         });
+        torrent.on('done', () => {
+            bar.stop();
+        })
         this.torrents.set(torrent_id, torrent);
     }
 
