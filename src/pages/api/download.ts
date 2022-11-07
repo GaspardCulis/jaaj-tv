@@ -11,11 +11,11 @@ export const post: APIRoute = async ({ request }) => {
     query.torrent_id = parseInt(query.torrent_id);
 
     const user = await UserManager.getUser(authorized as string);
-    if (!isNaN(query.torrent_id) && user.getDownloader().isTorrentFileDownloaded(query.torrent_id)) {
-        if (!user.getDownloader().getTorrent(query.torrent_id)) {
+    if (!isNaN(query.torrent_id) && user.getDownloader().isTorrentFileDownloaded(query.torrent_id) && query.folder_name) {
+        if (!(user.getDownloader().getTorrent(query.torrent_id) || [...user.getLibrary().getFolders().values()].includes(query.folder_name))) {
             const files = await user.getDownloader().getTorrentFiles(query.torrent_id);
             if (Array.isArray(query.files) && query.files.length > 0 && query.files.filter((file) => files.map(local_file => local_file.path.replace(/\\/g, "/")).includes(file)).length === query.files.length) {
-                user.getLibrary().addTorrent(query.torrent_id, query.files);
+                user.getLibrary().addTorrent(query.torrent_id, query.files, query.folder_name);
                 status = 200;
             }
         }

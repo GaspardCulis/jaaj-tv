@@ -3,6 +3,7 @@ import { isAuthorized } from "../../../model/utils";
 import { getCachedMovieById } from "../../../model/database";
 import GradientBackground from "../../../layouts/GradientBackground.astro";
 import NavBar from "../../../components/NavBar.astro";
+import TextField from "../../../components/TextField.astro";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 
@@ -15,8 +16,19 @@ if (!movie) return new Response("Movie not found", { status: 404 });
 const important_properties = ["episode","season","language", "quality", "resolution", "year"];
 ---
 <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
-<script defer define:vars={{id}} type="module">
+<script defer define:vars={{id, movie}} type="module">
     var fileTree;
+
+    function setupFolderName() {
+        let folder_name = movie.title || movie.baseName;
+        if (movie.season) 
+            folder_name += " Season " + movie.season;
+        if (movie.episode)
+            folder_name += " Episode " + movie.episode;
+
+        const folderNameInput = document.getElementById("folder_name");
+        folderNameInput.value = folder_name;
+    }
 
     async function getFiles() {
         const response = await fetch("/api/files", {
@@ -88,7 +100,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
         // Lock width and height
         const rect = downloadButton.getBoundingClientRect();
-        downloadButton.style.width = rect.width + "px";
+        downloadButton.style.minWidth = rect.width + "px";
         downloadButton.style.height = rect.height + "px";
         // Remove text
         downloadButtonText.classList.add("hidden");
@@ -98,13 +110,14 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
         // Fetching
         const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
+        const folderNameInput = document.getElementById("folder_name");
         
         const response = await fetch("/api/download", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ torrent_id: id, files: selectedFiles }),
+            body: JSON.stringify({ torrent_id: id, files: selectedFiles, folder_name:  folderNameInput.value}),
         });
 
         await animationWait;
@@ -112,7 +125,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         if (response.status === 200) {
             downloadButtonText.innerText = "Added to library";
             downloadButtonText.classList.remove("hidden");
-            downloadButton.style.width = "";
+            downloadButton.style.minWidth = "";
             downloadButton.style.height = "";
         } else {
             downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
@@ -131,7 +144,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 downloadButton.classList.remove("clicked");
                 downloadButtonText.innerText = "Add to library";
                 downloadButtonText.classList.remove("hidden");
-                downloadButton.style.width = "";
+                downloadButton.style.minWidth = "";
                 downloadButton.style.height = "";
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 downloadButton.style.backgroundImage = backgroundBackup;
@@ -164,6 +177,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
     }
     
     document.addEventListener("DOMContentLoaded", async () => {
+        setupFolderName();
         await setupDownloadButton();
         await getFiles();
     });
@@ -198,6 +212,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
                 </div>
                 <div class="download-button-container">
+                    <TextField placeholder="Enter folder name" type="text" name="folder_name" required/>
                     <button id="download-button"><p>Add to library</p></button>
                 </div>
             </div>
@@ -310,7 +325,10 @@ const important_properties = ["episode","season","language", "quality", "resolut
         border: 1px solid;
         padding-inline: 10px;
         padding-block: 5px;
-        margin: 10px;
+        margin-inline: 10px;
+        margin-block: auto;
+
+        min-width: fit-content;
         
         background-size: 200% 100% ;
         background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
