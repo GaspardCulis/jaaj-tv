@@ -10,7 +10,8 @@ type FolderInfo = {
 
 type TorrentInfo = {
     files: string[],
-    downloaded: boolean
+    downloaded: boolean,
+    error: string | null,
 }
 
 type MovieFolder = {
@@ -61,7 +62,8 @@ export default class Library {
             },
             torrent_info: {
                 files: files,
-                downloaded: false
+                downloaded: false,
+                error: null
             }
         }
         this.setData(movie.id, data);
@@ -77,6 +79,12 @@ export default class Library {
     setTorrentDownloaded(torrent_id: number) {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
+        this.setData(torrent_id, data);
+    }
+
+    setTorrentError(torrent_id: number, error: string) {
+        const data = this.getData(torrent_id);
+        data.torrent_info.error = error;
         this.setData(torrent_id, data);
     }
 

@@ -70,7 +70,7 @@ export default class Downloader {
         bar.start(100, 0);
         const instance = this;
         torrent.on('warning', console.log);
-        torrent.on('error',console.log);
+        torrent.on('error', (e) => {console.error(e); instance.user.getLibrary().setTorrentError(torrent_id, e.message)});
         torrent.on('download', function () {
             torrent.discovery.tracker.destroy(); // Tracker evasion
             bar.update(instance.getTorrentProgress(torrent) * 100);

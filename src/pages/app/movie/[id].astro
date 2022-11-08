@@ -4,6 +4,7 @@ import { getCachedMovieById } from "../../../model/database";
 import GradientBackground from "../../../layouts/GradientBackground.astro";
 import NavBar from "../../../components/NavBar.astro";
 import TextField from "../../../components/TextField.astro";
+import Transition from "../../../components/Transition.astro";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 
@@ -249,12 +250,18 @@ const important_properties = ["episode","season","language", "quality", "resolut
         </div>
     </div>
 </GradientBackground>
+<Transition />
 <style>
     #movie-page {
         height: 100%;
         width: 85%;
         margin-left: 15%;
         background-color: whitesmoke;
+    }
+
+    html.is-leaving #movie-page {
+        transform: translateY(100%);
+        transition: transform 0.5s ease-in-out;
     }
 
     #movie-page img {
