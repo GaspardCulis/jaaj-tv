@@ -23,14 +23,13 @@ function createSpacer(element) {
 function onMovieClicked(clicked_a) {
     let results_container = document.getElementById("search-results");
     results_container.classList.remove("has-transition");
-    const target_root = clicked_a;
-    const rect = target_root.getBoundingClientRect();
-    target_root.style.position = "absolute";
-    createSpacer(target_root);
-    target_root.style.top = `${rect.top}px`;
-    target_root.style.left = `${rect.left}px`;
+    const rect = clicked_a.getBoundingClientRect();
+    clicked_a.style.position = "absolute";
+    createSpacer(clicked_a);
+    clicked_a.style.top = `${rect.top}px`;
+    clicked_a.style.left = `${rect.left}px`;
     setTimeout(() => {
-        target_root.classList.add("is-showing");
+        clicked_a.classList.add("is-showing");
     }, 10);
     
 }
