@@ -1,6 +1,7 @@
 import { APIRoute } from "astro";
 import UserManager from "../../model/usermanager";
 import { isAuthorized } from "../../model/utils";
+import { filterUnwantedFiles } from "../../model/utils";
 
 export const post: APIRoute = async ({ request }) => {
     const authorized = isAuthorized(request);
@@ -12,7 +13,7 @@ export const post: APIRoute = async ({ request }) => {
     const files = await user.getDownloader().getTorrentFiles(parseInt(query.id));
 
     return new Response(JSON.stringify({
-        files: files
+        files: filterUnwantedFiles(files)
     }), {
         status: 200
     });
