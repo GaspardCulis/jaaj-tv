@@ -86,6 +86,7 @@ export default class Downloader {
                     });
                 }
             }
+            instance.user.getLibrary().setTorrentDownloaded(torrent_id);
             instance.removeTorrent(torrent_id);
             console.log("Finished downloading torrent "+torrent_id);
         });

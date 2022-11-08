@@ -8,9 +8,15 @@ type FolderInfo = {
     name: string
 }
 
+type TorrentInfo = {
+    files: string[],
+    downloaded: boolean
+}
+
 type MovieFolder = {
     movie_info: Movie,
-    folder_info: FolderInfo
+    folder_info: FolderInfo,
+    torrent_info: TorrentInfo,
 }
 
 export default class Library {
@@ -25,40 +31,76 @@ export default class Library {
         this.init();
     }
 
-    getMovieDownloadPath(torrent_id: number): string {
-        return path.join(this.download_path, torrent_id.toString());
-    }
-
     private init() {
         for(let dir of fs.readdirSync(this.download_path)) {
-            const data: MovieFolder = JSON.parse(fs.readFileSync(path.join(this.download_path, dir, "movie.info"), "utf-8"));
-            this.movies.set(parseInt(dir), data.movie_info);
-            this.folders.set(parseInt(dir), data.folder_info);
+            const id = parseInt(dir)
+            const data: MovieFolder = this.getData(id);
+            this.movies.set(id, data.movie_info);
+            this.folders.set(id, data.folder_info);
+        }
+        setTimeout(() => {
+            this.resumeDownloads();
+        }, 1000);
+    }
+
+    private resumeDownloads() {
+        for(let id of this.movies.keys()) {
+            const data: MovieFolder = this.getData(id);
+            if (!data.torrent_info.downloaded) {
+                console.log("Resuming download of torrent " + id);
+                this.user.getDownloader().downloadTorrent(id, data.torrent_info.files);
+            }
         }
     }
 
-    createMovieFolder(movie: Movie, name: string) {
+    createMovieFolder(movie: Movie, folder_name: string, files: string[]) {
         const data: MovieFolder = {
             movie_info: movie,
             folder_info: {
-                name: name
+                name: folder_name
+            },
+            torrent_info: {
+                files: files,
+                downloaded: false
             }
         }
-        fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieDownloadPath(movie.id)), "movie.info"), JSON.stringify(data));
+        this.setData(movie.id, data);
     }
 
     addTorrent(torrent_id: number, files: string[], folder_name: string) {
         const movie = getCachedMovieById(torrent_id);
-        this.createMovieFolder(movie, folder_name);
+        this.createMovieFolder(movie, folder_name, files);
         this.movies.set(torrent_id, movie);
         this.user.getDownloader().downloadTorrent(torrent_id, files);
+    }
+
+    setTorrentDownloaded(torrent_id: number) {
+        const data = this.getData(torrent_id);
+        data.torrent_info.downloaded = true;
+        this.setData(torrent_id, data);
     }
 
     exists(torrent_id: number): boolean {
         return this.movies.has(torrent_id);
     }
 
+    getMovies(): Map<number, Movie> {
+        return this.movies;
+    }
+
     getFolders(): Map<number, FolderInfo> {
         return this.folders;
+    }
+
+    getMovieDownloadPath(torrent_id: number): string {
+        return path.join(this.download_path, torrent_id.toString());
+    }
+
+    private getData(torrent_id: number): MovieFolder {
+        return JSON.parse(fs.readFileSync(path.join(this.getMovieDownloadPath(torrent_id), "movie.info"), "utf-8"));
+    }
+
+    private setData(torrent_id: number, data: MovieFolder) {
+        fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieDownloadPath(torrent_id)), "movie.info"), JSON.stringify(data));
     }
 }
