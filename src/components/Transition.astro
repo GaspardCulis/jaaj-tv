@@ -21,7 +21,8 @@ duration = duration || 500;
 		let action;
 		let target;
 		let no_transition = false;
-		for (let element of e.path) {
+		const path = e.path || (e.composedPath && e.composedPath());
+		for (let element of path) {
 			if (! action) {
 				if (element.tagName == 'A') {
 					action = (element) => document.location.href = element.href;

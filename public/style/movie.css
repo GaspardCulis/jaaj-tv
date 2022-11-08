@@ -1,0 +1,146 @@
+.movie {
+    margin: 0.5rem;
+    width: 300px;
+    height: 450px;
+    text-align: left;
+    background-color: whitesmoke;
+    border-radius: 10px;
+    padding-bottom: 5px;
+    transform: rotateY(90deg);
+}
+
+.movie .movie-info {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    text-indent: 0%;
+    justify-content: flex-start;
+    align-items: baseline;
+    overflow-y: scroll;
+    scrollbar-width: 0px;
+}
+
+.movie .movie-info::-webkit-scrollbar {
+    display: none;
+}
+
+.movie .movie-info h3 {
+    margin: 0px;
+    padding: 0px;
+}
+
+.movie .movie-info a {
+    display: block;
+    position: relative;
+    padding: 0.1rem;
+    text-decoration: none;
+}
+
+.movie .movie-info a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.08em;
+    background-color: black;
+    opacity: 0;
+    transition: opacity 300ms, transform 300ms;
+}
+
+.movie .movie-info a:hover::after,
+.movie .movie-info a:focus::after {
+  opacity: 1;
+  transform: translate3d(0, 0.2em, 0);
+}
+
+
+
+.movie .movie-info ul {
+    text-align: left;
+}
+
+.movie .poster-container {
+    width: 100%;
+    height: 370px;
+    background-color: whitesmoke;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+.movie .poster-container::after {
+    display: block;
+    position: relative;
+    margin-top: -14px;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, whitesmoke 100%);
+    
+    content: '';
+    height: 10px;
+}
+
+.movie .poster-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px 10px 0 0;
+    transform: scale(1.1);
+    transition: 0.5s;
+}
+
+.movie .poster-container img:hover {
+    transform: scale(1);
+}
+
+.movie.is-showing {
+    position: absolute;
+
+    top: 0 !important;
+    left: 15% !important;
+
+    height: calc(100% + 8px);
+    width: 85%;
+    border-radius: 0px;
+
+    margin: 0px;
+
+    z-index: 1;
+
+    transition: all 500ms ease-in-out;
+}
+
+.is-showing img {
+    transform: scale(1) !important;
+    border-radius: 0px !important;
+    object-fit: contain !important;
+    object-position: left !important;
+    transition: 500ms !important;
+}
+
+.is-showing .poster-container {
+    border-radius: 0px !important;
+    transition: 500ms;
+    height: 100%;
+}
+
+.is-showing .poster-container::after {
+    margin-top: 0px;
+    height: 0px;
+    background-image: none;
+}
+
+.is-showing .movie-info {
+    max-height: 0%;
+}
+
+.movie .spacer {
+    height: 100%;
+}
+
+@keyframes movie-appear {
+    0% {
+        transform: rotateY(90deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
+}
