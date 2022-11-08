@@ -1,3 +1,0 @@
-const swup = new Swup({
-   
-});

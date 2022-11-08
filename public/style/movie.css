@@ -19,8 +19,26 @@
     scrollbar-width: 0px;
 }
 
+.movie .movie-info {
+    scrollbar-width: none;
+    scrollbar-color: transparent transparent;
+    -ms-overflow-style: none;
+    overflow-y: scroll;
+}
+
 .movie .movie-info::-webkit-scrollbar {
     display: none;
+}
+
+.movie .movie-info::-moz-scrollbar {
+    display: none;
+}
+
+@-moz-document url-prefix() {
+    .movie .movie-info {
+        overflow-y: scroll !important;
+        scrollbar-width: 0px;
+    }
 }
 
 .movie .movie-info h3 {
@@ -83,12 +101,12 @@
     object-fit: cover;
     object-position: center;
     border-radius: 10px 10px 0 0;
-    transform: scale(1.1);
+    transform: scale(1);
     transition: 0.5s;
 }
 
 .movie .poster-container img:hover {
-    transform: scale(1);
+    transform: scale(1.1);
 }
 
 .movie.is-showing {
