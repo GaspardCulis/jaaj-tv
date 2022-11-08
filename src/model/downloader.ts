@@ -68,11 +68,12 @@ export default class Downloader {
         
         console.log("Starting to download torrent "+torrent_id);
         bar.start(100, 0);
+        const instance = this;
         torrent.on('warning', console.log);
         torrent.on('error',console.log);
         torrent.on('download', function () {
             torrent.discovery.tracker.destroy(); // Tracker evasion
-            bar.update(Downloader.getTorrentProgress(torrent) * 100);
+            bar.update(instance.getTorrentProgress(torrent) * 100);
         });
         torrent.on('done', () => {
             bar.stop();
@@ -85,7 +86,9 @@ export default class Downloader {
                     });
                 }
             }
-        })
+            instance.removeTorrent(torrent_id);
+            console.log("Finished downloading torrent "+torrent_id);
+        });
         this.torrents.set(torrent_id, torrent);
     }
 
@@ -93,7 +96,18 @@ export default class Downloader {
         return this.torrents.get(torrent_id);
     }
 
-    static getTorrentProgress(torrent: WebTorrent.Torrent): number {
+    removeTorrent(torrent_id: number) {
+        if (this.torrents.has(torrent_id)) {
+            this.torrents.get(torrent_id).destroy({destroyStore: !this.torrents.get(torrent_id).done});
+            this.torrents.delete(torrent_id);
+        } else {
+            throw new Error("Torrent "+torrent_id+" does not exist");
+        }
+    }
+
+    getTorrentProgress(torrent: WebTorrent.Torrent | number): number {
+        if (typeof torrent === "number")
+            torrent = this.getTorrent(torrent);
         let total = 0;
         let progress = 0;
 
