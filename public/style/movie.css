@@ -43,32 +43,29 @@
 
 .movie .movie-info h3 {
     margin: 0px;
-    padding: 0px;
-}
-
-.movie .movie-info a {
     display: block;
     position: relative;
     padding: 0.1rem;
     text-decoration: none;
+    cursor: pointer;
 }
 
-.movie .movie-info a::after {
+.movie .movie-info h3::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 0.08em;
+    height: 0.08pc;
     background-color: black;
     opacity: 0;
     transition: opacity 300ms, transform 300ms;
 }
 
-.movie .movie-info a:hover::after,
-.movie .movie-info a:focus::after {
+.movie .movie-info h3:hover::after,
+.movie .movie-info h3:focus::after {
   opacity: 1;
-  transform: translate3d(0, 0.2em, 0);
+  transform: translate3d(0, 0.1em, 0);
 }
 
 

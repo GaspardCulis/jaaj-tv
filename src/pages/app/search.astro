@@ -23,7 +23,7 @@ function createSpacer(element) {
 function onMovieClicked(clicked_a) {
     let results_container = document.getElementById("search-results");
     results_container.classList.remove("has-transition");
-    const target_root = clicked_a.parentElement.parentElement;
+    const target_root = clicked_a;
     const rect = target_root.getBoundingClientRect();
     target_root.style.position = "absolute";
     createSpacer(target_root);
@@ -36,8 +36,13 @@ function onMovieClicked(clicked_a) {
 }
 
 function movieElement(movie, animation_delay, no_animation) {
-    const out = document.createElement("div");
+    const out = document.createElement("a");
     out.classList.add("vbox", "movie");
+    out.href = `movie/${movie.id}`;
+    out.style.color = "inherit";
+    out.style.textDecoration = "none";
+    out.style.cursor = "initial";
+    out.setAttribute("onclick", `onMovieClicked(this); handleLoad(event);`);
 
     if (no_animation) {
         out.style.animation = `movie-appear 0s forwards`;
@@ -56,7 +61,7 @@ function movieElement(movie, animation_delay, no_animation) {
         </div>
         
         <div class="vbox movie-info">
-            <a href="./movie/${movie.id}" style="color: inherit;" onclick="onMovieClicked(this); handleLoad(event);"><h3>${movie.title || movie.baseName}</h3></a>
+            <h3>${movie.title || movie.baseName}</h3>
             <ul>
                 ${important_properties.map((prop) => {
                     return movie[prop] ? `<li>${prop}: ${movie[prop]}</li>` : ""
