@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { isLoggedIn } from './database';
+import path from 'path';
 
 /**
  * @param { Headers } headers 
@@ -34,4 +35,20 @@ export function isAuthorized(request: Request): boolean | string {
     );
     if (token) return isLoggedIn(token[1]);
     else return false;
+}
+
+export function filterUnwantedFiles(files: { name: string, path: string, length: number, offset: 0 }[]) {
+    const unwantedFileExtensions = [
+        ".nfo",
+        ".txt",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".bmp",
+    ];
+    return files.filter(file => {
+        const extension = path.extname(file.name);
+        return !unwantedFileExtensions.includes(extension);
+    });
 }
