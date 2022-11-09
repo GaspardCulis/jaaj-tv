@@ -7,7 +7,7 @@ let { duration } = Astro.props;
 duration = duration || 500;
 ---
 
-<script define:vars={{ duration }}>
+<script defer define:vars={{ duration }}>
 	function animate() {
 		for (let h of document.getElementsByTagName('html')) {
 			h.classList.add('is-leaving');
