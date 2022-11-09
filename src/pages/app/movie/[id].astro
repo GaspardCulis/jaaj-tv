@@ -1,8 +1,6 @@
 ---
 import { isAuthorized } from "../../../model/utils";
 import { getCachedMovieById } from "../../../model/database";
-import GradientBackground from "../../../layouts/GradientBackground.astro";
-import NavBar from "../../../components/NavBar.astro";
 import TextField from "../../../components/TextField.astro";
 import Transition from "../../../components/Transition.astro";
 import App from "../../../layouts/App.astro";
@@ -17,204 +15,6 @@ if (!movie) return new Response("Movie not found", { status: 404 });
 
 const important_properties = ["episode","season","language", "quality", "resolution", "year"];
 ---
-<script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
-<script defer define:vars={{id, movie}} type="module">
-    var fileTree;
-
-    function setupFolderName() {
-        let folder_name = movie.title || movie.baseName;
-        if (movie.season) 
-            folder_name += " Season " + movie.season;
-        if (movie.episode)
-            folder_name += " Episode " + movie.episode;
-
-        const folderNameInput = document.getElementById("folder_name");
-        folderNameInput.value = folder_name;
-    }
-
-    async function getFiles() {
-        const response = await fetch("/api/files", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id }),
-        });
-
-        const files = (await response.json()).files;
-
-        console.log(files);
-        
-        fileTree = new Tree('.files-container', {
-            data: parseFiles(files),
-            onChange: () => {
-                const downloadButton = document.getElementById("download-button");
-                if (!downloadButton.style.transition.startsWith("none")) {
-                    updateDownloadButton();
-                }
-            }
-        });
-        fileTree.options.onChange();
-    }
-
-    // Thanks to https://stackoverflow.com/a/20732091/16994743
-    function humanFileSize(size) {
-        var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-        return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-    }
-
-    function parseFiles(files) {
-        const treeData = [];
-        for (const file of files) {
-            file.path = file.path.replace(/\\/g, "/");
-            const path = file.path.split("/");
-            let currentNode = treeData;
-            for (const folder of path) {
-                const node = currentNode.find((node) => node.id === folder);
-                if (node) {
-                    currentNode = node.children;
-                } else {
-                    const type = path.indexOf(folder) === path.length - 1 ? "file" : "folder";
-                    const newNode = {
-                        id: folder,
-                        text: folder + (type === "file" ? ` (${humanFileSize(file.length)})` : ""),
-                        children: [],
-                        attributes: {
-                            type: type,
-                            path: file.path,
-                            size: file.length,
-                        }
-                    };
-                    currentNode.push(newNode);
-                    currentNode = newNode.children;
-                }
-            }
-        }
-        for(const node of treeData) {
-            node.checked = true;
-        }
-
-        return treeData;
-    }
-
-    function parseSelectedNodes(selectedNodes) {
-        const files = [];
-        for (const node of selectedNodes) {
-            if (node.attributes.type === 'file') {
-                files.push(node.attributes.path);
-            }
-        }
-        
-        return files;
-    }
-
-    function getTotalFileSize(selectedNodes) {
-        let totalSize = 0;
-        for (const node of selectedNodes) {
-            if (node.attributes.type === 'file') {
-                totalSize += node.attributes.size;
-            }
-        }
-
-        return totalSize;
-    }
-
-    function updateDownloadButton() {
-        if (!fileTree) return;
-        const selectedNodes = fileTree.selectedNodes;
-        const totalSize = getTotalFileSize(selectedNodes);
-
-        const downloadButtonText = document.getElementById("download-button").getElementsByTagName("p")[0];
-        downloadButtonText.innerText = `Add to library (${humanFileSize(totalSize)})`;
-    }
-
-    async function onDownloadButtonPressed() {
-        // Remove event listener to prevent multiple clicks
-        document.getElementById("download-button").removeEventListener("click", onDownloadButtonPressed);
-        // Animation
-        const downloadButton = document.getElementById("download-button");
-        const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
-        // Lock width and height
-        const rect = downloadButton.getBoundingClientRect();
-        downloadButton.style.minWidth = rect.width + "px";
-        downloadButton.style.height = rect.height + "px";
-        // Remove text
-        downloadButtonText.classList.add("hidden");
-        // Animate
-        downloadButton.classList.add("clicked");
-        const animationWait = new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Fetching
-        const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
-        const folderNameInput = document.getElementById("folder_name");
-        
-        const response = await fetch("/api/download", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ torrent_id: id, files: selectedFiles, folder_name:  folderNameInput.value}),
-        });
-
-        await animationWait;
-        const backgroundBackup = downloadButton.style.backgroundImage;
-        if (response.status === 200) {
-            downloadButtonText.innerText = "Added to library";
-            downloadButtonText.classList.remove("hidden");
-        } else {
-            downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
-            downloadButton.classList.remove("clicked");
-            downloadButtonText.innerText = "Error";
-            downloadButtonText.classList.remove("hidden");
-
-            setTimeout(async () => {
-                downloadButton.style.backgroundImage = "linear-gradient(to left, red 50%, #2691d9 50%)";
-                const transitionBackup = downloadButton.style.transition;
-                downloadButton.style.transition = "none";
-                downloadButton.classList.add("clicked");
-                downloadButtonText.classList.add("hidden");
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                downloadButton.style.transition = transitionBackup;
-                downloadButton.classList.remove("clicked");
-                fileTree.options.onChange();
-                downloadButtonText.classList.remove("hidden");
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                downloadButton.style.backgroundImage = backgroundBackup;
-                downloadButton.style.minWidth = "";
-                downloadButton.style.height = "";
-                document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
-            }, 3000);
-        }
-
-    }
-
-    async function setupDownloadButton() {
-        const response = await fetch("/api/library/exists", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ torrent_id: id }),
-        });
-
-        const data = (await response.json());
-        const downloadButton = document.getElementById("download-button");
-        const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
-        if (data.exists) {
-            downloadButtonText.innerText = "Added to library";
-            downloadButton.style.transition = "none";
-            downloadButton.classList.add("clicked");
-        } else {
-            downloadButton.addEventListener("click", onDownloadButtonPressed);
-        }
-    }
-    
-    document.addEventListener("DOMContentLoaded", async () => {
-        setupFolderName();
-        await setupDownloadButton();
-        await getFiles();
-    });
-</script>
 <App title="jaajTV | Search" selected_index={0}>
     <div id="movie-page" class="hbox">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
@@ -250,162 +50,360 @@ const important_properties = ["episode","season","language", "quality", "resolut
             </div>
         </div>
     </div>
-</App>
-<Transition />
-<style>
-    #movie-page {
-        height: 100%;
-        width: 100%;
-        background-color: whitesmoke;
-    }
-
-    html.is-leaving #movie-page {
-        transform: translateY(100%);
-        transition: transform 0.5s ease-in-out;
-    }
-
-    #movie-page img {
-        height: 100%;
-        object-fit: contain;
-    }
-
-    #movie-info {
-        height: 100%;
-        width: 100%;
-        padding-top: 1rem;
-        padding-left: 3rem;
-        justify-content: space-between;
-    }
-
-    #movie-info header {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    #close-button {
-        width: 2rem;
-        height: 2rem;
-        margin-right: 1rem;
-    }
-
-    #close-icon {
-        height: 2rem;
-        width: 2rem;
-        cursor: pointer;
-    }
-
-    .title-container {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .title-container a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .title-container h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0s;
-    }
-
-    .title-container h2 {
-        font-size: 1rem;
-        margin-block: 0;
-        margin-left: 0.5rem;
-        color: gray;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.2s;
-    }
-
-    .title-container a:hover h2 {
-        text-decoration: underline;
-    }
-
-    .info-container h2 {
-        font-size: 1.5rem;
-        margin-block: 0;
-        margin-left: 0.5rem;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.4s;
-    }
-
-    #files {
-        width: 80%;
-        height: fit-content;
-        overflow-y: auto;
-        margin-bottom: 50px;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.8s;
-    }
-
-    #files .files-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        border: 1px solid gray;
-        border-radius: 5px;
-        min-height: 10rem;
-    }
-
-    .download-button-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: right;
-        align-items: right;
-        width: 100%;
-    }
-
-    #download-button {
-        border: 1px solid;
-        padding-inline: 10px;
-        padding-block: 5px;
-        margin-inline: 10px;
-        margin-block: auto;
-
-        min-width:max-content;
+    <Transition />
+    <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
+    <script defer define:vars={{id, movie}} type="module">
+        var fileTree;
+    
+        function setupFolderName() {
+            let folder_name = movie.title || movie.baseName;
+            if (movie.season) 
+                folder_name += " Season " + movie.season;
+            if (movie.episode)
+                folder_name += " Episode " + movie.episode;
+    
+            const folderNameInput = document.getElementById("folder_name");
+            folderNameInput.value = folder_name;
+        }
+    
+        async function getFiles() {
+            const response = await fetch("/api/files", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+    
+            const files = (await response.json()).files;
+    
+            console.log(files);
+            
+            fileTree = new Tree('.files-container', {
+                data: parseFiles(files),
+                onChange: () => {
+                    const downloadButton = document.getElementById("download-button");
+                    if (!downloadButton.style.transition.startsWith("none")) {
+                        updateDownloadButton();
+                    }
+                }
+            });
+            fileTree.options.onChange();
+        }
+    
+        // Thanks to https://stackoverflow.com/a/20732091/16994743
+        function humanFileSize(size) {
+            var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+        }
+    
+        function parseFiles(files) {
+            const treeData = [];
+            for (const file of files) {
+                file.path = file.path.replace(/\\/g, "/");
+                const path = file.path.split("/");
+                let currentNode = treeData;
+                for (const folder of path) {
+                    const node = currentNode.find((node) => node.id === folder);
+                    if (node) {
+                        currentNode = node.children;
+                    } else {
+                        const type = path.indexOf(folder) === path.length - 1 ? "file" : "folder";
+                        const newNode = {
+                            id: folder,
+                            text: folder + (type === "file" ? ` (${humanFileSize(file.length)})` : ""),
+                            children: [],
+                            attributes: {
+                                type: type,
+                                path: file.path,
+                                size: file.length,
+                            }
+                        };
+                        currentNode.push(newNode);
+                        currentNode = newNode.children;
+                    }
+                }
+            }
+            for(const node of treeData) {
+                node.checked = true;
+            }
+    
+            return treeData;
+        }
+    
+        function parseSelectedNodes(selectedNodes) {
+            const files = [];
+            for (const node of selectedNodes) {
+                if (node.attributes.type === 'file') {
+                    files.push(node.attributes.path);
+                }
+            }
+            
+            return files;
+        }
+    
+        function getTotalFileSize(selectedNodes) {
+            let totalSize = 0;
+            for (const node of selectedNodes) {
+                if (node.attributes.type === 'file') {
+                    totalSize += node.attributes.size;
+                }
+            }
+    
+            return totalSize;
+        }
+    
+        function updateDownloadButton() {
+            if (!fileTree) return;
+            const selectedNodes = fileTree.selectedNodes;
+            const totalSize = getTotalFileSize(selectedNodes);
+    
+            const downloadButtonText = document.getElementById("download-button").getElementsByTagName("p")[0];
+            downloadButtonText.innerText = `Add to library (${humanFileSize(totalSize)})`;
+        }
+    
+        async function onDownloadButtonPressed() {
+            // Remove event listener to prevent multiple clicks
+            document.getElementById("download-button").removeEventListener("click", onDownloadButtonPressed);
+            // Animation
+            const downloadButton = document.getElementById("download-button");
+            const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
+            // Lock width and height
+            const rect = downloadButton.getBoundingClientRect();
+            downloadButton.style.minWidth = rect.width + "px";
+            downloadButton.style.height = rect.height + "px";
+            // Remove text
+            downloadButtonText.classList.add("hidden");
+            // Animate
+            downloadButton.classList.add("clicked");
+            const animationWait = new Promise((resolve) => setTimeout(resolve, 500));
+    
+            // Fetching
+            const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
+            const folderNameInput = document.getElementById("folder_name");
+            
+            const response = await fetch("/api/download", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ torrent_id: id, files: selectedFiles, folder_name:  folderNameInput.value}),
+            });
+    
+            await animationWait;
+            const backgroundBackup = downloadButton.style.backgroundImage;
+            if (response.status === 200) {
+                downloadButtonText.innerText = "Added to library";
+                downloadButtonText.classList.remove("hidden");
+            } else {
+                downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
+                downloadButton.classList.remove("clicked");
+                downloadButtonText.innerText = "Error";
+                downloadButtonText.classList.remove("hidden");
+    
+                setTimeout(async () => {
+                    downloadButton.style.backgroundImage = "linear-gradient(to left, red 50%, #2691d9 50%)";
+                    const transitionBackup = downloadButton.style.transition;
+                    downloadButton.style.transition = "none";
+                    downloadButton.classList.add("clicked");
+                    downloadButtonText.classList.add("hidden");
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                    downloadButton.style.transition = transitionBackup;
+                    downloadButton.classList.remove("clicked");
+                    fileTree.options.onChange();
+                    downloadButtonText.classList.remove("hidden");
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                    downloadButton.style.backgroundImage = backgroundBackup;
+                    downloadButton.style.minWidth = "";
+                    downloadButton.style.height = "";
+                    document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
+                }, 3000);
+            }
+    
+        }
+    
+        async function setupDownloadButton() {
+            const response = await fetch("/api/library/exists", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ torrent_id: id }),
+            });
+    
+            const data = (await response.json());
+            const downloadButton = document.getElementById("download-button");
+            const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
+            if (data.exists) {
+                downloadButtonText.innerText = "Added to library";
+                downloadButton.style.transition = "none";
+                downloadButton.classList.add("clicked");
+            } else {
+                downloadButton.addEventListener("click", onDownloadButtonPressed);
+            }
+        }
         
-        background-size: 200% 100% ;
-        background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
-        transition: all 500ms;
-
-        border-radius: 25px;
-        font-size: 18px;
-        color: #e9f4fb;
-        font-weight: 700;
-        cursor: pointer;
-        outline: none;
-        text-align: center;
-        user-select: none;
-
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #download-button.clicked {
-        background-position: -100% 0;
-    }
-
-    #download-button p {
-        margin: 0;
-        transition: all 0.5s;
-    }
-
-    #download-button p.hidden {
-        transform: scaleY(0);
-    }
-
-
-    @keyframes fadeIn {
-        from {
+        document.addEventListener("DOMContentLoaded", async () => {
+            setupFolderName();
+            await setupDownloadButton();
+            await getFiles();
+        });
+    </script>
+    <style>
+        #movie-page {
+            height: 100%;
+            width: 100%;
+            background-color: whitesmoke;
+        }
+    
+        html.is-leaving #movie-page {
+            transform: translateY(100%);
+            transition: transform 0.5s ease-in-out;
+        }
+    
+        #movie-page img {
+            height: 100%;
+            object-fit: contain;
+        }
+    
+        #movie-info {
+            height: 100%;
+            width: 100%;
+            padding-top: 1rem;
+            padding-left: 3rem;
+            justify-content: space-between;
+        }
+    
+        #movie-info header {
+            width: 100%;
+            justify-content: space-between;
+        }
+    
+        #close-button {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 1rem;
+        }
+    
+        #close-icon {
+            height: 2rem;
+            width: 2rem;
+            cursor: pointer;
+        }
+    
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .title-container a {
+            color: inherit;
+            text-decoration: none;
+        }
+    
+        .title-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0;
             opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0s;
         }
-        to {
-            opacity: 1;
+    
+        .title-container h2 {
+            font-size: 1rem;
+            margin-block: 0;
+            margin-left: 0.5rem;
+            color: gray;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.2s;
         }
-    }
-</style>
+    
+        .title-container a:hover h2 {
+            text-decoration: underline;
+        }
+    
+        .info-container h2 {
+            font-size: 1.5rem;
+            margin-block: 0;
+            margin-left: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.4s;
+        }
+    
+        #files {
+            width: 80%;
+            height: fit-content;
+            overflow-y: auto;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.8s;
+        }
+    
+        #files .files-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border: 1px solid gray;
+            border-radius: 5px;
+            min-height: 10rem;
+        }
+    
+        .download-button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: right;
+            align-items: right;
+            width: 100%;
+        }
+    
+        #download-button {
+            border: 1px solid;
+            padding-inline: 10px;
+            padding-block: 5px;
+            margin-inline: 10px;
+            margin-block: auto;
+    
+            min-width:max-content;
+            
+            background-size: 200% 100% ;
+            background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
+            transition: all 500ms;
+    
+            border-radius: 25px;
+            font-size: 18px;
+            color: #e9f4fb;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            user-select: none;
+    
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        #download-button.clicked {
+            background-position: -100% 0;
+        }
+    
+        #download-button p {
+            margin: 0;
+            transition: all 0.5s;
+        }
+    
+        #download-button p.hidden {
+            transform: scaleY(0);
+        }
+    
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</App>

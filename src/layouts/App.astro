@@ -14,18 +14,4 @@ const { title, selected_index } = Astro.props;
     <main data-barba="container" class="vbox full-height" style="margin-left: 15%; width: 85%" data-barba-namespace="app">
         <slot />
     </main>
-    <script>
-        import barba from '@barba/core';
-
-        barba.init({
-            transitions: [{
-                leave(data) {
-                    return new Promise(resolve => setTimeout(resolve, 500));
-                },
-                enter(data) {
-                    return new Promise(resolve => setTimeout(resolve, 50));
-                }
-            }]
-        });
-    </script>
 </GradientBackground>

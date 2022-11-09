@@ -11,19 +11,4 @@ const { title } = Astro.props;
     <main data-barba="container" data-barba-namespace="home">
         <slot />
     </main>
-    <script>
-        import barba from '@barba/core';
-
-        barba.init({
-            transitions: [{
-                name: 'fade',
-                leave(data) {
-                    return new Promise(resolve => setTimeout(resolve, 500));
-                },
-                enter(data) {
-                    return;
-                }
-            }]
-        });
-    </script>
 </GradientBackground>

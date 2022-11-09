@@ -10,6 +10,16 @@ import { isAuthorized } from "../../model/utils";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 ---
+<App title="jaajTV | Search" selected_index={0}>
+    <link rel="stylesheet" href="/style/movie.css" />
+    <SearchBar />
+    <div style="pointer-events: none;position:absolute; margin: auto; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
+        <LoadingBoi />
+    </div>
+    <div id="search-results" class="hbox wrap has-transition">
+    </div>
+    <BottomPopup message="No results" color="#FFFFFF"/>
+<Transition />
 <script src="../src/cookie-utils.js" type="text/javascript" is:inline/>
 <script type="text/javascript" defer>
 
@@ -142,16 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
-<link rel="stylesheet" href="/style/movie.css" />
-<Transition />
-<App title="jaajTV | Search" selected_index={0}>
-    <SearchBar />
-    <div style="pointer-events: none;position:absolute; margin: auto; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
-        <LoadingBoi />
-    </div>
-    <div id="search-results" class="hbox wrap has-transition">
-    </div>
-    <BottomPopup message="No results" color="#FFFFFF"/>
 </App>
 <style>
     #search-results {
