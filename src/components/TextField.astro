@@ -12,7 +12,7 @@ const { placeholder, type, name, required } = Astro.props;
 <div class="txt_field">
 	<input type={type} name={name} id={name} {required} />
 	<span></span>
-	<label>{placeholder}</label>
+	<label for={name}>{placeholder}</label>
 </div>
 <style>
 	.txt_field {
