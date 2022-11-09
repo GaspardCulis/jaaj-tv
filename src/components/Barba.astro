@@ -1,0 +1,55 @@
+---
+
+---
+<script>
+    import barba from '@barba/core';
+
+    function onFormSubmit(event, form) {
+        event.preventDefault();
+        document.documentElement.classList.add('is-leaving');   
+        setTimeout(() => {
+            form.submit();
+        }, 500);
+    }
+
+    function setupFormListeners(container) {
+        container.querySelectorAll('form').forEach(form => {
+            if (!form.classList.contains('no-transition')) { 
+                form.addEventListener('submit', event => onFormSubmit(event, form));
+            }
+        });
+    }
+
+    barba.init({
+        transitions: [{
+            name: "default",
+            leave({ current, next }) {
+                return new Promise((resolve) => {
+                    document.documentElement.classList.remove('is-refreshed');
+                    document.documentElement.classList.add('is-leaving');
+                    setTimeout(resolve => {resolve({current, next})}, 500, resolve);
+                });
+            },
+            enter({ current, next }) {
+                document.documentElement.classList.remove('is-leaving');
+                document.documentElement.classList.add('is-loading');
+                setTimeout(() => {
+                    document.documentElement.classList.remove('is-loading');
+                }, 500);
+                setupFormListeners(next.container);
+            }
+        }], preventRunning: true});
+    
+    setupFormListeners(document);
+</script>
+<script defer>
+    if (performance.getEntries()[0].type != 'reload') {
+        document.documentElement.classList.add('is-loading');
+        document.documentElement.classList.add('is-loaded');
+        console.log('not reloaded');
+        setTimeout(() => {
+            document.documentElement.classList.remove('is-loading');
+        }, 600);
+    }
+
+</script>

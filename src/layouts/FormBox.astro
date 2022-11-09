@@ -6,16 +6,13 @@ export interface Props {
 const { title } = Astro.props;
 ---
 
-<div class="center">
+<div class="formbox">
 	<h1>{title}</h1>
 	<slot />
 </div>
 <style>
-	.center {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(500%, -50%);
+	.formbox {
+		margin: auto;
 		width: 400px;
 		background: whitesmoke;
 		border-radius: 10px;
@@ -23,24 +20,29 @@ const { title } = Astro.props;
 		padding-bottom: 10px;
 		box-sizing: border-box;
 	}
-	.center h1 {
+	.formbox h1 {
 		text-align: center;
-		padding: 0 0 20px 0;
+		padding-block: 15px;
 		border-bottom: 1px solid silver;
 	}
 
-	html.is-leaving .center {
-		transform: translate(-500%, -50%) !important;
-		transition: 800ms ease-in;
+	
+	html.is-leaving .formbox {
+		transform: translate(-270%, 0%) !important;
+		transition: 500ms ease-in;
 	}
 
-	html.is-loaded .center {
-		transform: translate(-50%, -50%);
-		transition: 800ms ease-out;
+	html.is-loading .formbox {
+		animation: slidein 500ms ease-out forwards;
 	}
 
-	html.is-refreshed .center {
-		transform: translate(-50%, -50%);
-		transition: 0;
+	@keyframes slidein {
+		0% {
+			transform: translate(270%, 0%);
+		}
+		100% {
+			transform: translate(0%, 0%);
+		}
 	}
+	
 </style>

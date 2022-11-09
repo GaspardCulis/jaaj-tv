@@ -11,7 +11,7 @@ function formatCategoryName(name: string) {
     return name.toLowerCase().replace(/_/g, " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).replace('Tv', 'TV');
 }
 ---
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="/style/utils.css">
 <form class="hbox no-transition" id="search-bar" method="get">
     <div class="container name-field">
         <TextField placeholder="Search" type="text" name="search" required/>
@@ -35,7 +35,6 @@ function formatCategoryName(name: string) {
         margin-left: 1%;
         width: 95%;
         padding-block: 16px;
-        animation: 500ms ease-out 0s 1 slideInFromTop;
         justify-content: space-between;
     }
 
@@ -60,8 +59,8 @@ function formatCategoryName(name: string) {
         flex-grow: 0.1;
     }
 
-    html.is-refreshed #search-bar {
-        animation: none;
+    html.is-loading #search-bar {
+        animation: 500ms ease-out 0s 1 slideInFromTop;
     }
 
     html.is-leaving #search-bar {

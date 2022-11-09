@@ -1,4 +1,5 @@
 ---
+import Barba from "../components/Barba.astro";
 import NavBar from "../components/NavBar.astro";
 import GradientBackground from "./GradientBackground.astro";
 
@@ -11,21 +12,8 @@ const { title, selected_index } = Astro.props;
 ---
 <GradientBackground title={title}>
     <NavBar selected_index={selected_index}/>
-    <main data-barba="container" class="vbox full-height" style="margin-left: 15%; width: 85%" data-barba-namespace="app">
+    <main data-barba="container" data-barba-namespace="app" class="vbox full-height" style="margin-left: 15%; width: 85%" >
         <slot />
     </main>
-    <script>
-        import barba from '@barba/core';
-
-        barba.init({
-            transitions: [{
-                leave(data) {
-                    return new Promise(resolve => setTimeout(resolve, 500));
-                },
-                enter(data) {
-                    return new Promise(resolve => setTimeout(resolve, 50));
-                }
-            }]
-        });
-    </script>
+    <Barba />
 </GradientBackground>

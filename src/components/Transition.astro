@@ -9,9 +9,7 @@ duration = duration || 500;
 
 <script defer define:vars={{ duration }}>
 	function animate() {
-		for (let h of document.getElementsByTagName('html')) {
-			h.classList.add('is-leaving');
-		}
+		document.documentElement.classList.add('is-leaving');
 	}
 
 	/**
@@ -40,11 +38,13 @@ duration = duration || 500;
 		if (! no_transition) {
 			e.preventDefault();
 			animate();
-			setTimeout(action, duration, target);
 		}
 	}
 
 	document.addEventListener('DOMContentLoaded', () => {
+		if (performance.getEntries()[0].type == 'reload')
+			document.documentElement.classList.add('is-refreshed');
+		/*
 		for (let a of document.getElementsByTagName("a")) {
 			a.addEventListener('click', handleLoad, false);
 		}
@@ -58,6 +58,7 @@ duration = duration || 500;
 			else
 				document.documentElement.classList.add('is-loaded');
 		}, 50);
+		*/
 	});
 	
 </script>

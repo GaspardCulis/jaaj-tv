@@ -17,6 +17,42 @@ if (!movie) return new Response("Movie not found", { status: 404 });
 
 const important_properties = ["episode","season","language", "quality", "resolution", "year"];
 ---
+<App title="jaajTV | Search" selected_index={0}>
+    <link rel="stylesheet" href="/style/movie.css" />
+    <div id="movie-page" class="hbox">
+        <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
+        <div id="movie-info" class="vbox">
+            <header class="hbox">
+                <div class="title-container">
+                    <h1>{movie.title || movie.baseName}</h1>
+                    <a href={movie.url}><h2>{movie.baseName}</h2></a>
+                </div>
+                <a href="/app/search" id="close-button">
+                    <img src="/assets/close.svg" alt="close" id="close-icon"/>
+                </a>
+            </header>
+            <div class="info-container">
+                <h2>Informations :</h2>
+                <ul>
+                    {important_properties.map((prop) => {
+                        if (movie[prop]) {
+                            return <li style="opacity: 0; animation: fadeIn 0.5s ease-in-out forwards 0.6s;"><b>{prop}:</b> {movie[prop]}</li>
+                        }
+                    })}
+                </ul>
+            </div>
+            <div id="files">
+                <h2>Files :</h2>
+                <div class="files-container">
+
+                </div>
+                <div class="download-button-container">
+                    <TextField placeholder="Enter folder name" type="text" name="folder_name" required/>
+                    <button id="download-button"><p>Add to library</p></button>
+                </div>
+            </div>
+        </div>
+    </div>
 <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
 <script defer define:vars={{id, movie}} type="module">
     var fileTree;
@@ -213,199 +249,11 @@ const important_properties = ["episode","season","language", "quality", "resolut
         setupFolderName();
         await setupDownloadButton();
         await getFiles();
+        console.log("JE peut bien aller me faire foutre");
+    });
+    
+    barba.hooks.enter((data) => {
+        console.log("SALU TOI");
     });
 </script>
-<App title="jaajTV | Search" selected_index={0}>
-    <div id="movie-page" class="hbox">
-        <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
-        <div id="movie-info" class="vbox">
-            <header class="hbox">
-                <div class="title-container">
-                    <h1>{movie.title || movie.baseName}</h1>
-                    <a href={movie.url}><h2>{movie.baseName}</h2></a>
-                </div>
-                <a href="/app/search" id="close-button">
-                    <img src="/assets/close.svg" alt="close" id="close-icon"/>
-                </a>
-            </header>
-            <div class="info-container">
-                <h2>Informations :</h2>
-                <ul>
-                    {important_properties.map((prop) => {
-                        if (movie[prop]) {
-                            return <li style="opacity: 0; animation: fadeIn 0.5s ease-in-out forwards 0.6s;"><b>{prop}:</b> {movie[prop]}</li>
-                        }
-                    })}
-                </ul>
-            </div>
-            <div id="files">
-                <h2>Files :</h2>
-                <div class="files-container">
-
-                </div>
-                <div class="download-button-container">
-                    <TextField placeholder="Enter folder name" type="text" name="folder_name" required/>
-                    <button id="download-button"><p>Add to library</p></button>
-                </div>
-            </div>
-        </div>
-    </div>
 </App>
-<Transition />
-<style>
-    #movie-page {
-        height: 100%;
-        width: 100%;
-        background-color: whitesmoke;
-    }
-
-    html.is-leaving #movie-page {
-        transform: translateY(100%);
-        transition: transform 0.5s ease-in-out;
-    }
-
-    #movie-page img {
-        height: 100%;
-        object-fit: contain;
-    }
-
-    #movie-info {
-        height: 100%;
-        width: 100%;
-        padding-top: 1rem;
-        padding-left: 3rem;
-        justify-content: space-between;
-    }
-
-    #movie-info header {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    #close-button {
-        width: 2rem;
-        height: 2rem;
-        margin-right: 1rem;
-    }
-
-    #close-icon {
-        height: 2rem;
-        width: 2rem;
-        cursor: pointer;
-    }
-
-    .title-container {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .title-container a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .title-container h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0s;
-    }
-
-    .title-container h2 {
-        font-size: 1rem;
-        margin-block: 0;
-        margin-left: 0.5rem;
-        color: gray;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.2s;
-    }
-
-    .title-container a:hover h2 {
-        text-decoration: underline;
-    }
-
-    .info-container h2 {
-        font-size: 1.5rem;
-        margin-block: 0;
-        margin-left: 0.5rem;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.4s;
-    }
-
-    #files {
-        width: 80%;
-        height: fit-content;
-        overflow-y: auto;
-        margin-bottom: 50px;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards 0.8s;
-    }
-
-    #files .files-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        border: 1px solid gray;
-        border-radius: 5px;
-        min-height: 10rem;
-    }
-
-    .download-button-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: right;
-        align-items: right;
-        width: 100%;
-    }
-
-    #download-button {
-        border: 1px solid;
-        padding-inline: 10px;
-        padding-block: 5px;
-        margin-inline: 10px;
-        margin-block: auto;
-
-        min-width:max-content;
-        
-        background-size: 200% 100% ;
-        background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
-        transition: all 500ms;
-
-        border-radius: 25px;
-        font-size: 18px;
-        color: #e9f4fb;
-        font-weight: 700;
-        cursor: pointer;
-        outline: none;
-        text-align: center;
-        user-select: none;
-
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #download-button.clicked {
-        background-position: -100% 0;
-    }
-
-    #download-button p {
-        margin: 0;
-        transition: all 0.5s;
-    }
-
-    #download-button p.hidden {
-        transform: scaleY(0);
-    }
-
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-</style>

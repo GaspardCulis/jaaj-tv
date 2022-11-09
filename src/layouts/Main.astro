@@ -1,4 +1,6 @@
 ---
+import Barba from "../components/Barba.astro";
+import Transition from "../components/Transition.astro";
 import GradientBackground from "./GradientBackground.astro";
 
 export interface Props {
@@ -8,22 +10,9 @@ export interface Props {
 const { title } = Astro.props;
 ---
 <GradientBackground title={title}>
-    <main data-barba="container" data-barba-namespace="home">
+    <link rel="stylesheet" href="/style/main.css" />
+    <main data-barba="container" data-barba-namespace="home" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
         <slot />
     </main>
-    <script>
-        import barba from '@barba/core';
-
-        barba.init({
-            transitions: [{
-                name: 'fade',
-                leave(data) {
-                    return new Promise(resolve => setTimeout(resolve, 500));
-                },
-                enter(data) {
-                    return;
-                }
-            }]
-        });
-    </script>
+    <Barba />
 </GradientBackground>
