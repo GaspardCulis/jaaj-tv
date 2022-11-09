@@ -1,0 +1,10 @@
+{
+    "invite_codes": {
+        "JAAJ_CODE": {"permanent": false}
+    },
+    "comment": "invite_codes is the only field you should edit.",
+    "users": {},
+    "sessions": {},
+    "cached_results": {},
+    "cached_movies": {}
+}

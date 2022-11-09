@@ -31,7 +31,9 @@ type Database = {
             createdAt: number,
         }
     }
-    invite_codes: string[],
+    invite_codes: {
+        [code: string]: {permanent: boolean}
+    },
     cached_results: {
         [query: string]: {
             results: number[], // Movie ids
@@ -119,8 +121,10 @@ export function consumeInviteCode(code: string): boolean {
     let database = getDatabase();
     let consumed = false;
 
-    if (database.invite_codes.includes(code)) {
-        database.invite_codes = database.invite_codes.filter((value) => value !== code);
+    if (database.invite_codes[code]) {
+        if(!database.invite_codes[code].permanent) {
+            delete database.invite_codes[code];
+        }
         consumed = true;
     }
 
