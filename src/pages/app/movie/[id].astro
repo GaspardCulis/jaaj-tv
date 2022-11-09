@@ -179,9 +179,10 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 downloadButtonText.classList.remove("hidden");
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 downloadButton.style.backgroundImage = backgroundBackup;
+                downloadButton.style.minWidth = "";
+                downloadButton.style.height = "";
+                document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
             }, 3000);
-            // Add event listener back
-            document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
         }
 
     }
@@ -365,7 +366,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         margin-inline: 10px;
         margin-block: auto;
 
-        min-width: fit-content;
+        min-width:max-content;
         
         background-size: 200% 100% ;
         background-image: linear-gradient(to left, rgb(0, 167, 0) 50%, #2691d9 50%);
