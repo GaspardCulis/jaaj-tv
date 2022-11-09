@@ -11,7 +11,7 @@ function formatCategoryName(name: string) {
     return name.toLowerCase().replace(/_/g, " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).replace('Tv', 'TV');
 }
 ---
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="/style/utils.css">
 <form class="hbox no-transition" id="search-bar" method="get">
     <div class="container name-field">
         <TextField placeholder="Search" type="text" name="search" required/>

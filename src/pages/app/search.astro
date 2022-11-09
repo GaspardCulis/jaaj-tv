@@ -11,7 +11,7 @@ import { isAuthorized } from "../../model/utils";
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 ---
 <App title="jaajTV | Search" selected_index={0}>
-    <link rel="stylesheet" href="/style/movie.css" />
+    <link rel="stylesheet" href="/style/search.css" />
     <SearchBar />
     <div style="pointer-events: none;position:absolute; margin: auto; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
         <LoadingBoi />

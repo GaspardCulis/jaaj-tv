@@ -11,7 +11,7 @@ const { title, selected_index } = Astro.props;
 ---
 <GradientBackground title={title}>
     <NavBar selected_index={selected_index}/>
-    <main data-barba="container" class="vbox full-height" style="margin-left: 15%; width: 85%" data-barba-namespace="app">
+    <main class="vbox full-height" style="margin-left: 15%; width: 85%">
         <slot />
     </main>
 </GradientBackground>
