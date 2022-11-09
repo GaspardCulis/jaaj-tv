@@ -8,7 +8,7 @@ export interface Props {
 const { title } = Astro.props;
 ---
 <GradientBackground title={title}>
-    <main data-barba="container">
+    <main data-barba="container" data-barba-namespace="home">
         <slot />
     </main>
     <script>
