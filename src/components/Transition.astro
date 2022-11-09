@@ -51,14 +51,15 @@ duration = duration || 500;
 		for (let form of document.getElementsByTagName("form")) {
 			form.addEventListener('submit', handleLoad);
 		}
-		for (let h of document.getElementsByTagName('html')) {
+
+		setTimeout(() => {
 			if (performance.getEntries()[0].type == 'reload')
-				h.classList.add('is-refreshed');
+				document.documentElement.classList.add('is-refreshed');
 			else
-				h.classList.add('is-loaded');
-			
-		}
+				document.documentElement.classList.add('is-loaded');
+		}, 50);
 	});
+	
 </script>
 <style is:global define:vars={{ duration }}>
 	html.is-loaded .transition-fade {
