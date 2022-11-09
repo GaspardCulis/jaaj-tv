@@ -2,13 +2,14 @@
 import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
 import Transition from "../../components/Transition.astro";
+import App from "../../layouts/App.astro";
 import GradientBackground from "../../layouts/GradientBackground.astro";
 import { isAuthorized } from "../../model/utils";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("../login");
 
 ---
-<GradientBackground title="jaajTV  |  Library">
-    <NavBar selected_index={1}/>
-</GradientBackground>
+<App title="jaajTV  |  Library" selected_index={1}>
+    
+</App>
 <Transition />

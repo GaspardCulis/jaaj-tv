@@ -5,6 +5,7 @@ import GradientBackground from "../../../layouts/GradientBackground.astro";
 import NavBar from "../../../components/NavBar.astro";
 import TextField from "../../../components/TextField.astro";
 import Transition from "../../../components/Transition.astro";
+import App from "../../../layouts/App.astro";
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 
@@ -214,8 +215,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         await getFiles();
     });
 </script>
-<GradientBackground title="jaajTV | Search">
-    <NavBar selected_index={0}/>
+<App title="jaajTV | Search" selected_index={0}>
     <div id="movie-page" class="hbox">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
         <div id="movie-info" class="vbox">
@@ -250,13 +250,12 @@ const important_properties = ["episode","season","language", "quality", "resolut
             </div>
         </div>
     </div>
-</GradientBackground>
+</App>
 <Transition />
 <style>
     #movie-page {
         height: 100%;
-        width: 85%;
-        margin-left: 15%;
+        width: 100%;
         background-color: whitesmoke;
     }
 

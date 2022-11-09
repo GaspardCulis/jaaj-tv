@@ -4,6 +4,7 @@ import TextField from "../components/TextField.astro";
 import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
 import GradientBackground from "../layouts/GradientBackground.astro";
+import Main from "../layouts/Main.astro";
 import { isAuthorized } from "../model/utils";
 
 if (isAuthorized(Astro.request)) return Astro.redirect("/app");
@@ -11,7 +12,7 @@ if (isAuthorized(Astro.request)) return Astro.redirect("/app");
 const error = Astro.url.searchParams.get("error") || "";
 ---
 
-<GradientBackground title="Login">
+<Main title="Login">
 	<form method="post" action="../api/login">
 		<FormBox title="Login">
 			<TextField placeholder="Username" type="text" name="username" required />
@@ -28,7 +29,7 @@ const error = Astro.url.searchParams.get("error") || "";
 			</div>
 		</FormBox>
 	</form>
-</GradientBackground>
+</Main>
 <Transition />
 <style>
 	.signup_link {

@@ -4,6 +4,7 @@ import LoadingBoi from "../../components/LoadingBoi.astro";
 import NavBar from "../../components/NavBar.astro";
 import SearchBar from "../../components/SearchBar.astro";
 import Transition from "../../components/Transition.astro";
+import App from "../../layouts/App.astro";
 import GradientBackground from "../../layouts/GradientBackground.astro";
 import { isAuthorized } from "../../model/utils";
 
@@ -37,7 +38,7 @@ function onMovieClicked(clicked_a) {
 function movieElement(movie, animation_delay, no_animation) {
     const out = document.createElement("a");
     out.classList.add("vbox", "movie");
-    out.href = `movie/${movie.id}`;
+    out.href = `/app/movie/${movie.id}`;
     out.style.color = "inherit";
     out.style.textDecoration = "none";
     out.style.cursor = "initial";
@@ -143,26 +144,22 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <link rel="stylesheet" href="/style/movie.css" />
 <Transition />
-<GradientBackground title="jaajTV | Search">
-    <NavBar selected_index={0}/>
-    <div class="vbox full-height full-width">
-        <SearchBar />
-        <div style="pointer-events: none;position:absolute; margin: auto; margin-left: 15%; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
-            <LoadingBoi />
-        </div>
-        <div id="search-results" class="hbox wrap has-transition">
-        </div>
-        <BottomPopup message="No results" color="#FFFFFF"/>
+<App title="jaajTV | Search" selected_index={0}>
+    <SearchBar />
+    <div style="pointer-events: none;position:absolute; margin: auto; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
+        <LoadingBoi />
     </div>
-</GradientBackground>
+    <div id="search-results" class="hbox wrap has-transition">
+    </div>
+    <BottomPopup message="No results" color="#FFFFFF"/>
+</App>
 <style>
     #search-results {
         overflow-y: auto;
         padding-block: 1rem;
         padding-right: 1rem;
         padding-left: 3rem;
-        margin-left: 15%;
-        width: 85%;
+        width: 100%;
         height: 100%;
         opacity: 0;
     }
