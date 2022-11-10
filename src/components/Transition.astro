@@ -44,9 +44,9 @@ duration = duration || 500;
 		}
 	}
 
-	const cookie = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('no-transition='));
+	const disabled = localStorage.getItem('setting-page-transitions') === 'false';
 	document.addEventListener('DOMContentLoaded', () => {
-		if (cookie) return;
+		if (disabled) return;
 		for (let a of document.getElementsByTagName("a")) {
 			a.addEventListener('click', handleLoad, false);
 		}
@@ -54,7 +54,7 @@ duration = duration || 500;
 			form.addEventListener('submit', handleLoad);
 		}
 	});
-	if (performance.getEntries()[0].type == 'reload' || cookie) 
+	if (performance.getEntries()[0].type == 'reload' || disabled) 
 			document.documentElement.classList.add('is-refreshed');
 		else
 			document.documentElement.classList.add('is-loaded');
@@ -62,7 +62,7 @@ duration = duration || 500;
 </script>
 <style is:global define:vars={{ duration }}>
 	html.is-loaded .transition-fade {
-		transition: 500ms;
+		transition: opacity 500ms ease-in-out;
 		opacity: 1;
 	}
 
