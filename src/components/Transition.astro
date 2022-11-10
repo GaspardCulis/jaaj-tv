@@ -44,7 +44,9 @@ duration = duration || 500;
 		}
 	}
 
+	const cookie = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('no-transition='));
 	document.addEventListener('DOMContentLoaded', () => {
+		if (cookie) return;
 		for (let a of document.getElementsByTagName("a")) {
 			a.addEventListener('click', handleLoad, false);
 		}
@@ -52,7 +54,7 @@ duration = duration || 500;
 			form.addEventListener('submit', handleLoad);
 		}
 	});
-	if (performance.getEntries()[0].type == 'reload')
+	if (performance.getEntries()[0].type == 'reload' || cookie) 
 			document.documentElement.classList.add('is-refreshed');
 		else
 			document.documentElement.classList.add('is-loaded');

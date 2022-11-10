@@ -3,7 +3,6 @@ import Button from "../components/Button.astro";
 import TextField from "../components/TextField.astro";
 import Transition from "../components/Transition.astro";
 import FormBox from "../layouts/FormBox.astro";
-import GradientBackground from "../layouts/GradientBackground.astro";
 import Main from "../layouts/Main.astro";
 import { isAuthorized } from "../model/utils";
 
@@ -13,7 +12,7 @@ const error = Astro.url.searchParams.get("error") || "";
 ---
 
 <Main title="Login">
-	<form method="post" action="../api/login">
+	<form method="post" action="/api/login">
 		<FormBox title="Login">
 			<TextField placeholder="Username" type="text" name="username" required />
 			<TextField

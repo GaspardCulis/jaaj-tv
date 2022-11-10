@@ -19,7 +19,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
     <div id="movie-page" class="hbox">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
         <div id="movie-info" class="vbox">
-            <header class="hbox">
+            <header class="hbox" style="margin-bottom: 50px;">
                 <div class="title-container">
                     <h1>{movie.title || movie.baseName}</h1>
                     <a href={movie.url}><h2>{movie.baseName}</h2></a>
