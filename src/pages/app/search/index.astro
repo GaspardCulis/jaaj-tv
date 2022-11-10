@@ -1,12 +1,11 @@
 ---
-import BottomPopup from "../../components/BottomPopup.astro";
-import LoadingBoi from "../../components/LoadingBoi.astro";
-import NavBar from "../../components/NavBar.astro";
-import SearchBar from "../../components/SearchBar.astro";
-import Transition from "../../components/Transition.astro";
-import App from "../../layouts/App.astro";
-import GradientBackground from "../../layouts/GradientBackground.astro";
-import { isAuthorized } from "../../model/utils";
+import BottomPopup from "../../../components/BottomPopup.astro";
+import LoadingBoi from "../../../components/LoadingBoi.astro";
+import SearchBar from "../../../components/SearchBar.astro";
+import Transition from "../../../components/Transition.astro";
+import App from "../../../layouts/App.astro";
+import { isAuthorized } from "../../../model/utils";
+
 
 if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
 ---
@@ -48,7 +47,7 @@ function onMovieClicked(clicked_a) {
 function movieElement(movie, animation_delay, no_animation) {
     const out = document.createElement("a");
     out.classList.add("vbox", "movie");
-    out.href = `/app/movie/${movie.id}`;
+    out.href = `/app/search/${movie.id}`;
     out.style.color = "inherit";
     out.style.textDecoration = "none";
     out.style.cursor = "initial";
