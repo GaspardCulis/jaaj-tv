@@ -7,14 +7,14 @@ import path from 'path';
  * @param { Object } cookie
  * @param { String } cookie.name
  * @param { String } cookie.value
- * @param { number } [cookie.expires]
+ * @param { number } [cookie.maxAge]
  * @param { boolean } [cookie.secure]
  * @param { String } [cookie.path]
  * @returns { void }
  */
 export function addCookie(headers, cookie) {
     let val = `${cookie.name}=${cookie.value};`
-    val += cookie.expires ? ` Expires=${cookie.expires};` : '';
+    val += cookie.maxAge ? ` Max-Age=${cookie.maxAge};` : '';
     val += cookie.secure ? ` Secure;` : '';
     val += cookie.path ? ` Path=${cookie.path};` : '';
     headers.append('Set-Cookie', val);

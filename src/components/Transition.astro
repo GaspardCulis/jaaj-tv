@@ -9,9 +9,7 @@ duration = duration || 500;
 
 <script defer define:vars={{ duration }}>
 	function animate() {
-		for (let h of document.getElementsByTagName('html')) {
-			h.classList.add('is-leaving');
-		}
+		document.documentElement.classList.add('is-leaving');
 	}
 
 	/**

@@ -9,11 +9,11 @@ export const post: APIRoute = async ({ request }) => {
 
     const headers = new Headers();
 	if (isLoginValid(username, password)) {
-		let { token, expires } = createAuthToken(username);
+		let { token, maxAge } = createAuthToken(username);
 		addCookie(headers, {
 			name: "token",
 			value: token,
-			expires: expires,
+			maxAge: maxAge,
 			secure: false, // TODO: change to true
 			path: "/",
 		});

@@ -87,9 +87,9 @@ function updateTokens() {
 }
 updateTokens();
 
-export function createAuthToken(username: string): { token: string, expires: number } {
+export function createAuthToken(username: string): { token: string, maxAge: number } {
     let token = shajs('sha256').update(username + Date.now()).digest('hex');
-    let maxAge = 1000 * 60 * 60 * 24 * 7; // 1 week
+    let maxAge = 1 * 60 * 60 * 24 * 7; // 1 week
     let database = getDatabase();
     database.sessions[token] = {
         username: username,
@@ -97,7 +97,7 @@ export function createAuthToken(username: string): { token: string, expires: num
         createdAt: Date.now()
     };
     storeDatabase(database);
-    return {token: token, expires: Date.now() + maxAge};
+return {token: token, maxAge: maxAge};
 }
 
 export function revokeToken(token: string) {
