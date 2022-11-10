@@ -70,7 +70,7 @@ export default class Downloader {
         bar.start(100, 0);
         const instance = this;
         torrent.on('warning', console.log);
-        torrent.on('error', (e) => {console.error(e); instance.user.getLibrary().setTorrentError(torrent_id, e.message)});
+        torrent.on('error', (e) => {console.error(e); instance.user.getLibrary().setMovieError(torrent_id, e.message)});
         torrent.on('download', function () {
             torrent.discovery.tracker.destroy(); // Tracker evasion
             bar.update(instance.getTorrentProgress(torrent) * 100);
@@ -86,7 +86,7 @@ export default class Downloader {
                     });
                 }
             }
-            instance.user.getLibrary().setTorrentDownloaded(torrent_id);
+            instance.user.getLibrary().setMovieDownloaded(torrent_id);
             instance.removeTorrent(torrent_id);
             console.log("Finished downloading torrent "+torrent_id);
         });
@@ -109,6 +109,8 @@ export default class Downloader {
     getTorrentProgress(torrent: WebTorrent.Torrent | number): number {
         if (typeof torrent === "number")
             torrent = this.getTorrent(torrent);
+        if (torrent === undefined)
+            return 100;
         let total = 0;
         let progress = 0;
 

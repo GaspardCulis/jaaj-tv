@@ -8,7 +8,7 @@ export const post: APIRoute = async ({ request }) => {
     let status = 417;
     
     const query = (await request.json());
-    query.torrent_id = parseInt(query.torrent_id);
+    query.torrent_id = parseInt(query.movie_id);
 
     const user = await UserManager.getUser(authorized as string);
     if (!isNaN(query.torrent_id) && user.getDownloader().isTorrentFileDownloaded(query.torrent_id) && query.folder_name) {

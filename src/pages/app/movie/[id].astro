@@ -44,7 +44,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
                 </div>
                 <div class="download-button-container">
-                    <TextField placeholder="Enter folder name" type="text" name="folder_name" required/>
+                    <TextField placeholder="Folder name" type="text" name="folder_name" required/>
                     <button id="download-button"><p>Add to library</p></button>
                 </div>
             </div>
@@ -72,9 +72,13 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ movie_id: id }),
             });
     
+            if (response.status !== 200) {
+                console.error("Error while fetching files");
+                return;
+            }
             const files = (await response.json()).files;
     
             console.log(files);
@@ -181,13 +185,14 @@ const important_properties = ["episode","season","language", "quality", "resolut
             // Fetching
             const selectedFiles = parseSelectedNodes(fileTree.selectedNodes);
             const folderNameInput = document.getElementById("folder_name");
+            folderNameInput.disabled = true;
             
             const response = await fetch("/api/download", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ torrent_id: id, files: selectedFiles, folder_name:  folderNameInput.value}),
+                body: JSON.stringify({ movie_id: id, files: selectedFiles, folder_name:  folderNameInput.value}),
             });
     
             await animationWait;
@@ -195,6 +200,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
             if (response.status === 200) {
                 downloadButtonText.innerText = "Added to library";
                 downloadButtonText.classList.remove("hidden");
+                setupProgressAnimation();
             } else {
                 downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
                 downloadButton.classList.remove("clicked");
@@ -217,6 +223,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     downloadButton.style.minWidth = "";
                     downloadButton.style.height = "";
                     document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
+                    folderNameInput.disabled = false;
                 }, 3000);
             }
     
@@ -228,9 +235,13 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ torrent_id: id }),
+                body: JSON.stringify({ movie_id: id }),
             });
     
+            if (response.status !== 200) {
+                console.error("Failed to check if movie is in library");
+                return;
+            }
             const data = (await response.json());
             const downloadButton = document.getElementById("download-button");
             const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
@@ -238,9 +249,34 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 downloadButtonText.innerText = "Added to library";
                 downloadButton.style.transition = "none";
                 downloadButton.classList.add("clicked");
+                document.getElementById("folder_name").disabled = true;
+                setupProgressAnimation();
             } else {
                 downloadButton.addEventListener("click", onDownloadButtonPressed);
             }
+        }
+
+        function setupProgressAnimation() {
+            const textField = document.getElementsByClassName("txt_field")[0];
+            const span = textField.querySelector("span");
+
+            const interval = setInterval(async (span) => {
+                const response = await fetch("/api/library/progress", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ movie_id: id}),
+                });
+                const data = await response.json();
+                let progress = data.progress;
+                if (data.downloaded) {
+                    progress = 1;
+                    span.style.setProperty("--color", "rgb(0, 167, 0)");
+                    clearInterval(interval);
+                }
+                span.style.setProperty('--progress', Math.round(progress * 100) + '%');
+            }, 1000, span);
         }
         
         document.addEventListener("DOMContentLoaded", async () => {

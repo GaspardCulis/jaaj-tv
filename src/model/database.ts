@@ -53,15 +53,39 @@ function storeDatabase(database: Database) {
     fs.writeFileSync(DB_PATH, JSON.stringify(database, null, 4));
 }
 
+function initDatabase() {
+    if (!fs.existsSync(DB_PATH)) {
+        fs.writeFileSync(DB_PATH, JSON.stringify({
+            users: {},
+            sessions: {},
+            invite_codes: {},
+            cached_results: {},
+            cached_movies: {},
+        }, null, 4));
+    } else {
+        const db = getDatabase();
+        db.users = db.users || {};
+        db.sessions = db.sessions || {};
+        db.invite_codes = db.invite_codes || {};
+        db.cached_results = db.cached_results || {};
+        db.cached_movies = db.cached_movies || {};
+        storeDatabase(db);
+    }
+}
+initDatabase();
+
 function updateTokens() {
     let database = getDatabase();
+    let changed = false;
     for (let token in database.sessions) {
         if (database.sessions[token].createdAt + database.sessions[token].maxAge < Date.now()) {
             delete database.sessions[token];
+            changed = true;
         }
     }
-    storeDatabase(database);
+    if (changed) storeDatabase(database);
 }
+updateTokens();
 
 export function createAuthToken(username: string): { token: string, expires: number } {
     let token = shajs('sha256').update(username + Date.now()).digest('hex');
@@ -201,4 +225,3 @@ export function getCachedMovieById(id: number): Movie {
     let database = getDatabase();
     return database.cached_movies[id];
 }
-

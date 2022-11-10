@@ -10,7 +10,8 @@ export const post: APIRoute = async ({ request }) => {
     const query = (await request.json());
 
     const user = await UserManager.getUser(authorized as string);
-    const files = await user.getDownloader().getTorrentFiles(parseInt(query.id));
+    const files = await user.getDownloader().getTorrentFiles(parseInt(query.movie_id));
+    if (!files) return { status: 417, body: "Invalid torrent id" };
 
     return new Response(JSON.stringify({
         files: filterUnwantedFiles(files)

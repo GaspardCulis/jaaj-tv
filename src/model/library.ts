@@ -76,13 +76,17 @@ export default class Library {
         this.user.getDownloader().downloadTorrent(torrent_id, files);
     }
 
-    setTorrentDownloaded(torrent_id: number) {
+    setMovieDownloaded(torrent_id: number) {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
         this.setData(torrent_id, data);
     }
 
-    setTorrentError(torrent_id: number, error: string) {
+    isMovieDownloaded(torrent_id: number): boolean {
+        return this.getData(torrent_id).torrent_info.downloaded;
+    }
+
+    setMovieError(torrent_id: number, error: string) {
         const data = this.getData(torrent_id);
         data.torrent_info.error = error;
         this.setData(torrent_id, data);
