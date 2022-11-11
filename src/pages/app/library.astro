@@ -1,10 +1,167 @@
 ---
-import Transition from "../../components/Transition.astro";
+import MovieItem from "../../components/MovieItem.astro";
 import App from "../../layouts/App.astro";
+import UserManager from "../../model/usermanager";
 import { isAuthorized } from "../../model/utils";
 
-if (!isAuthorized(Astro.request)) return Astro.redirect("../login");
+const authorized = isAuthorized(Astro.request)
+if (!authorized) return Astro.redirect("../login");
 
+const library = (await UserManager.getUser(authorized as string)).getLibrary();
+const folders = library.getFolders();
+const movies = [...library.getMovies().values()];
+let elements = movies.map((movie) => {
+    const folder = folders.get(movie.id);
+    movie.title = folder.name;
+    return {
+        ...movie,
+        created_at: folder.created_at
+    }
+}).sort((a, b) => b.created_at - a.created_at);
+elements = elements.concat(elements);
 ---
 <App title="jaajTV  |  Library" selected_index={1}>
+    <div class="container">
+        <label><img src="/icon/clock.svg" /><h2>Recently added</h2></label>
+        <div class="carousel">
+            <div class="carousel-container">
+                <div class="carousel-spacer left"></div>
+                {elements.map(movie => <MovieItem movie={movie} />)}
+                <div class="carousel-spacer right"></div>
+            </div>
+            <div class="carousel-button right inactive" onclick="moveCarousel(this, 'right')"></div>
+            <div class="carousel-button left inactive" onclick="moveCarousel(this, 'left')"></div>
+        </div>
+    </div>
+    <script defer>
+        function moveCarousel(button, direction) {
+            const carousel = button.parentElement.getElementsByClassName("carousel-container")[0];
+            carousel.scrollBy({
+                left: direction === "right" ? 300 : -300,
+                behavior: "smooth"
+            });
+            setTimeout(() => {
+                updateCarouselButtons();
+            }, 500);
+        }
+
+        function updateCarouselButtons(carousel) {
+            const button_left = document.getElementsByClassName("carousel-button left")[0];
+            const button_right = document.getElementsByClassName("carousel-button right")[0];
+            const carousel = document.getElementsByClassName("carousel-container")[0];
+            if (carousel.scrollLeft === 0) {
+                button_left.classList.add("inactive");
+            } else {
+                button_left.classList.remove("inactive");
+            }
+            console.log(carousel.scrollWidth, carousel.scrollLeft, carousel.clientWidth);
+            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 50) {
+                button_right.classList.add("inactive");
+            } else {
+                button_right.classList.remove("inactive");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCarouselButtons();
+        });
+    </script>
+    <style>
+        .container {
+
+        }
+        .container label {
+            display: flex;
+            align-items: center;
+            margin: 20px 30px;
+        }
+        .container label img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .container label h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'Roboto', sans-serif;
+            user-select: none;
+        }
+        .carousel {
+            position: relative;
+            overflow:visible;
+        }
+        .carousel-container {
+            display: flex;
+            flex-wrap: nowrap;
+            transition: transform 0.5s;
+            overflow: hidden;
+        }
+        .carousel-spacer {
+            min-width: 80px;
+            height: 100%;
+        }
+        .carousel-button {
+            position:absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: whitesmoke;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            transition: transform 0.5s ease-in-out;
+            border: 1px solid #e0e0e0;
+        }
+        .carousel-button:hover {
+            background-color: #e0e0e0;
+        }
+        .carousel-button:active {
+            background-color: #d0d0d0;
+            transition: background-color 0.1s;
+        }
+
+        .carousel-button.right {
+            right: 0;
+            margin-right: 5px;
+        }
+        .carousel-button.left {
+            left: 0;
+            margin-left: 5px;
+        }
+        /* Draw line arrows */
+        .carousel-button::before {
+            content: "";
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(40deg);
+            width: 17px;
+            height: 2px;
+            background-color: black;
+        }
+        .carousel-button::after {
+            content: "";
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-40deg);
+            width: 17px;
+            height: 2px;
+            background-color: black;
+        }
+        .carousel-button.left::before {
+            transform: translate(-50%, -50%) rotate(140deg);
+        }
+        .carousel-button.left::after {
+            transform: translate(-50%, -50%) rotate(-140deg);
+        }
+        .carousel-button.right.inactive {
+            transform: translate(60px, -50%);
+        }
+        .carousel-button.left.inactive {
+            transform: translate(-60px, -50%);
+        }
+
+    </style>
 </App>

@@ -5,7 +5,8 @@ import path from 'path';
 import { ensureDirectoryExists, moveFilesOutOfDirectory } from "./utils";
 
 type FolderInfo = {
-    name: string
+    name: string,
+    created_at: number,
 }
 
 type TorrentInfo = {
@@ -58,7 +59,8 @@ export default class Library {
         const data: MovieFolder = {
             movie_info: movie,
             folder_info: {
-                name: folder_name
+                name: folder_name,
+                created_at: Date.now(),
             },
             torrent_info: {
                 files: files,
@@ -66,6 +68,7 @@ export default class Library {
                 error: null
             }
         }
+        this.folders.set(movie.id, data.folder_info);
         this.setData(movie.id, data);
     }
 
@@ -121,13 +124,24 @@ export default class Library {
         fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieFolderPath(torrent_id)), "movie.info"), JSON.stringify(data));
     }
 
-    private async formatMovieFolder(movie_path: string) {
+    private async formatMovieFolder(movie_path: string, is_root: boolean = true) {
         const files = await fs.promises.readdir(movie_path);
-        if (files.length == 1) {
+        if (files.length === 0 && !is_root) {
+            await fs.promises.rmdir(movie_path);
+        } else if (files.length == 1) {
             const type = await fs.promises.lstat(path.join(movie_path, files[0])).catch((e) => null);
             if (type && type.isDirectory()) {
                 await moveFilesOutOfDirectory(path.join(movie_path, files[0]));
-                await this.formatMovieFolder(movie_path);
+                await this.formatMovieFolder(movie_path, is_root);
+            } else if(!is_root) {
+                await moveFilesOutOfDirectory(movie_path);
+            }
+        } else {
+            for (let file of files) {
+                const type = await fs.promises.lstat(path.join(movie_path, file)).catch((e) => null);
+                if (type && type.isDirectory()) {
+                    await this.formatMovieFolder(path.join(movie_path, file), false);
+                }
             }
         }
     }

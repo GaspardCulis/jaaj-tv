@@ -1,0 +1,40 @@
+---
+import { Movie } from '../model/database';
+
+export interface Props {
+    movie: Movie;
+}
+
+const { movie } = Astro.props;
+
+const properties = [];
+if (movie.season || movie.episode) {
+    if (movie.season) {
+        properties.push(`Season ${movie.season}${movie.episode ? '' : ' Full'}`);
+    } else {
+        properties.push(`Episode ${movie.episode}`);
+    }
+} else if (movie.year) {
+    properties.push(movie.year);
+} else if (movie.language) {
+    properties.push(movie.language);
+} else if (movie.resolution) {
+    properties.push(movie.resolution);
+} else if (movie.quality) {
+    properties.push(movie.quality);
+}
+---
+<link rel="stylesheet" href="/style/search.css">
+<div class="movie" style="transform: rotateY(0deg);">
+    <div class="poster-container">
+        <img src={movie.image} alt={movie.title || movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'" />
+    </div>
+    
+    <div class="vbox movie-info">
+        <h3>{movie.title || movie.baseName}</h3>
+        <ul>
+            {properties.map((prop) => <li>{prop}</li>)}
+        </ul>
+    </div>
+</div>
+
