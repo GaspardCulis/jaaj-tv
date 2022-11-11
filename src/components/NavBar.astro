@@ -62,16 +62,22 @@ if (referer) {
         height: 100%;
         background-color: whitesmoke;
         border-right: 2 px solid lightgray;
-        transition: 500ms;
+        transition: transform 500ms;
         z-index: 1;
+        transform: translate(-100%, 0);
     }
 
-    html.is-loaded #navbar:not(.transitionless) {
-        animation: slide-in 500ms ease-out forwards;
+    #navbar.transitionless {
+        transition: none;
+    }
+
+    html.is-loaded #navbar {
+        transform: translate(0, 0);
     }
 
     html.is-leaving #navbar.disconnecting {
-        animation: slide-in 500ms ease-in reverse forwards;
+        transform: translate(-100%, 0);
+        transition: all 500ms;
     }
 
     .navbar_logo {
@@ -82,14 +88,5 @@ if (referer) {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-
-    @keyframes slide-in {
-        from {
-            transform: translate(-100%, 0%);
-        }
-        to {
-            transform: translate(0%, 0%);
-        }
     }
 </style>
