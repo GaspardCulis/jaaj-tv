@@ -56,7 +56,7 @@ export function filterUnwantedFiles(files: { name: string, path: string, length:
 export async function moveFilesOutOfDirectory(directory: string) {
     const files = await fs.promises.readdir(directory);
     for (const file of files) {
-        await fs.promises.rename(path.join(directory, file), path.join(directory, "..", file));
+        await fs.promises.rename(path.join(directory, file), path.join(directory, "..", file)).catch(() => null);
     };
     await fs.promises.rmdir(directory);
 }

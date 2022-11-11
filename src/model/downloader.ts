@@ -45,18 +45,16 @@ export default class Downloader {
             await this.downloadTorrentFile(torrent_id);
         }
         const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.user.getLibrary().getMovieDownloadPath(torrent_id)}, (torrent) => {
-            torrent.files.forEach(file => file.deselect());
             torrent.deselect(0, torrent.pieces.length - 1, false);
 
-            torrent.files.forEach(file => {
+            for(let file of torrent.files) {
                 const formatted_path = file.path.replace(file._torrent.path, "").replace(/\\/g, "/").replace(/^\//, "");
                 if (files.includes(formatted_path)) {
                     file.select();
                 } else {
-                    file.deselect();
                     file._destroy();
                 }
-            });
+            };
         });
 
         const bar = new cliProgress.SingleBar({
@@ -78,14 +76,19 @@ export default class Downloader {
         torrent.on('done', async () => {
             bar.stop();
             // Remove deselected files which have empty files
-            for (let file of torrent.files) {
-                if (file._destroyed) {
-                    const file_path = path.join(torrent.path, file.path);
-                    console.info(await fs.promises.unlink(file_path).then(() => "Removed file "+file.path).catch((e) => "Failed to remove file " +file.path));
+            const files = torrent.files;
+            const files_to_remove = torrent.files.filter((file) => file._destroyed);
+            const abs_path = torrent.path;
+            instance.removeTorrent(torrent_id);
+
+            for (let file of files_to_remove) {
+                const file_path = path.join(abs_path, file.path);
+                if (fs.existsSync(file_path)) {
+                    await fs.promises.rm(file_path, { force: true })
+                        .then(() => {console.log("Removed empty file "+file.path)});
                 }
             }
             await instance.user.getLibrary().setMovieDownloaded(torrent_id);
-            instance.removeTorrent(torrent_id);
             console.info("Finished downloading torrent "+torrent_id);
         });
         this.torrents.set(torrent_id, torrent);

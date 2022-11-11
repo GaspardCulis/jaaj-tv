@@ -123,9 +123,12 @@ export default class Library {
 
     private async formatMovieFolder(movie_path: string) {
         const files = await fs.promises.readdir(movie_path);
-        if (files.length == 1 && await fs.promises.lstat(path.join(movie_path, files[0])).then(stat => stat.isDirectory())) {
-            await moveFilesOutOfDirectory(path.join(movie_path, files[0]));
-            await this.formatMovieFolder(movie_path);
+        if (files.length == 1) {
+            const type = await fs.promises.lstat(path.join(movie_path, files[0])).catch((e) => null);
+            if (type && type.isDirectory()) {
+                await moveFilesOutOfDirectory(path.join(movie_path, files[0]));
+                await this.formatMovieFolder(movie_path);
+            }
         }
     }
 }
