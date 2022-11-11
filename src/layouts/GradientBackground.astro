@@ -12,12 +12,11 @@ const { title, transition_duration } = Astro.props;
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	<script src="/src/transition.js" type="text/javascript" data-duration={transition_duration} defer/>
-	<meta name="generator" content={Astro.generator} />
+	<script src="/src/transition.js" type="text/javascript" data-duration={transition_duration}/>
 	<title>{title}</title>
 </head>
 
-<body class="running_gradient" data-barba="wrapper">
+<body class="running_gradient">
 	<slot />
 	<style>
 		.running_gradient {

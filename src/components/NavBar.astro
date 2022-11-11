@@ -30,13 +30,12 @@ if (referer) {
 <script define:vars={{selected_index}}>
     const disconnect_button = document.getElementById('disconnect-button');
     disconnect_button.addEventListener('click', () => {
-        document.getElementById('navbar').classList.add('disconnecting');
+        document.documentElement.classList.add('disconnecting');
     });
 
     const search_button = document.getElementById('search-button');
     const library_button = document.getElementById('library-button');
     const settings_button = document.getElementById('settings-button');
-    const buttons = [search_button, library_button, settings_button];
 
     function onButtonPressed(index) {
         if (index == selected_index) return;
@@ -64,20 +63,19 @@ if (referer) {
         border-right: 2 px solid lightgray;
         transition: transform 500ms;
         z-index: 1;
-        transform: translate(-100%, 0);
     }
 
     #navbar.transitionless {
         transition: none;
     }
 
-    html.is-loaded #navbar {
-        transform: translate(0, 0);
+    html.is-loaded #navbar:not(.transitionless) {
+        animation: slide-in 500ms;
     }
 
-    html.is-leaving #navbar.disconnecting {
+    html.disconnecting #navbar {
         transform: translate(-100%, 0);
-        transition: all 500ms;
+        transition: all  500ms ease-in;
     }
 
     .navbar_logo {
@@ -88,5 +86,14 @@ if (referer) {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    @keyframes slide-in {
+        from {
+            transform: translate(-100%, 0);
+        }
+        to {
+            transform: translate(0, 0);
+        }
     }
 </style>

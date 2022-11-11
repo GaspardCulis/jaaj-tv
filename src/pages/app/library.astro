@@ -10,7 +10,8 @@ if (!authorized) return Astro.redirect("../login");
 const library = (await UserManager.getUser(authorized as string)).getLibrary();
 const folders = library.getFolders();
 const movies = [...library.getMovies().values()];
-let elements = movies.map((movie) => {
+let i = 0;
+const elements = movies.map((movie) => {
     const folder = folders.get(movie.id);
     movie.title = folder.name;
     return {
@@ -18,7 +19,10 @@ let elements = movies.map((movie) => {
         created_at: folder.created_at
     }
 }).sort((a, b) => b.created_at - a.created_at);
-elements = elements.concat(elements);
+for (const movie of elements) {
+    movie.index = i++;
+}
+console.log(elements);
 ---
 <App title="jaajTV  |  Library" selected_index={1}>
     <div class="container">
@@ -26,7 +30,7 @@ elements = elements.concat(elements);
         <div class="carousel">
             <div class="carousel-container">
                 <div class="carousel-spacer left"></div>
-                {elements.map(movie => <MovieItem movie={movie} />)}
+                {elements.map(movie => <MovieItem movie={movie} animation_delay={movie.index*200}/>)}
                 <div class="carousel-spacer right"></div>
             </div>
             <div class="carousel-button right inactive" onclick="moveCarousel(this, 'right')"></div>
@@ -68,7 +72,7 @@ elements = elements.concat(elements);
     </script>
     <style>
         .container {
-
+            transition: opacity 500ms;
         }
         .container label {
             display: flex;
@@ -86,6 +90,15 @@ elements = elements.concat(elements);
             font-family: 'Roboto', sans-serif;
             user-select: none;
         }
+
+        html.is-loaded .container label {
+            animation: slide-in 1000ms forwards;
+        }
+
+        html.is-leaving .container {
+            opacity: 0;
+        }
+
         .carousel {
             position: relative;
             overflow:visible;
@@ -163,5 +176,15 @@ elements = elements.concat(elements);
             transform: translate(-60px, -50%);
         }
 
+        @keyframes slide-in {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
     </style>
 </App>

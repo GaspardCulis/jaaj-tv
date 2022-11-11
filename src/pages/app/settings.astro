@@ -106,6 +106,10 @@ const option_defaults = {
             animation: slide-out 1s ease-in-out forwards;
         }
 
+        html.disconnecting .settings-container {
+            animation: slide-out-disconnect 1s ease-in forwards;
+        }
+
         @keyframes slide-in {
             0% {
                 z-index: -1;
@@ -128,6 +132,17 @@ const option_defaults = {
             100% {
                 z-index: -1;
                 transform: translateX(-100%);
+            }
+        }
+
+        @keyframes slide-out-disconnect {
+            0% {
+                z-index: -1;
+                transform: translateX(0);
+            }
+            100% {
+                z-index: -1;
+                transform: translateX(-100vw);
             }
         }
     </style>
