@@ -11,7 +11,7 @@ const option_defaults = {
     "setting-page-transitions": true,
 }
 ---
-<App title="jaajTV  |  Settings" selected_index={2}>
+<App title="jaajTV  |  Settings" selected_index={2} transition_duration={1000}>
     <div class="settings-container">
         <div class="settings-header">
             <h1>Settings</h1>
@@ -28,7 +28,6 @@ const option_defaults = {
             <button class="apply-button" onclick="window.location.reload();">Apply</button>
         </div>
     </div>
-    <Transition duration={1000}/>
     <script define:vars={{option_defaults}}>
         const checkboxes = document.getElementsByClassName("toggle-checkbox");
         for (let i = 0; i < checkboxes.length; i++) {

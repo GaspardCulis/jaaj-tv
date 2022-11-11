@@ -2,7 +2,7 @@ import { getCachedMovieById, Movie } from "./database";
 import User from "./user";
 import fs from 'fs';
 import path from 'path';
-import { ensureDirectoryExists } from "./utils";
+import { ensureDirectoryExists, moveFilesOutOfDirectory } from "./utils";
 
 type FolderInfo = {
     name: string
@@ -76,9 +76,10 @@ export default class Library {
         this.user.getDownloader().downloadTorrent(torrent_id, files);
     }
 
-    setMovieDownloaded(torrent_id: number) {
+    async setMovieDownloaded(torrent_id: number) {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
+        await this.formatMovieFolder(this.getMovieDownloadPath(torrent_id));
         this.setData(torrent_id, data);
     }
 
@@ -104,15 +105,27 @@ export default class Library {
         return this.folders;
     }
 
-    getMovieDownloadPath(torrent_id: number): string {
+    getMovieFolderPath(torrent_id: number): string {
         return path.join(this.download_path, torrent_id.toString());
     }
 
+    getMovieDownloadPath(torrent_id: number): string {
+        return path.join(this.getMovieFolderPath(torrent_id), "files");
+    }
+
     private getData(torrent_id: number): MovieFolder {
-        return JSON.parse(fs.readFileSync(path.join(this.getMovieDownloadPath(torrent_id), "movie.info"), "utf-8"));
+        return JSON.parse(fs.readFileSync(path.join(this.getMovieFolderPath(torrent_id), "movie.info"), "utf-8"));
     }
 
     private setData(torrent_id: number, data: MovieFolder) {
-        fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieDownloadPath(torrent_id)), "movie.info"), JSON.stringify(data));
+        fs.writeFileSync(path.join(ensureDirectoryExists(this.getMovieFolderPath(torrent_id)), "movie.info"), JSON.stringify(data));
+    }
+
+    private async formatMovieFolder(movie_path: string) {
+        const files = await fs.promises.readdir(movie_path);
+        if (files.length == 1 && await fs.promises.lstat(path.join(movie_path, files[0])).then(stat => stat.isDirectory())) {
+            await moveFilesOutOfDirectory(path.join(movie_path, files[0]));
+            await this.formatMovieFolder(movie_path);
+        }
     }
 }

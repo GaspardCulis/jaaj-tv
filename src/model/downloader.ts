@@ -75,20 +75,18 @@ export default class Downloader {
             torrent.discovery.tracker.destroy(); // Tracker evasion
             bar.update(instance.getTorrentProgress(torrent) * 100);
         });
-        torrent.on('done', () => {
+        torrent.on('done', async () => {
             bar.stop();
             // Remove deselected files which have empty files
             for (let file of torrent.files) {
                 if (file._destroyed) {
-                    fs.unlink(file.path, (err) => {
-                        if (err) console.log("Failed to remove file "+file.path);
-                        else console.log("Removed file "+file.path);
-                    });
+                    const file_path = path.join(torrent.path, file.path);
+                    console.info(await fs.promises.unlink(file_path).then(() => "Removed file "+file.path).catch((e) => "Failed to remove file " +file.path));
                 }
             }
-            instance.user.getLibrary().setMovieDownloaded(torrent_id);
+            await instance.user.getLibrary().setMovieDownloaded(torrent_id);
             instance.removeTorrent(torrent_id);
-            console.log("Finished downloading torrent "+torrent_id);
+            console.info("Finished downloading torrent "+torrent_id);
         });
         this.torrents.set(torrent_id, torrent);
     }

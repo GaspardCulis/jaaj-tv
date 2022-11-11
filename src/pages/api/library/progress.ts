@@ -14,6 +14,10 @@ export const post: APIRoute = async ({ request }) => {
 
     const user = await UserManager.getUser(authorized as string);
 
+    const exists = user.getLibrary().exists(torrent_id);
+
+    if (!exists) return { status: 404, body: "Movie not found" };
+
     const downloaded = user.getLibrary().isMovieDownloaded(torrent_id);
     const progress = user.getDownloader().getTorrentProgress(torrent_id);
 

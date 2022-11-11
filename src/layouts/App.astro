@@ -5,11 +5,12 @@ import GradientBackground from "./GradientBackground.astro";
 export interface Props {
 	title: string;
     selected_index: number;
+    transition_duration?: number;
 }
 
-const { title, selected_index } = Astro.props;
+const { title, selected_index, transition_duration } = Astro.props;
 ---
-<GradientBackground title={title}>
+<GradientBackground title={title} transition_duration={transition_duration}>
     <NavBar selected_index={selected_index}/>
     <main class="vbox full-height" style="margin-left: 15%; width: 85%">
         <slot />

@@ -93,7 +93,7 @@ export function createAuthToken(username: string): { token: string, maxAge: numb
     let database = getDatabase();
     database.sessions[token] = {
         username: username,
-        maxAge: maxAge,
+        maxAge: maxAge * 1000,
         createdAt: Date.now()
     };
     storeDatabase(database);
