@@ -53,6 +53,12 @@ const important_properties = ["episode","season","language", "quality", "resolut
     <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
     <script defer define:vars={{id, movie}}>
         var fileTree;
+
+        let files = [];
+
+        const button_state = {
+            enabled: false,
+        }
     
         function setupFolderName() {
             let folder_name = movie.title || movie.baseName;
@@ -61,8 +67,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
             if (movie.episode)
                 folder_name += " Episode " + movie.episode;
     
-            const folderNameInput = document.getElementById("folder_name");
-            folderNameInput.value = folder_name;
+            document.getElementById("folder_name").value = folder_name;
         }
     
         async function getFiles() {
@@ -85,11 +90,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
             
             fileTree = new Tree('.files-container', {
                 data: parsed,
-                onChange: () => {
-                    const downloadButton = document.getElementById("download-button");
-                    if (!downloadButton.style.transition.startsWith("none")) {
-                        updateDownloadButton();
-                    }
+                onChange: () => {;
+                    updateDownloadButton();
                 }
             });
             fileTree.options.onChange();
@@ -155,14 +157,41 @@ const important_properties = ["episode","season","language", "quality", "resolut
     
         function updateDownloadButton() {
             if (!fileTree) return;
+            button_state.enabled = true;
             const selectedNodes = fileTree.selectedNodes;
             const totalSize = getTotalFileSize(selectedNodes);
+            let message = `Add to library (${humanFileSize(totalSize)})`;
+            const downloadButton = document.getElementById("download-button");
+            downloadButton.classList.remove("clicked");
+
+
+            const exists = files.length > 0;
+            if (exists) {
+                const new_files = fileTree.values.filter((v) => !files.includes(v));
+                const new_size = getTotalFileSize(selectedNodes.filter((v) => new_files.includes(v.id)));
+                const files_to_remove = files.filter((v) => !fileTree.values.includes(v));
+                if (new_files.length > 0) {
+                    message = `Add ${new_files.length} new file${new_files.length > 1 ? 's' : ''} (${humanFileSize(new_size)})`;
+                    if (files_to_remove.length > 0) {
+                        message += ` and remove ${files_to_remove.length} file${files_to_remove.length > 1 ? 's' : ''}`;
+                    }
+                } else if (files_to_remove.length > 0) {
+                    message = `Remove ${files_to_remove.length} file${files_to_remove.length > 1 ? 's' : ''} from library`;
+                } else {
+                    message = "Added to library";
+                    button_state.enabled = false;
+                    downloadButton.classList.add("clicked");
+                }
+            }
     
             const downloadButtonText = document.getElementById("download-button").getElementsByTagName("p")[0];
-            downloadButtonText.innerText = `Add to library (${humanFileSize(totalSize)})`;
+            downloadButtonText.innerText = message;
         }
     
         async function onDownloadButtonPressed() {
+            if (!button_state.enabled) return;
+            console.log("Download button pressed");
+            button_state.enabled = false;
             // Remove event listener to prevent multiple clicks
             document.getElementById("download-button").removeEventListener("click", onDownloadButtonPressed);
             // Animation
@@ -196,7 +225,10 @@ const important_properties = ["episode","season","language", "quality", "resolut
             if (response.status === 200) {
                 downloadButtonText.innerText = "Added to library";
                 downloadButtonText.classList.remove("hidden");
+                files = selectedFiles;
                 setupProgressAnimation();
+                downloadButton.style.minWidth = "";
+                downloadButton.style.height = "";
             } else {
                 downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
                 downloadButton.classList.remove("clicked");
@@ -218,8 +250,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     downloadButton.style.backgroundImage = backgroundBackup;
                     downloadButton.style.minWidth = "";
                     downloadButton.style.height = "";
-                    document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
                     folderNameInput.disabled = false;
+                    button_state.enabled = true;
                 }, 3000);
             }
     
@@ -247,17 +279,23 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 downloadButton.classList.add("clicked");
                 document.getElementById("folder_name").disabled = true;
                 setupProgressAnimation();
-                setupFileTree(data.files);
+                files = data.files;
+                setupFileTree();
+                document.getElementById("folder_name").value = data.folder_name;
             } else {
                 downloadButton.addEventListener("click", onDownloadButtonPressed);
+                setupFolderName();
             }
         }
 
         function setupProgressAnimation() {
             const textField = document.getElementsByClassName("txt_field")[0];
             const span = textField.querySelector("span");
+            span.style.setProperty("--color", "rgb(255, 136, 0)");
+            span.style.setProperty('--progress', '0%');
 
             const interval = setInterval(async (span) => {
+                console.log("Fetching progress");
                 const response = await fetch("/api/library/progress", {
                     method: "POST",
                     headers: {
@@ -265,25 +303,34 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     },
                     body: JSON.stringify({ movie_id: id}),
                 });
-                const data = await response.json();
+                const data = await response.json().catch((e) => {
+                    clearInterval(interval);
+                });
                 let progress = data.progress;
                 if (data.downloaded) {
                     progress = 1;
                     span.style.setProperty("--color", "rgb(0, 167, 0)");
                     clearInterval(interval);
+                    setupFileTree();
+                    updateDownloadButton();
                 }
                 span.style.setProperty('--progress', Math.round(progress * 100) + '%');
             }, 1000, span);
         }
 
-        function setupFileTree(files) {
+        function setupFileTree() {
+            Object.values(fileTree.liElementsById).map((li) => li.getElementsByClassName("treejs-checkbox")[0].classList.remove("downloaded"));
             fileTree.values = files;
+            for (const file of files) {
+                const element = fileTree.liElementsById[file].getElementsByClassName("treejs-checkbox")[0];
+                element.classList.add("downloaded");
+            }
         }
         
         document.addEventListener("DOMContentLoaded", async () => {
-            setupFolderName();
             await getFiles();
             await setupDownloadButton();
+            document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
         });
     </script>
     <style>
@@ -367,12 +414,25 @@ const important_properties = ["episode","season","language", "quality", "resolut
         }
     
         #files {
-            width: 80%;
+            width: 95%;
             height: fit-content;
-            overflow-y: auto;
             margin-bottom: 50px;
             opacity: 0;
             animation: fadeIn 0.5s ease-in-out forwards 0.8s;
+
+            overflow-y: scroll;
+            scrollbar-width: none;
+            scrollbar-color: transparent transparent;
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+
+        #files::-webkit-scrollbar {
+            display: none;
+        }
+
+        #files::-moz-scrollbar {
+            display: none;
         }
     
         #files .files-container {
@@ -441,6 +501,49 @@ const important_properties = ["episode","season","language", "quality", "resolut
             to {
                 opacity: 1;
             }
+        }
+    </style>
+    <style is:global>
+        li.treejs-node__checked > span.treejs-checkbox.downloaded::before {
+            background-color: rgb(0, 167, 0) !important;
+            border-color: rgb(0, 167, 0) !important;
+        }
+        li:not(.treejs-node__checked) > span.treejs-checkbox.downloaded {
+            background-color: red;
+            border-color: red;
+            border-radius: 2px;
+            width: 18px;
+            height: 18px;
+        }
+        li:not(.treejs-node__checked) > span.treejs-checkbox.downloaded::before {
+            transition: none;
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-100%, -50%) rotate(45deg);
+            width: 0.6rem;
+            height: 0.6rem;
+            border: 3px solid white;
+            border-bottom: none;
+            border-left: none;
+        }
+        li:not(.treejs-node__checked) > span.treejs-checkbox.downloaded:hover::before {
+            box-shadow: none;
+        }
+
+        li:not(.treejs-node__checked) > span.treejs-checkbox.downloaded::after {
+            /* Cross */
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(0%, -50%) rotate(45deg);
+            width: 0.6rem;
+            height: 0.6rem;
+            border: 3px solid white;
+            border-top: none;
+            border-right: none;
         }
     </style>
 </App>

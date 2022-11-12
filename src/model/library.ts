@@ -26,6 +26,7 @@ export default class Library {
     private user: User;
     private movies: Map<number, Movie> = new Map();
     private folders: Map<number, FolderInfo> = new Map();
+    private torrents: Map<number, TorrentInfo> = new Map();
 
     constructor(user: User) {
         this.user = user;
@@ -39,6 +40,7 @@ export default class Library {
             const data: MovieFolder = this.getData(id);
             this.movies.set(id, data.movie_info);
             this.folders.set(id, data.folder_info);
+            this.torrents.set(id, data.torrent_info);
         }
         setTimeout(() => {
             this.resumeDownloads();
@@ -69,20 +71,61 @@ export default class Library {
             }
         }
         this.folders.set(movie.id, data.folder_info);
+        this.torrents.set(movie.id, data.torrent_info);
         this.setData(movie.id, data);
     }
 
     addTorrent(torrent_id: number, files: string[], folder_name: string) {
         const movie = getCachedMovieById(torrent_id);
-        this.createMovieFolder(movie, folder_name, files);
-        this.movies.set(torrent_id, movie);
+        if (this.movies.has(torrent_id)) {
+            this.torrents.set(torrent_id, {
+                files: this.torrents.get(torrent_id).files.concat(files).filter((v, i, a) => a.indexOf(v) === i),
+                downloaded: false,
+                error: null
+            });
+            this.folders.set(torrent_id, {
+                name: folder_name,
+                created_at: Date.now()
+            });
+            this.setData(torrent_id, {
+                movie_info: movie,
+                folder_info: this.folders.get(torrent_id),
+                torrent_info: this.torrents.get(torrent_id)
+            });
+        } else {
+            this.movies.set(torrent_id, movie);
+            this.createMovieFolder(movie, folder_name, files);
+        }
         this.user.getDownloader().downloadTorrent(torrent_id, files);
+    }
+
+    async deleteFiles(torrent_id: any, to_delete: string[]) {
+        const data = this.getData(torrent_id);
+        data.torrent_info.files = data.torrent_info.files.filter(f => !to_delete.includes(f));
+        console.log("To delte : ================================= ",to_delete);
+        if (data.torrent_info.files.length === 0) {
+            await this.deleteMovie(torrent_id);
+        } else {
+            this.setData(torrent_id, data);
+            this.torrents.set(torrent_id, data.torrent_info);
+        }
+        for(let file of to_delete) {
+            await fs.promises.rm(path.join(this.getMovieDownloadPath(torrent_id), file), { force: true });
+            console.log("Deleted file " + path.join(this.getMovieDownloadPath(torrent_id), file));
+        }
+    }
+
+    async deleteMovie(torrent_id: number) {
+        this.movies.delete(torrent_id);
+        this.folders.delete(torrent_id);
+        this.torrents.delete(torrent_id);
+        await fs.promises.rm(this.getMovieFolderPath(torrent_id), { force: true, recursive: true });
     }
 
     async setMovieDownloaded(torrent_id: number) {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
-        await this.formatMovieFolder(this.getMovieDownloadPath(torrent_id));
+        //await this.formatMovieFolder(this.getMovieDownloadPath(torrent_id));
         this.setData(torrent_id, data);
     }
 

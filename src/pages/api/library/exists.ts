@@ -17,7 +17,8 @@ export const post: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify({
         exists: exists,
-        files: torrent ? torrent.files : null
+        files: torrent ? torrent.files : null,
+        folder_name: torrent ? user.getLibrary().getFolders().get(movie_id).name : null
     }), {
         status: 200
     });
