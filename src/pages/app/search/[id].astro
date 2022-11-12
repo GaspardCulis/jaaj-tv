@@ -51,7 +51,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
         </div>
     </div>
     <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
-    <script defer define:vars={{id, movie}} type="module">
+    <script defer define:vars={{id, movie}}>
         var fileTree;
     
         function setupFolderName() {
@@ -79,11 +79,12 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 return;
             }
             const files = (await response.json()).files;
-    
-            console.log(files);
+
+            const parsed = parseFiles(files.map((f) => {f.path = f.path.replace(/\\/g, '/'); return f;}));
+            for (const node of parsed) node.checked = true;
             
             fileTree = new Tree('.files-container', {
-                data: parseFiles(files),
+                data: parsed,
                 onChange: () => {
                     const downloadButton = document.getElementById("download-button");
                     if (!downloadButton.style.transition.startsWith("none")) {
@@ -100,37 +101,33 @@ const important_properties = ["episode","season","language", "quality", "resolut
             return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
         }
     
-        function parseFiles(files) {
-            const treeData = [];
+        function parseFiles(files, parentName = "") {
+            const  treeData = [];
+            const ids = []
             for (const file of files) {
-                file.path = file.path.replace(/\\/g, "/");
-                const path = file.path.split("/");
-                let currentNode = treeData;
-                for (const folder of path) {
-                    const node = currentNode.find((node) => node.id === folder);
-                    if (node) {
-                        currentNode = node.children;
-                    } else {
-                        const type = path.indexOf(folder) === path.length - 1 ? "file" : "folder";
-                        const newNode = {
-                            id: folder,
-                            text: folder + (type === "file" ? ` (${humanFileSize(file.length)})` : ""),
-                            children: [],
-                            attributes: {
-                                type: type,
-                                path: file.path,
-                                size: file.length,
-                            }
-                        };
-                        currentNode.push(newNode);
-                        currentNode = newNode.children;
+                const path = file.path.replace(parentName, '').split("/");
+                const id = parentName + path[0];
+                if (ids.includes(id)) continue;
+                const newNode = {
+                    id: id,
+                    text: path[0] + (path.length === 1 ? ` (${humanFileSize(file.length)})` : ""),
+                    children: [],
+                    attributes: {
+                        type: null,
+                        size: file.length,
                     }
+                };
+                if (path.length > 1) {
+                    const folder = path[0];
+                    newNode.attributes.type = "folder";
+                    newNode.children = parseFiles(files.filter((v) => v.path.startsWith(newNode.id + '/')), parentName + folder + '/');
+                } else {
+                    newNode.attributes.type = "file";
                 }
+                treeData.push(newNode);
+                ids.push(id);
             }
-            for(const node of treeData) {
-                node.checked = true;
-            }
-    
+
             return treeData;
         }
     
@@ -138,7 +135,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
             const files = [];
             for (const node of selectedNodes) {
                 if (node.attributes.type === 'file') {
-                    files.push(node.attributes.path);
+                    files.push(node.id);
                 }
             }
             
@@ -250,6 +247,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 downloadButton.classList.add("clicked");
                 document.getElementById("folder_name").disabled = true;
                 setupProgressAnimation();
+                setupFileTree(data.files);
             } else {
                 downloadButton.addEventListener("click", onDownloadButtonPressed);
             }
@@ -277,11 +275,15 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 span.style.setProperty('--progress', Math.round(progress * 100) + '%');
             }, 1000, span);
         }
+
+        function setupFileTree(files) {
+            fileTree.values = files;
+        }
         
         document.addEventListener("DOMContentLoaded", async () => {
             setupFolderName();
-            await setupDownloadButton();
             await getFiles();
+            await setupDownloadButton();
         });
     </script>
     <style>

@@ -11,11 +11,13 @@ export const post: APIRoute = async ({ request }) => {
 
     if (isNaN(movie_id)) return { status: 417, body: "Invalid torrent id" };
 
-    const user = await UserManager.getUser(authorized as string);
+    const user = UserManager.getUserSync(authorized as string);
     const exists = user.getLibrary().exists(movie_id);
+    const torrent = exists ? user.getLibrary().getTorrentInfo(movie_id) : null;
 
     return new Response(JSON.stringify({
-        exists: exists
+        exists: exists,
+        files: torrent ? torrent.files : null
     }), {
         status: 200
     });

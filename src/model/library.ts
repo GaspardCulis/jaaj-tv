@@ -108,6 +108,11 @@ export default class Library {
         return this.folders;
     }
 
+    getTorrentInfo(torrent_id: number): TorrentInfo {
+        return this.getData(torrent_id).torrent_info;
+    }
+
+
     getMovieFolderPath(torrent_id: number): string {
         return path.join(this.download_path, torrent_id.toString());
     }
