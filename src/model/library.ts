@@ -109,7 +109,7 @@ export default class Library {
             this.torrents.set(torrent_id, data.torrent_info);
         }
         for(let file of to_delete) {
-            await fs.promises.rm(path.join(this.getMovieFilesPath(torrent_id), file), { force: true });
+            await fs.promises.rm(path.join(this.getMovieFilesPath(torrent_id), file), { force: true }).catch((e) => console.error("Error occured while deleting file : ", e));
             console.log("Deleted file " + path.join(this.getMovieFilesPath(torrent_id), file));
         }
     }
@@ -118,7 +118,7 @@ export default class Library {
         this.movies.delete(torrent_id);
         this.folders.delete(torrent_id);
         this.torrents.delete(torrent_id);
-        await fs.promises.rm(this.getMovieFolderPath(torrent_id), { force: true, recursive: true });
+        await fs.promises.rm(this.getMovieFolderPath(torrent_id), { force: true, recursive: true }).catch((e) => console.error("Error occured while deleting  movie folder : ", e));
     }
 
     async setMovieDownloaded(torrent_id: number) {

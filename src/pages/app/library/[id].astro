@@ -1,0 +1,102 @@
+---
+import App from "../../../layouts/App.astro";
+import { getCachedMovieById } from "../../../model/database";
+import { isAuthorized } from "../../../model/utils";
+
+if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
+
+const { id } = Astro.params;
+
+const movie = getCachedMovieById(parseInt(id + ""));
+
+if (!movie) return new Response("Movie not found", { status: 404 });
+---
+
+<App title="jaajTV | Search" selected_index={0}>
+    <div id="movie-page" class="hbox">
+        <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
+        <div id="movie-info" class="vbox">
+            <header class="hbox" style="margin-bottom: 50px;">
+                <div class="title-container">
+                    <h1>{movie.title || movie.baseName}</h1>
+                    <a href={movie.url}><h2>{movie.baseName}</h2></a>
+                </div>
+                <a href="/app/library" id="close-button">
+                    <img src="/assets/close.svg" alt="close" id="close-icon"/>
+                </a>
+            </header>
+        </div> 
+    </div>
+    <style>
+        #movie-page {
+            height: 100%;
+            width: 100%;
+            background-color: whitesmoke;
+        }
+
+        html.is-leaving #movie-page {
+            transform: translateY(100%);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        #movie-page img {
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #movie-info {
+            height: 100%;
+            width: 100%;
+            padding-top: 1rem;
+            padding-left: 3rem;
+            justify-content: space-between;
+        }
+    
+        #movie-info header {
+            width: 100%;
+            justify-content: space-between;
+        }
+    
+        #close-button {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 1rem;
+        }
+    
+        #close-icon {
+            height: 2rem;
+            width: 2rem;
+            cursor: pointer;
+        }
+    
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .title-container a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .title-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0s;
+        }
+    
+        .title-container h2 {
+            font-size: 1rem;
+            margin-block: 0;
+            margin-left: 0.5rem;
+            color: gray;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.2s;
+        }
+    
+        .title-container a:hover h2 {
+            text-decoration: underline;
+        }
+    </style>
+</App>

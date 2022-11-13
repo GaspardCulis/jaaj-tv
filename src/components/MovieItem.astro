@@ -42,6 +42,12 @@ if (movie.season || movie.episode) {
 </a>
 <script src="/src/movie-transition.js" is:inline></script>
 <style>
+    .movie {
+        color: inherit;
+        text-decoration: none;
+        cursor: initial;
+    }
+
     html.is-loaded .movie {
         animation: movie-appear 0.5s ease-in-out forwards;
     }

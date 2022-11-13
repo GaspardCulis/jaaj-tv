@@ -1,8 +1,8 @@
 ---
-import MovieItem from "../../components/MovieItem.astro";
-import App from "../../layouts/App.astro";
-import UserManager from "../../model/usermanager";
-import { isAuthorized } from "../../model/utils";
+import MovieItem from "../../../components/MovieItem.astro";
+import App from "../../../layouts/App.astro";
+import UserManager from "../../../model/usermanager";
+import { isAuthorized } from "../../../model/utils";
 
 const authorized = isAuthorized(Astro.request)
 if (!authorized) return Astro.redirect("../login");
@@ -29,7 +29,7 @@ for (const movie of elements) {
         <div class="carousel">
             <div class="carousel-container">
                 <div class="carousel-spacer left"></div>
-                {elements.map(movie => <MovieItem movie={movie} animation_delay={movie.index*200}/>)}
+                {elements.map(movie => <MovieItem movie={movie} animation_delay={movie.index*200} href={"/app/library/"+movie.id}/>)}
                 <div class="carousel-spacer right"></div>
             </div>
             <div class="carousel-button right inactive" onclick="moveCarousel(this, 'right')"></div>
