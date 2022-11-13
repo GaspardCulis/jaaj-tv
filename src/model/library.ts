@@ -102,7 +102,6 @@ export default class Library {
     async deleteFiles(torrent_id: any, to_delete: string[]) {
         const data = this.getData(torrent_id);
         data.torrent_info.files = data.torrent_info.files.filter(f => !to_delete.includes(f));
-        console.log("To delte : ================================= ",to_delete);
         if (data.torrent_info.files.length === 0) {
             await this.deleteMovie(torrent_id);
         } else {

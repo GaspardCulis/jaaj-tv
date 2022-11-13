@@ -54,11 +54,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
     <script defer define:vars={{id, movie}}>
         var fileTree;
 
-        let files = [];
-
-        const button_state = {
-            enabled: false,
-        }
+        let REMOTE_FILES = [];
+        let CAN_DOWNLOAD = false;
     
         function setupFolderName() {
             let folder_name = movie.title || movie.baseName;
@@ -70,7 +67,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
             document.getElementById("folder_name").value = folder_name;
         }
     
-        async function getFiles() {
+        async function getMovieFiles() {
             const response = await fetch("/api/files", {
                 method: "POST",
                 headers: {
@@ -133,17 +130,6 @@ const important_properties = ["episode","season","language", "quality", "resolut
             return treeData;
         }
     
-        function parseSelectedNodes(selectedNodes) {
-            const files = [];
-            for (const node of selectedNodes) {
-                if (node.attributes.type === 'file') {
-                    files.push(node.id);
-                }
-            }
-            
-            return files;
-        }
-    
         function getTotalFileSize(selectedNodes) {
             let totalSize = 0;
             for (const node of selectedNodes) {
@@ -157,7 +143,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
     
         function updateDownloadButton() {
             if (!fileTree) return;
-            button_state.enabled = true;
+            CAN_DOWNLOAD = true;
             const selectedNodes = fileTree.selectedNodes;
             const totalSize = getTotalFileSize(selectedNodes);
             let message = `Add to library (${humanFileSize(totalSize)})`;
@@ -165,11 +151,11 @@ const important_properties = ["episode","season","language", "quality", "resolut
             downloadButton.classList.remove("clicked");
 
 
-            const exists = files.length > 0;
+            const exists = REMOTE_FILES.length > 0;
             if (exists) {
-                const new_files = fileTree.values.filter((v) => !files.includes(v));
+                const new_files = fileTree.values.filter((v) => !REMOTE_FILES.includes(v));
                 const new_size = getTotalFileSize(selectedNodes.filter((v) => new_files.includes(v.id)));
-                const files_to_remove = files.filter((v) => !fileTree.values.includes(v));
+                const files_to_remove = REMOTE_FILES.filter((v) => !fileTree.values.includes(v));
                 if (new_files.length > 0) {
                     message = `Add ${new_files.length} new file${new_files.length > 1 ? 's' : ''} (${humanFileSize(new_size)})`;
                     if (files_to_remove.length > 0) {
@@ -178,8 +164,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
                 } else if (files_to_remove.length > 0) {
                     message = `Remove ${files_to_remove.length} file${files_to_remove.length > 1 ? 's' : ''} from library`;
                 } else {
-                    message = "Added to library";
-                    button_state.enabled = false;
+                    message = "No changes";
+                    CAN_DOWNLOAD = false;
                     downloadButton.classList.add("clicked");
                 }
             }
@@ -187,13 +173,21 @@ const important_properties = ["episode","season","language", "quality", "resolut
             const downloadButtonText = document.getElementById("download-button").getElementsByTagName("p")[0];
             downloadButtonText.innerText = message;
         }
+
+        function parseSelectedNodes(selectedNodes) {
+            const files = [];
+            for (const node of selectedNodes) {
+                if (node.attributes.type === 'file') {
+                    files.push(node.id);
+                }
+            }
+            
+            return files;
+        }
     
         async function onDownloadButtonPressed() {
-            if (!button_state.enabled) return;
-            console.log("Download button pressed");
-            button_state.enabled = false;
-            // Remove event listener to prevent multiple clicks
-            document.getElementById("download-button").removeEventListener("click", onDownloadButtonPressed);
+            if (!CAN_DOWNLOAD) return;
+            CAN_DOWNLOAD = false;
             // Animation
             const downloadButton = document.getElementById("download-button");
             const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
@@ -223,12 +217,25 @@ const important_properties = ["episode","season","language", "quality", "resolut
             await animationWait;
             const backgroundBackup = downloadButton.style.backgroundImage;
             if (response.status === 200) {
-                downloadButtonText.innerText = "Added to library";
+                const only_deletes = selectedFiles.filter((v) => !REMOTE_FILES.includes(v)).length === 0;
+
                 downloadButtonText.classList.remove("hidden");
-                files = selectedFiles;
-                setupProgressAnimation();
-                downloadButton.style.minWidth = "";
-                downloadButton.style.height = "";
+                const deleted_files = REMOTE_FILES.filter((v) => !selectedFiles.includes(v));
+                REMOTE_FILES = REMOTE_FILES.length > 0 ? selectedFiles.filter((v) => !deleted_files.includes(v)) : selectedFiles;
+                
+                if (only_deletes) {
+                    downloadButtonText.innerText = "Removed from library";
+                    CAN_DOWNLOAD = true;
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                    setupFileTree();
+                } else {
+                    if (deleted_files.length === 0) {
+                        downloadButtonText.innerText = "Added to library";
+                    } else {
+                        downloadButtonText.innerText = "Updated library";
+                    }
+                    setupProgressAnimation();
+                }
             } else {
                 downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
                 downloadButton.classList.remove("clicked");
@@ -251,7 +258,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     downloadButton.style.minWidth = "";
                     downloadButton.style.height = "";
                     folderNameInput.disabled = false;
-                    button_state.enabled = true;
+                    CAN_DOWNLOAD = true;
                 }, 3000);
             }
     
@@ -274,17 +281,17 @@ const important_properties = ["episode","season","language", "quality", "resolut
             const downloadButton = document.getElementById("download-button");
             const downloadButtonText = downloadButton.getElementsByTagName("p")[0];
             if (data.exists) {
+                const folderNameInput = document.getElementById("folder_name");
                 downloadButtonText.innerText = "Added to library";
                 downloadButton.style.transition = "none";
                 downloadButton.classList.add("clicked");
-                document.getElementById("folder_name").disabled = true;
+                folderNameInput.disabled = true;
+                folderNameInput.value = data.folder_name;
                 setupProgressAnimation();
-                files = data.files;
+                REMOTE_FILES = data.files;
                 setupFileTree();
-                document.getElementById("folder_name").value = data.folder_name;
             } else {
                 downloadButton.addEventListener("click", onDownloadButtonPressed);
-                setupFolderName();
             }
         }
 
@@ -313,6 +320,7 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     clearInterval(interval);
                     setupFileTree();
                     updateDownloadButton();
+                    CAN_DOWNLOAD = true;
                 }
                 span.style.setProperty('--progress', Math.round(progress * 100) + '%');
             }, 1000, span);
@@ -320,15 +328,16 @@ const important_properties = ["episode","season","language", "quality", "resolut
 
         function setupFileTree() {
             Object.values(fileTree.liElementsById).map((li) => li.getElementsByClassName("treejs-checkbox")[0].classList.remove("downloaded"));
-            fileTree.values = files;
-            for (const file of files) {
+            fileTree.values = REMOTE_FILES;
+            for (const file of REMOTE_FILES) {
                 const element = fileTree.liElementsById[file].getElementsByClassName("treejs-checkbox")[0];
                 element.classList.add("downloaded");
             }
         }
         
         document.addEventListener("DOMContentLoaded", async () => {
-            await getFiles();
+            setupFolderName();
+            await getMovieFiles();
             await setupDownloadButton();
             document.getElementById("download-button").addEventListener("click", onDownloadButtonPressed);
         });
