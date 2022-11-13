@@ -4,9 +4,10 @@ import { Movie } from '../model/database';
 export interface Props {
     movie: Movie;
     animation_delay?: number;
+    href?: string;
 }
 
-const { movie } = Astro.props;
+const { movie, href } = Astro.props;
 const animation_delay = (Astro.props.animation_delay === undefined ? 0 : Astro.props.animation_delay) + 'ms';
 
 const properties = [];
@@ -27,7 +28,7 @@ if (movie.season || movie.episode) {
 }
 ---
 <link rel="stylesheet" href="/style/search.css">
-<div class="movie" style={{ animationDelay: animation_delay }}>
+<a class="movie" style={{ animationDelay: animation_delay }} href={href} onclick="onMovieClicked(this); handleLoad(event);">
     <div class="poster-container">
         <img src={movie.image} alt={movie.title || movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'" />
     </div>
@@ -38,7 +39,8 @@ if (movie.season || movie.episode) {
             {properties.map((prop) => <li>{prop}</li>)}
         </ul>
     </div>
-</div>
+</a>
+<script src="/src/movie-transition.js" is:inline></script>
 <style>
     html.is-loaded .movie {
         animation: movie-appear 0.5s ease-in-out forwards;

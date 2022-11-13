@@ -24,7 +24,7 @@ for (const movie of elements) {
 }
 ---
 <App title="jaajTV  |  Library" selected_index={1}>
-    <div class="container">
+    <div class="container fade-transition">
         <label><img src="/icon/clock.svg" /><h2>Recently added</h2></label>
         <div class="carousel">
             <div class="carousel-container">
@@ -94,7 +94,7 @@ for (const movie of elements) {
             animation: slide-in 1000ms forwards;
         }
 
-        html.is-leaving .container {
+        html.is-leaving .container.fade-transition {
             opacity: 0;
         }
 

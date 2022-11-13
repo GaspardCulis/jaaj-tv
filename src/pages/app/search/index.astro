@@ -15,33 +15,11 @@ if (!isAuthorized(Astro.request)) return Astro.redirect("/login");
     <div style="pointer-events: none;position:absolute; margin: auto; width: 85%; height: 100%; display: flex; justify-content: center; align-items: center;" id="loading-boi">
         <LoadingBoi />
     </div>
-    <div id="search-results" class="hbox wrap has-transition">
+    <div id="search-results" class="hbox wrap fade-transition">
     </div>
     <BottomPopup message="No results" color="#FFFFFF"/>
-
+<script src="/src/movie-transition.js" is:inline></script>
 <script type="text/javascript" defer>
-
-function createSpacer(element) {
-    const spacer = document.createElement("div");
-    const rect = element.getBoundingClientRect();
-    spacer.style.minWidth = rect.width + "px";
-    spacer.style.minHeight = rect.height + "px";
-    element.parentNode.insertBefore(spacer, element);
-} 
-
-function onMovieClicked(clicked_a) {
-    let results_container = document.getElementById("search-results");
-    results_container.classList.remove("has-transition");
-    const rect = clicked_a.getBoundingClientRect();
-    clicked_a.style.position = "absolute";
-    createSpacer(clicked_a);
-    clicked_a.style.top = `${rect.top}px`;
-    clicked_a.style.left = `${rect.left}px`;
-    setTimeout(() => {
-        clicked_a.classList.add("is-showing");
-    }, 10);
-    
-}
 
 function movieElement(movie, animation_delay, no_animation) {
     const out = document.createElement("a");
@@ -161,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 100%;
     }
 
-    html.is-leaving #search-results.has-transition {
+    html.is-leaving #search-results.fade-transition {
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
     }
