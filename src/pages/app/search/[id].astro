@@ -236,6 +236,8 @@ const important_properties = ["episode","season","language", "quality", "resolut
                     }
                     setupProgressAnimation();
                 }
+                downloadButton.style.minWidth = "";
+                downloadButton.style.height = "";
             } else {
                 downloadButton.style.backgroundImage = "linear-gradient(to left, rgb(0, 167, 0) 50%, red 50%)";
                 downloadButton.classList.remove("clicked");
@@ -309,6 +311,9 @@ const important_properties = ["episode","season","language", "quality", "resolut
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ movie_id: id}),
+                }).catch((err) => {
+                    console.error("Failed to fetch progress");
+                    clearInterval(interval);
                 });
                 const data = await response.json().catch((e) => {
                     clearInterval(interval);

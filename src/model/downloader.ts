@@ -24,6 +24,10 @@ export default class Downloader {
         return path.join(this.torrents_path, torrent_id.toString() + ".torrent");
     }
 
+    getTorrentContentDownloadPath(torrent_id: number): string {
+        return path.join(this.user.getLibrary().getMovieFolderPath(torrent_id), "downloadings");
+    }
+
     async downloadTorrentFile(torrent_id: number) {
         await this.user.getClient().downloadTorrent(torrent_id, this.getTorrentFileDownloadPath(torrent_id));
     }
@@ -44,7 +48,7 @@ export default class Downloader {
         if (!this.isTorrentFileDownloaded(torrent_id)) {
             await this.downloadTorrentFile(torrent_id);
         }
-        const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.user.getLibrary().getMovieDownloadPath(torrent_id)}, (torrent) => {
+        const torrent = this._client.add(this.getTorrentFileDownloadPath(torrent_id), {path: this.getTorrentContentDownloadPath(torrent_id)}, (torrent) => {
             torrent.deselect(0, torrent.pieces.length - 1, false);
 
             for(let file of torrent.files) {

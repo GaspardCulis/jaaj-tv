@@ -109,8 +109,8 @@ export default class Library {
             this.torrents.set(torrent_id, data.torrent_info);
         }
         for(let file of to_delete) {
-            await fs.promises.rm(path.join(this.getMovieDownloadPath(torrent_id), file), { force: true });
-            console.log("Deleted file " + path.join(this.getMovieDownloadPath(torrent_id), file));
+            await fs.promises.rm(path.join(this.getMovieFilesPath(torrent_id), file), { force: true });
+            console.log("Deleted file " + path.join(this.getMovieFilesPath(torrent_id), file));
         }
     }
 
@@ -124,7 +124,10 @@ export default class Library {
     async setMovieDownloaded(torrent_id: number) {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
-        //await this.formatMovieFolder(this.getMovieDownloadPath(torrent_id));
+        //await this.formatMovieFolder(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id));
+        // Move files
+        await fs.promises.cp(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id), this.getMovieFilesPath(torrent_id), { recursive: true });
+        await fs.promises.rm(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id), { force: true, recursive: true });
         this.setData(torrent_id, data);
     }
 
@@ -159,7 +162,7 @@ export default class Library {
         return path.join(this.download_path, torrent_id.toString());
     }
 
-    getMovieDownloadPath(torrent_id: number): string {
+    getMovieFilesPath(torrent_id: number): string {
         return path.join(this.getMovieFolderPath(torrent_id), "files");
     }
 
