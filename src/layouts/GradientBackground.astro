@@ -12,6 +12,9 @@ const { title, transition_duration } = Astro.props;
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cantarell&display=swap" rel="stylesheet">
 	<script src="/src/transition.js" type="text/javascript" data-duration={transition_duration}/>
 	<title>{title}</title>
 </head>
@@ -19,6 +22,11 @@ const { title, transition_duration } = Astro.props;
 <body class="running_gradient">
 	<slot />
 	<style>
+		body {
+			/* Merci Ahurac pour ce font (presque) aussi beau que lui */
+			font-family: 'Cantarell', sans-serif;
+		}
+
 		.running_gradient {
 			animation: gradient 15s ease infinite;
 			margin: 0;
