@@ -115,7 +115,7 @@ export default class Downloader {
         if (typeof torrent === "number")
             torrent = this.getTorrent(torrent);
         if (torrent === undefined)
-            return 100;
+            return 1;
         let total = 0;
         let progress = 0;
 
