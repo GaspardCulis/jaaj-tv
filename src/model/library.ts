@@ -78,8 +78,9 @@ export default class Library {
     addTorrent(torrent_id: number, files: string[], folder_name: string) {
         const movie = getCachedMovieById(torrent_id);
         if (this.movies.has(torrent_id)) {
+            files = this.torrents.get(torrent_id).files.concat(files).filter((v, i, a) => a.indexOf(v) === i);
             this.torrents.set(torrent_id, {
-                files: this.torrents.get(torrent_id).files.concat(files).filter((v, i, a) => a.indexOf(v) === i),
+                files: files,
                 downloaded: false,
                 error: null
             });
@@ -109,8 +110,8 @@ export default class Library {
             this.torrents.set(torrent_id, data.torrent_info);
         }
         for(let file of to_delete) {
-            await fs.promises.rm(path.join(this.getMovieFilesPath(torrent_id), file), { force: true }).catch((e) => console.error("Error occured while deleting file : ", e));
-            console.log("Deleted file " + path.join(this.getMovieFilesPath(torrent_id), file));
+            await fs.promises.rm(path.join(this.getMovieDownloadPath(torrent_id), file), { force: true }).catch((e) => console.error("Error occured while deleting file : ", e));
+            console.log("Deleted file " + path.join(this.getMovieDownloadPath(torrent_id), file));
         }
     }
 
@@ -125,9 +126,6 @@ export default class Library {
         const data = this.getData(torrent_id);
         data.torrent_info.downloaded = true;
         //await this.formatMovieFolder(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id));
-        // Move files
-        await fs.promises.cp(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id), this.getMovieFilesPath(torrent_id), { recursive: true });
-        await fs.promises.rm(this.user.getDownloader().getTorrentContentDownloadPath(torrent_id), { force: true, recursive: true });
         this.setData(torrent_id, data);
     }
 
@@ -162,7 +160,7 @@ export default class Library {
         return path.join(this.download_path, torrent_id.toString());
     }
 
-    getMovieFilesPath(torrent_id: number): string {
+    getMovieDownloadPath(torrent_id: number): string {
         return path.join(this.getMovieFolderPath(torrent_id), "files");
     }
 
