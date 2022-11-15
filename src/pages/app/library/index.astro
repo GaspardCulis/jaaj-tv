@@ -1,11 +1,12 @@
 ---
 import MovieItem from "../../../components/MovieItem.astro";
 import App from "../../../layouts/App.astro";
+import getConfig from "../../../model/config";
 import UserManager from "../../../model/usermanager";
-import { isAuthorized } from "../../../model/utils";
+import { humanFileSize, isAuthorized } from "../../../model/utils";
 
 const authorized = isAuthorized(Astro.request)
-if (!authorized) return Astro.redirect("../login");
+if (!authorized) return Astro.redirect("/login");
 
 const library = UserManager.getUserSync(authorized as string).getLibrary();
 const folders = library.getFolders();
@@ -22,10 +23,23 @@ const elements = movies.map((movie) => {
 for (const movie of elements) {
     movie.index = i++;
 }
+
+console.log(await library.getQuotaPercentage());
+const quota_percentage = Math.min(Math.round((await library.getQuotaPercentage()) * 100), 100);
+const quota = humanFileSize(await library.getQuota());
+const max_quota = getConfig().jaajtv_max_user_storage;
 ---
 <App title="jaajTV  |  Library" selected_index={1}>
     <div class="container fade-transition">
-        <label><img src="/icon/clock.svg" /><h2>Recently added</h2></label>
+        <header>
+            <label><img src="/icon/clock.svg" /><h2>Recently added</h2></label>
+            <div id="quota-bar-container">
+                <div id="quota-bar-text">{quota} / {max_quota} GB</div>
+                <div id="quota-bar">
+                    <div id="quota-bar-fill" style={`width: ${quota_percentage}%`}></div>
+                </div>
+            </div>
+        </header>
         <div class="carousel">
             <div class="carousel-container">
                 <div class="carousel-spacer left"></div>
@@ -173,6 +187,41 @@ for (const movie of elements) {
         }
         .carousel-button.left.inactive {
             transform: translate(-60px, -50%);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 30px;
+        }
+
+        #quota-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+        }
+
+        #quota-bar {
+            width: 200px;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #quota-bar-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Roboto', sans-serif;
+            user-select: none;
+            margin-bottom: 0.2rem;
+        }
+
+        #quota-bar-fill {
+            height: 100%;
+            background-color: #00ff11;
+            transition: width 0.5s;
         }
 
         @keyframes slide-in {

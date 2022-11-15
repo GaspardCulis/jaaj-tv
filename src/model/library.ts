@@ -2,7 +2,8 @@ import { getCachedMovieById, Movie } from "./database";
 import User from "./user";
 import fs from 'fs';
 import path from 'path';
-import { ensureDirectoryExists, moveFilesOutOfDirectory } from "./utils";
+import { ensureDirectoryExists, getDirectorySize, moveFilesOutOfDirectory } from "./utils";
+import getConfig from "./config";
 
 type FolderInfo = {
     name: string,
@@ -163,6 +164,14 @@ export default class Library {
     getMovieDownloadPath(torrent_id: number): string {
         return path.join(this.getMovieFolderPath(torrent_id), "files");
     }
+
+    async getQuota(): Promise<number> {
+        return ((await getDirectorySize(this.download_path)));
+    }
+
+    async getQuotaPercentage(): Promise<number> {
+        return ((await this.getQuota()) / (1000000000) ) / getConfig().jaajtv_max_user_storage;
+    }    
 
     private getData(torrent_id: number): MovieFolder {
         return JSON.parse(fs.readFileSync(path.join(this.getMovieFolderPath(torrent_id), "movie.info"), "utf-8"));

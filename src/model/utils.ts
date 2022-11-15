@@ -60,3 +60,23 @@ export async function moveFilesOutOfDirectory(directory: string) {
     };
     await fs.promises.rmdir(directory);
 }
+
+export async function getDirectorySize(directory: string): Promise<number> {
+    let size = 0;
+    const files = await fs.promises.readdir(directory);
+    for (const file of files) {
+        const type = await fs.promises.lstat(path.join(directory, file)).catch((e) => null);
+        if (type && type.isDirectory()) {
+            size += await getDirectorySize(path.join(directory, file));
+        } else {
+            size += type.size;
+        }
+    }
+    return size;
+}
+
+export function humanFileSize(size: number): string {
+    var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1000));
+    const c = (size / Math.pow(1000, i)).toFixed(2)
+    return  c + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
