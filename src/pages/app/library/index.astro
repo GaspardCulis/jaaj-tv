@@ -24,7 +24,6 @@ for (const movie of elements) {
     movie.index = i++;
 }
 
-console.log(await library.getQuotaPercentage());
 const quota_percentage = Math.min(Math.round((await library.getQuotaPercentage()) * 100), 100);
 const quota = humanFileSize(await library.getQuota());
 const max_quota = getConfig().jaajtv_max_user_storage;

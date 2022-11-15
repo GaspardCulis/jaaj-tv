@@ -24,3 +24,7 @@
 .full-width {
     width: 100%;
 }
+
+.align-center {
+    align-items: center;
+}

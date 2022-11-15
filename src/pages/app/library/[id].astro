@@ -13,7 +13,7 @@ if (!movie) return new Response("Movie not found", { status: 404 });
 ---
 
 <App title="jaajTV | Search" selected_index={0}>
-    <div id="movie-page" class="hbox">
+    <div id="movie-page" class="hbox slide-transition">
         <img src={movie.image} alt={movie.baseName} onerror="this.onerror=null;this.src='/assets/placeholder.jpg'"/>
         <div id="movie-info" class="vbox">
             <header class="hbox" style="margin-bottom: 50px;">
@@ -25,7 +25,13 @@ if (!movie) return new Response("Movie not found", { status: 404 });
                     <img src="/assets/close.svg" alt="close" id="close-icon"/>
                 </a>
             </header>
-        </div> 
+            <section id="files-section">
+                <div class="hbox full-width align-center">
+                    <h3>Files</h3>
+                    <a id ="manage-button" href={`/app/search/${id}`} onclick="document.getElementById('movie-page').classList.remove('slide-transition'); document.getElementById('movie-info').classList.add('fade-transition');">[ Manage files ]</a>
+                </div>
+            </section>
+        </div>
     </div>
     <style>
         #movie-page {
@@ -34,9 +40,14 @@ if (!movie) return new Response("Movie not found", { status: 404 });
             background-color: whitesmoke;
         }
 
-        html.is-leaving #movie-page {
+        html.is-leaving #movie-page.slide-transition {
             transform: translateY(100%);
             transition: transform 0.5s ease-in-out;
+        }
+
+        html.is-leaving #movie-info.fade-transition {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         #movie-page img {
@@ -49,7 +60,6 @@ if (!movie) return new Response("Movie not found", { status: 404 });
             width: 100%;
             padding-top: 1rem;
             padding-left: 3rem;
-            justify-content: space-between;
         }
     
         #movie-info header {
@@ -97,6 +107,16 @@ if (!movie) return new Response("Movie not found", { status: 404 });
     
         .title-container a:hover h2 {
             text-decoration: underline;
+        }
+
+        #manage-button {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.4s;
+            margin-block: auto;
+            margin-left: 1rem;
         }
     </style>
 </App>
