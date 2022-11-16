@@ -199,6 +199,11 @@ const max_quota = getConfig().jaajtv_max_user_storage;
             display: flex;
             flex-direction: column;
             align-items: left;
+            opacity: 1;
+        }
+
+        html.is-loaded #quota-bar-container {
+            animation: slide-in 1000ms forwards;
         }
 
         #quota-bar {
