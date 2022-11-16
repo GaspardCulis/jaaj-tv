@@ -10,9 +10,12 @@ if (!authorized) return Astro.redirect("/login");
 
 const { id } = Astro.params;
 
-const movie = getCachedMovieById(parseInt(id + ""));
+const user = await UserManager.getUser(authorized as string)
+
+const movie = user.getLibrary().getMovies().get(parseInt(id as string));
 if (!movie) return new Response("Movie not found", { status: 404 });
-const files = (await UserManager.getUser(authorized as string)).getLibrary().getTorrentInfo(movie.id).files.map((file) => {
+
+const files = user.getLibrary().getTorrentInfo(movie.id).files.map((file) => {
     const parsed = tnp(file);
     return {
     path: file,
@@ -60,10 +63,13 @@ if (!movie) return new Response("Movie not found", { status: 404 });
                 <video
                     id="my-video"
                     class="video-js"
+                    width="640"
+                    height="264"
                     controls
                     preload="auto"
                     poster={movie.image}
                     data-setup="{}"
+                    style="margin-bottom: 50px;"
                 >
                 </video>
             </div>
@@ -71,7 +77,7 @@ if (!movie) return new Response("Movie not found", { status: 404 });
         </section>
     </div>
     <script src="/src/@widgetjs/tree/tree.min.js" type="text/javascript" is:inline />
-    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    
     <script defer define:vars={{id, movie, files}}>
         var fileTree;
 
@@ -120,14 +126,28 @@ if (!movie) return new Response("Movie not found", { status: 404 });
                 }
             });
             document.getElementById("watch-button").addEventListener("click", () => {
-                var player = videojs(document.querySelector('.video-js'));
-                player.src({
-                    src: `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`,
-                    type: 'video/mp4'
-                });
-                setTimeout(() => {
-                    player.play();
-                }, 1000);
+                const url = `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`
+                if (typeof videojs !== 'undefined') {
+                    const player = videojs(document.querySelector('.video-js'));
+                    player.src({
+                        src: `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`,
+                        type: 'video/mp4'
+                    });
+                    setTimeout(() => {
+                        player.play();
+                    }, 1000);
+                } else {
+                    const video = document.getElementsByTagName("video")[0];
+                    const source = document.createElement("source");
+                    source.src = `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`;
+                    source.type = "video/mp4";
+                    video.innerHTML = "";
+                    video.appendChild(source);
+                    video.load();
+                    setTimeout(() => {
+                        video.play();
+                    }, 1000);
+                }
                 // Names
                 document.getElementById("episode-title").innerText = fileTree.selectedNodes[0].text;
                 // Animation
@@ -297,12 +317,6 @@ if (!movie) return new Response("Movie not found", { status: 404 });
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-
-        .video-container video {
-            width: 70%;
-            object-fit: contain;
-            margin-bottom: 50px;
         }
     </style>
 </App>

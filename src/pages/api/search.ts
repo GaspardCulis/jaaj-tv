@@ -32,6 +32,9 @@ export const post: APIRoute = async ({ request }) => {
       let i = 0; // For ordering
 
       await Promise.all(results.map(async (result) => {
+        const files = await user.getDownloader().getTorrentFiles(result.id, false);
+        // Check if all are mp4
+        if (!files.every((file) => file.name.endsWith(".mp4"))) return;
         let index = i;
         i++;
         const parsed_torrent = tnp(result.name);

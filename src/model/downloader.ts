@@ -32,11 +32,14 @@ export default class Downloader {
         return fs.existsSync(this.getTorrentFileDownloadPath(torrent_id));
     }
 
-    async getTorrentFiles(torrent_id: number): Promise<{ name: string, path: string, length: number, offset: 0 }[]> {
+    async getTorrentFiles(torrent_id: number, keep_files: boolean = true): Promise<{ name: string, path: string, length: number, offset: 0 }[]> {
         if (!this.isTorrentFileDownloaded(torrent_id)) {
             await this.downloadTorrentFile(torrent_id);
         }
         const data = parseTorrent(fs.readFileSync(this.getTorrentFileDownloadPath(torrent_id)));
+        if (!keep_files) {
+            await fs.promises.rm(this.getTorrentFileDownloadPath(torrent_id), { force: true });
+        }
         return data.files;
     }
 
