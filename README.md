@@ -7,7 +7,7 @@ Features
 --------
 - Search for movies and TV series with a wide range of filters
 - Get a preview of the torrent files and choose the ones you want
-- Network optimized video player which can loads and cache the video files in chunks while you do other things
+- Network optimized video player which can load and cache the video files in chunks while you do other things
 
 Installation
 ------------
