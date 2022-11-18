@@ -15,4 +15,11 @@ const { title, selected_index, transition_duration } = Astro.props;
     <main class="vbox full-height" style="margin-left: 15%; width: 85%">
         <slot />
     </main>
+    <script>
+        fetch("/api/keepalive");
+        setInterval(() => {
+            fetch("/api/keepalive");
+            console.log("keepalive");
+        }, 20 * 1000);
+    </script>
 </GradientBackground>

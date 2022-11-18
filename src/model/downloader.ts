@@ -128,6 +128,8 @@ export default class Downloader {
         return progress / total;
     } 
 
-    
+    getDownloadsCount(): number {
+        return this.torrents.size;
+    }
 }
 
