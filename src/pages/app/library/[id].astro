@@ -289,6 +289,11 @@ if (!movie) return new Response("Movie not found", { status: 404 });
             text-decoration: underline;
         }
 
+        #files-section h3 {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.4s;
+        }
+
         #manage-button {
             color: #007bff;
             text-decoration: none;
@@ -301,6 +306,11 @@ if (!movie) return new Response("Movie not found", { status: 404 });
 
         #manage-button:hover {
             text-decoration: underline;
+        }
+
+        .files-container {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards 0.6s;
         }
 
         .separator-line {
@@ -317,6 +327,15 @@ if (!movie) return new Response("Movie not found", { status: 404 });
             flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
         }
     </style>
 </App>

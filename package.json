@@ -22,6 +22,7 @@
     "parse-torrent": "^9.1.5",
     "probe-image-size": "^7.2.3",
     "sha.js": "^2.4.11",
+    "stream-transcoder": "^0.0.5",
     "torrent-name-parser": "^0.6.5",
     "webtorrent": "^1.8.32"
   }
