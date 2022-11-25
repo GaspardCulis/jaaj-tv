@@ -29,3 +29,7 @@ Configuration
 You can configure the website by editing the `jaajtv.config.json` file. Check the `jaajtv.config.example.json` file for more information.
 
 You also need to create the `data/database.json` file. You can use the `data/database.example.json` file as a template.
+
+Status
+------
+- Struggling with the video player, plz send help 
