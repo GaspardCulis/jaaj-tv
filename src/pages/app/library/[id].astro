@@ -130,7 +130,7 @@ if (!movie) return new Response("Movie not found", { status: 404 });
                 if (typeof videojs !== 'undefined') {
                     const player = videojs(document.querySelector('.video-js'));
                     player.src({
-                        src: `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`,
+                        src: url,
                         type: 'video/mp4'
                     });
                     setTimeout(() => {
@@ -139,7 +139,7 @@ if (!movie) return new Response("Movie not found", { status: 404 });
                 } else {
                     const video = document.getElementsByTagName("video")[0];
                     const source = document.createElement("source");
-                    source.src = `/api/library/video?movie_id=${id}&file_path=${fileTree.values[0]}`;
+                    source.src = url;
                     source.type = "video/mp4";
                     video.innerHTML = "";
                     video.appendChild(source);
