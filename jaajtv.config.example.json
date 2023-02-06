@@ -1,8 +1,0 @@
-{
-    "yggtorrent": {
-        "username": "YGGTORRENT_USERNAME",
-        "password": "YGGTORRENT_PASSWORD"
-    },
-    "jaajtv_folder": "Path where jaajtv will store user directories and torrents",
-    "jaajtv_max_user_storage": "This has to be a number, represents the max storage the user has to store movies, in Gb"
-}
