@@ -1,25 +1,25 @@
 {
-	"name": "@ptkdev/svelte-electron-boilerplate",
+	"name": "@jaajcorp/jaaj-tv",
 	"displayName": "Svelte Electron Boilerplate",
 	"description": "Create a desktop app with this user friendly Svelte boilerplate for electron",
-	"version": "2.0.0",
+	"version": "1.0.0",
 	"main": "dist/electron/electron/main.js",
 	"publishConfig": {
 		"access": "public"
 	},
-	"author": "Patryk Rzucidło [@ptkdev] <support@ptkdev.io> (https://ptk.dev)",
+	"author": "Gaspard Culis",
 	"license": "MIT",
 	"license-docs": "CC BY 4.0",
 	"license-translations": "CC BY 4.0",
 	"license-images": "CC BY-NC 4.0",
-	"homepage": "https://github.com/ptkdev-boilerplate/svelte-electron-boilerplate",
+	"homepage": "https://github.com/jaaj-tv-boilerplate/jaaj-tv",
 	"docs": "https://github.com/WeeeTeam/projectx-docs",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ptkdev-boilerplate/svelte-electron-boilerplate.git"
+		"url": "https://github.com/jaaj-tv-boilerplate/jaaj-tv.git"
 	},
 	"bugs": {
-		"url": "https://github.com/ptkdev-boilerplate/svelte-electron-boilerplate/issues"
+		"url": "https://github.com/jaaj-tv-boilerplate/jaaj-tv/issues"
 	},
 	"engines": {
 		"node": ">=14.0.0"
@@ -42,7 +42,7 @@
 		"lint": "npm run lint-prettify && eslint . --cache --ext .ts,.js",
 		"lint-fix": "npm run lint-prettify && eslint . --cache --ext .ts,.js --fix",
 		"lint-prettify": "prettier --write --ignore-unknown '**/*.{ts,scss,md,json}'",
-		"git-set-upstream": "git remote add upstream git@github.com:ptkdev-boilerplate/svelte-electron-boilerplate.git && git fetch upstream",
+		"git-set-upstream": "git remote add upstream git@github.com:ptkdev-boilerplate/jaaj-tv.git && git fetch upstream",
 		"git-pull-upstream": "git pull upstream main && git pull upstream beta && git pull upstream nightly",
 		"git-pull": "git pull --recursive",
 		"git-hash": "ts-node scripts/githash.ts",
@@ -121,8 +121,8 @@
 		"yargs": "^17.3.1"
 	},
 	"build": {
-		"productName": "svelte-electron-boilerplate",
-		"appId": "io.ptkdev.svelte-electron-boilerplate",
+		"productName": "jaaj-tv",
+		"appId": "io.ptkdev.jaaj-tv",
 		"artifactName": "${productName}-${version}-${arch}.${ext}",
 		"directories": {
 			"output": "build",
@@ -178,7 +178,7 @@
 		"svelte-desktop",
 		"desktop-app",
 		"electron-boilerplate",
-		"svelte-electron-boilerplate",
+		"jaaj-tv",
 		"boilerplate"
 	],
 	"contributors": []
