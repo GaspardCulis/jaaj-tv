@@ -2,9 +2,9 @@
 	"contributions": {
 		"language": "Italian",
 		"license": "CC BY 4.0",
-		"contributors": ["Patryk Rzucidło [@ptkdev] <support@ptkdev.io> (https://ptk.dev)"]
+		"contributors": ["Gaspard Culis"]
 	},
-	"app_name": "svelte-electron-boilerplate",
+	"app_name": "jaaj-tv",
 	"hello_world": "Ciao Mondo!",
 	"error404_notfound": "Non trovata!",
 	"error404_message": "Oops, questo url non esiste!",
