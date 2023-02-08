@@ -1,45 +1,35 @@
 <script lang="ts">
-	/**
-	 * Menu HTML
-	 * =====================
-	 *
-	 * @contributors: Gaspard Culis
-	 *
-	 * @license: MIT License
-	 *
-	 */
-	import DarkMode from "@components/common/darkmode/darkmode.svelte";
 	import "./menu.ts";
+
+	let selected = 0;
+	let links = [
+		{ name: "All", href: "/" },
+		{ name: "Movies", href: "/" },
+		{ name: "Series", href: "/" },
+		{ name: "TV Shows", href: "/" },
+		{ name: "Cartoons", href: "/" },
+	];
 </script>
 
 <nav class="navbar" role="navigation" aria-label="main navigation">
-	<div class="navbar-brand">
-		<a href="#/" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-basic">
-			<span aria-hidden="true" />
-			<span aria-hidden="true" />
-			<span aria-hidden="true" />
+	<div class="navbar-start">
+		<a href="#/" role="button" class="navbar-home" aria-label="menu" data-target="navbar-basic">
+			<span class="navbar-home-circle" />
+			<span class="navbar-home-circle" />
+			<span class="navbar-home-circle" />
+			<span class="navbar-home-circle" />
 		</a>
 	</div>
-
-	<div id="navbar-basic" class="navbar-menu">
-		<div class="navbar-start">
-			<a href="#/" class="navbar-item"> Home </a>
-
-			<div class="navbar-item has-dropdown is-hoverable">
-				<a href="#/wild" class="navbar-link"> Wild </a>
-
-				<div class="navbar-dropdown">
-					<a href="#/wild/about" class="navbar-item"> About </a>
-					<a href="#/wild/contacts" class="navbar-item"> Contacts </a>
-				</div>
-			</div>
-		</div>
+	<div class="navbar-center">
+		{#each links as link, i}
+			<a href={link.href} class="navbar-item" class:selected={selected === i} on:click={() => (selected = i)}>
+				{link.name}
+			</a>
+		{/each}
 	</div>
 
 	<div class="navbar-end">
-		<div class="navbar-item">
-			<DarkMode />
-		</div>
+		<img src="/icons/search.svg" alt="search" class="navbar-search" />
 	</div>
 </nav>
 

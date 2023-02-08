@@ -1,13 +1,4 @@
 <script lang="ts">
-	/**
-	 * Home HTML
-	 * =====================
-	 *
-	 * @contributors: Gaspard Culis
-	 *
-	 * @license: MIT License
-	 *
-	 */
 	import Menu from "@components/common/menu/menu.svelte";
 	import Footer from "@components/common/footer/footer.svelte";
 	import { translate } from "@app/translations/translate";
@@ -26,8 +17,6 @@
 	</section>
 	<div class="content has-text-centered">app/pages/home.svelte</div>
 </div>
-
-<Footer />
 
 <style lang="scss">
 	@import "./home.scss";
