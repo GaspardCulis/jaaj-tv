@@ -7,6 +7,7 @@
 	
 	"index_recommended": "<strong> Recommended </strong> to you",
 	"index_popular": "Most popular",
+	
 	"error404_message": "Oops, this route doesn't exist!",
 	"offline_title": "Offline!",
 	"offline_message": "You are offline!",

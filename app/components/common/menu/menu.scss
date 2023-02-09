@@ -42,6 +42,8 @@
     font-size: 14;
     font-weight: 550;
     margin-inline: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
 .navbar-item:hover {
