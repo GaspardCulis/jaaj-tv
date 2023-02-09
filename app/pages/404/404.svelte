@@ -9,7 +9,6 @@
 	 *
 	 */
 	import Menu from "@components/common/menu/menu.svelte";
-	import Footer from "@components/common/footer/footer.svelte";
 	import { translate } from "@app/translations/translate";
 </script>
 
@@ -27,8 +26,6 @@
 		<p>{translate("error404_message")}</p>
 	</div>
 </div>
-
-<Footer />
 
 <style lang="scss">
 	@import "./404.scss";

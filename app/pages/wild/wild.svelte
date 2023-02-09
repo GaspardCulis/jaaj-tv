@@ -10,7 +10,6 @@
 	 *
 	 */
 	import Menu from "@components/common/menu/menu.svelte";
-	import Footer from "@components/common/footer/footer.svelte";
 	import { translate } from "@app/translations/translate";
 
 	export let params = { wild: "" };
@@ -34,8 +33,6 @@
 		<p>{translate("wildcard_current", { param: params.wild })}</p>
 	</div>
 </div>
-
-<Footer />
 
 <style lang="scss">
 	@import "./wild.scss";

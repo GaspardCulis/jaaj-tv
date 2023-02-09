@@ -5,9 +5,10 @@
 	"navbar_tv_shows": "TV Shows",
 	"navbar_cartoons": "Cartoons",
 	
-	"index_recommended": "<strong> Recommended </strong> to you",
+	"index_recommended_bold": "Recommended",
+	"index_recommended_tail": "to you",
 	"index_popular": "Most popular",
-	
+
 	"error404_message": "Oops, this route doesn't exist!",
 	"offline_title": "Offline!",
 	"offline_message": "You are offline!",
