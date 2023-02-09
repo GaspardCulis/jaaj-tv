@@ -1,14 +1,17 @@
 <script lang="ts">
+	import translate from "@translations/translate";
 	import "./menu.ts";
 
-	let selected = 0;
 	let links = [
-		{ name: "All", href: "/" },
-		{ name: "Movies", href: "/" },
-		{ name: "Series", href: "/" },
-		{ name: "TV Shows", href: "/" },
-		{ name: "Cartoons", href: "/" },
+		{ name: translate("navbar_all"), href: "?category=all" },
+		{ name: translate("navbar_movies"), href: "?category=movies" },
+		{ name: translate("navbar_series"), href: "?category=series" },
+		{ name: translate("navbar_tv_shows"), href: "?category=tv_shows" },
+		{ name: translate("navbar_cartoons"), href: "?category=cartoons" },
 	];
+
+	let selected_name = new URLSearchParams(window.location.search).get("category") || "all";
+	let selected = links.findIndex((link) => link.name === translate(`navbar_${selected_name}`));
 </script>
 
 <nav class="navbar" role="navigation" aria-label="main navigation">

@@ -1,12 +1,12 @@
 {
-	"contributions": {
-		"language": "English",
-		"license": "CC BY 4.0",
-		"contributors": ["Gaspard Culis"]
-	},
-	"app_name": "jaaj-tv",
-	"hello_world": "Hello World!",
-	"error404_notfound": "Not Found!",
+	"navbar_all": "All",
+	"navbar_movies": "Movies",
+	"navbar_series": "Series",
+	"navbar_tv_shows": "TV Shows",
+	"navbar_cartoons": "Cartoons",
+	
+	"index_recommended": "<strong> Recommended </strong> to you",
+	"index_popular": "Most popular",
 	"error404_message": "Oops, this route doesn't exist!",
 	"offline_title": "Offline!",
 	"offline_message": "You are offline!",
