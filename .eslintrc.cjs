@@ -93,7 +93,7 @@ module.exports = {
 		"space-before-function-paren": "off",
 		"prefer-template": "error",
 		"no-useless-concat": "error",
-		"linebreak-style": ["error", "unix"],
+		"linebreak-style": 0,
 		"eol-last": ["error", "always"],
 		"template-curly-spacing": ["error", "never"],
 		"no-multiple-empty-lines": "off",
