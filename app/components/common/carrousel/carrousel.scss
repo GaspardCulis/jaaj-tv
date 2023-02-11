@@ -1,0 +1,48 @@
+.carrousel {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid blue;
+
+    .carrousel_container {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        transition: transform 0.5s;
+
+        .carrousel_item {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: 1px solid red;
+        }
+    }
+
+    .carrousel_controls {
+        width: 100%;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .carrousel_control {
+            width: 10px;
+            height: 10px;
+            margin-inline: 5px;
+            background-color: #bfbff5;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: width 0.5s, background-color 0.5s;
+
+            &:hover {
+                background-color: #4f50f5;
+            }
+
+            &.selected {
+                width: 30px;
+                background-color: #4f50f5;
+            }
+        }
+    }
+}

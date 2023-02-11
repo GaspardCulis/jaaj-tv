@@ -3,4 +3,4 @@
 // No Node.js APIs are available in this process unless
 // nodeIntegration is set to true in webPreferences.
 // Use preload.js to selectively enable features
-// needed in the renderer process.
+console.log("Hello from the renderer process!");

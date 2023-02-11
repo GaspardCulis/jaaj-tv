@@ -14,6 +14,7 @@
 	let selected = links.findIndex((link) => link.name === translate(`navbar_${selected_name}`));
 </script>
 
+<!-- svelte-ignore a11y-no-redundant-roles -->
 <nav class="navbar" role="navigation" aria-label="main navigation">
 	<div class="navbar-start">
 		<a href="#/" role="button" class="navbar-home" aria-label="menu" data-target="navbar-basic">
@@ -32,7 +33,7 @@
 	</div>
 
 	<div class="navbar-end">
-		<img src="/icons/search.svg" alt="search" class="navbar-search" />
+		<img src="icons/search.svg" alt="search" class="navbar-search" />
 	</div>
 </nav>
 
