@@ -5,8 +5,7 @@
 	export let alt: string;
 	export let hidden: boolean;
 	export let place: number;
-
-	console.log(place);
+	export let fast_transition: boolean;
 </script>
 
 <div
@@ -16,6 +15,8 @@
 	class:place-2={place == 2}
 	class:place--1={place == -1}
 	class:place--2={place == -2}
+	class:fast-transition={fast_transition}
+	style="z-index: {-Math.abs(place)}"
 >
 	<img {src} {alt} />
 
