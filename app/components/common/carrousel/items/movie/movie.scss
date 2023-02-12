@@ -56,4 +56,27 @@
         }
     }
 
+    &:not(.hidden) {
+        z-index: 1;
+    }
+
+    &.place-1 {
+        transform: scaleY(0.95) translateX(-3%);
+        z-index: -1;
+    }
+
+    &.place-2 {
+        transform: scaleY(0.9) translateX(-5%);
+        z-index: -2;
+    }
+
+    &.place--1 {
+        transform: scaleY(0.95) translateX(3%);
+        z-index: -3;
+    }
+
+    &.place--2 {
+        transform: scaleY(0.9) translateX(5%);
+        z-index: -4;
+    }
 }

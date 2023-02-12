@@ -4,9 +4,19 @@
 	export let src: string;
 	export let alt: string;
 	export let hidden: boolean;
+	export let place: number;
+
+	console.log(place);
 </script>
 
-<div class="movie_carrousel_item" class:hidden>
+<div
+	class="movie_carrousel_item"
+	class:hidden
+	class:place-1={place == 1}
+	class:place-2={place == 2}
+	class:place--1={place == -1}
+	class:place--2={place == -2}
+>
 	<img {src} {alt} />
 
 	<a href="lol">
@@ -24,7 +34,7 @@
 				/>
 			</g>
 		</svg>
-		<span>Watch now</span>
+		<span> Watch now </span>
 	</a>
 </div>
 

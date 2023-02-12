@@ -19,7 +19,7 @@
 <div class="carrousel vbox">
 	<div class="carrousel_container">
 		{#each items as item, i}
-			<Movie src={item.src} alt={item.alt} hidden={selected !== i} />
+			<Movie src={item.src} alt={item.alt} hidden={selected !== i} place={selected - i} />
 		{/each}
 	</div>
 	<div class="carrousel_controls hbox">
