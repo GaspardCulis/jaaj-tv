@@ -10,6 +10,10 @@
 		{ src: "test/time-out-backdrop-w780.jpg", alt: "Time Out" },
 		{ src: "test/upgrade-backdrop-w780.jpg", alt: "Upgrade" },
 	];
+
+	function updateSelected(index: number) {
+		selected = index;
+	}
 </script>
 
 <div class="carrousel vbox">
@@ -20,7 +24,7 @@
 	</div>
 	<div class="carrousel_controls hbox">
 		{#each items as _, i}
-			<span class="carrousel_control" class:selected={selected === i} on:click={() => (selected = i)} />
+			<span class="carrousel_control" class:selected={selected === i} on:click={() => updateSelected(i)} />
 		{/each}
 	</div>
 </div>
