@@ -14,4 +14,4 @@ Streaming desktop app
 
 Thanks to [**@ptkdev**](https://github.com/ptkdev-boilerplate/svelte-electron-boilerplate) for the boilerplate.
 
-UI/UX Inspiration from [**Cleverload**](https://dribbble.com/shots/16374672-Streaming-web-platform).
+UI/UX Inspiration from [**Cleveroad**](https://dribbble.com/shots/16374672-Streaming-web-platform).
